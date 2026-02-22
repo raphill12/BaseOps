@@ -5,6 +5,14 @@ import { f$, fp, vp, vf, q26vals } from '../utils.js';
 import { Card, SectionHeader, ChartCard, ChartLegendStd, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
 export default function PageOverview({ QD, B, FY26 }) {
+  // 2025 quarterly actuals derived from live QD series (not hardcoded)
+  const arr25  = QD.arr.slice(0, 4).map(d => d.total);
+  const rev25  = QD.rev.slice(0, 4).map(d => d.act);
+  const gm25   = QD.gm.slice(0, 4).map(d => d.act);
+  const opex25 = QD.opex.slice(0, 4).map(d => d.act);
+  const cash25 = QD.cash.slice(0, 4).map(d => d.act);
+  const nrr25  = QD.nrr.slice(0, 4).map(d => d.act);
+
   const cards = [
     { lbl: 'Total ARR · FY26F EOP',    val: f$(FY26.totalARR), meta: `Budget ${f$(B.totalARR[4])}`, pill: vf(vp(FY26.totalARR, B.totalARR[4])), good: FY26.totalARR >= B.totalARR[4], color: C.blue },
     { lbl: 'Revenue · FY26F',           val: f$(FY26.revenue),  meta: `Budget ${f$(B.revenue[4])}`,  pill: vf(vp(FY26.revenue,  B.revenue[4])),  good: FY26.revenue  >= B.revenue[4],  color: C.grn  },
@@ -158,12 +166,12 @@ export default function PageOverview({ QD, B, FY26 }) {
       <SectionHeader title="Full Year 2026 Summary · Forecast vs Budget" />
       <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <BvATable rows={[
-          { lbl: 'Total ARR (EOP)',     a25: [1612462, 2109500, 2385060, 2595641], a26: arr26,  b26: B.totalARR.slice(0, 4), fy: FY26.totalARR, fyb: B.totalARR[4], h: true },
-          { lbl: 'Revenue',             a25: [369102,  483870,  551089,  628065],  a26: rev26,  b26: B.revenue.slice(0, 4),  fy: FY26.revenue,  fyb: B.revenue[4],  h: true },
-          { lbl: 'Gross Margin %',      a25: [0.8233,  0.8660,  0.8770,  0.8680],  a26: gm26,   b26: B.gm.slice(0, 4),       fy: FY26.gm,       fyb: B.gm[4],       f: fp   },
-          { lbl: 'Operating Expenses',  a25: [1133492, 1105524, 1361137, 1367592], a26: opex26, b26: B.opex.slice(0, 4),     fy: FY26.opex,     fyb: B.opex[4],     inv: true, h: true },
-          { lbl: 'Ending Cash',         a25: [5600656, 4953894, 4210406, 4002599], a26: cash26, b26: B.cash.slice(0, 4),     fy: FY26.cash,     fyb: B.cash[4]                  },
-          { lbl: 'Corp NRR % (TTM)',    a25: [null,    null,    null,    1.105],   a26: nrr26,  b26: B.nrr.slice(0, 4),      fy: FY26.nrr,      fyb: B.nrr[4],      f: fp   },
+          { lbl: 'Total ARR (EOP)',     a25: arr25,  a26: arr26,  b26: B.totalARR.slice(0, 4), fy: FY26.totalARR, fyb: B.totalARR[4], h: true },
+          { lbl: 'Revenue',             a25: rev25,  a26: rev26,  b26: B.revenue.slice(0, 4),  fy: FY26.revenue,  fyb: B.revenue[4],  h: true },
+          { lbl: 'Gross Margin %',      a25: gm25,   a26: gm26,   b26: B.gm.slice(0, 4),       fy: FY26.gm,       fyb: B.gm[4],       f: fp   },
+          { lbl: 'Operating Expenses',  a25: opex25, a26: opex26, b26: B.opex.slice(0, 4),     fy: FY26.opex,     fyb: B.opex[4],     inv: true, h: true },
+          { lbl: 'Ending Cash',         a25: cash25, a26: cash26, b26: B.cash.slice(0, 4),     fy: FY26.cash,     fyb: B.cash[4]                  },
+          { lbl: 'Corp NRR % (TTM)',    a25: nrr25,  a26: nrr26,  b26: B.nrr.slice(0, 4),      fy: FY26.nrr,      fyb: B.nrr[4],      f: fp   },
         ]} />
       </div>
     </div>

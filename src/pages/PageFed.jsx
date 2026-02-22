@@ -8,20 +8,16 @@ export default function PageFed({ QD, B, FY26 }) {
   const fed26 = q26vals(QD.fedARR);
 
   // Federal P&L summary (quarterly)
-  const fedRevFY  = QD.fedPL.reduce((s, d) => s + (d.rev   || 0), 0);
+  const fedRevFY   = QD.fedPL.reduce((s, d) => s + (d.rev   || 0), 0);
   const fedOpIncFY = QD.fedPL.reduce((s, d) => s + (d.opInc || 0), 0);
 
-  // Historical + 2026 federal TCV bookings by quarter (for the quarterly TCV chart)
-  const fedTCVQtly = [
-    { q: 'Q1 25A', act: 448098,  fct: null, bud: null    },
-    { q: 'Q2 25A', act: 0,       fct: null, bud: null    },
-    { q: 'Q3 25A', act: 0,       fct: null, bud: null    },
-    { q: 'Q4 25A', act: 0,       fct: null, bud: null    },
-    { q: 'Q1 26A', act: 0,       fct: null, bud: 0       },
-    { q: 'Q2 26F', act: null,    fct: 0,    bud: 0       },
-    { q: 'Q3 26F', act: null,    fct: 1250000, bud: 1125000 },
-    { q: 'Q4 26F', act: null,    fct: 1000000, bud: 1125000 },
-  ];
+  // 2025 quarterly actuals derived from live QD series (not hardcoded)
+  const fed25    = QD.arr.slice(0, 4).map(d => d.fed);
+  const fedTCV25 = QD.fedTCVQ.slice(0, 4).map(d => d.act);
+  const fedTCV26 = q26vals(QD.fedTCVQ);
+
+  // Federal TCV by quarter — derived from live data
+  const fedTCVQtly = QD.fedTCVQ;
 
   return (
     <div>
@@ -126,8 +122,8 @@ export default function PageFed({ QD, B, FY26 }) {
       <SectionHeader title="Federal Detail" />
       <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <BvATable rows={[
-          { lbl: 'Federal ARR (EOP)',      a25: [298732, 640500, 640500, 640500], a26: fed26,                    b26: B.fedARR.slice(0, 4),  fy: FY26.fedARR,  fyb: B.fedARR[4],           h: true },
-          { lbl: 'Federal TCV (Bookings)', a25: [448098, 0,      0,      0],      a26: [0, 0, 1250000, 1000000], b26: B.fedTCV.slice(0, 4),  fy: FY26.fedTCV,  fyb: B.fedTCV[4] ?? 2250000         },
+          { lbl: 'Federal ARR (EOP)',      a25: fed25,    a26: fed26,    b26: B.fedARR.slice(0, 4),  fy: FY26.fedARR,  fyb: B.fedARR[4],           h: true },
+          { lbl: 'Federal TCV (Bookings)', a25: fedTCV25, a26: fedTCV26, b26: B.fedTCV.slice(0, 4),  fy: FY26.fedTCV,  fyb: B.fedTCV[4] ?? 2250000         },
           { lbl: 'Federal Revenue',        a25: [null,   null,   null,   null],   a26: QD.fedPL.map(d => d.rev),   b26: [null, null, null, null], fy: fedRevFY,    fyb: null, h: true },
           { lbl: 'Federal Op Income',      a25: [null,   null,   null,   null],   a26: QD.fedPL.map(d => d.opInc), b26: [null, null, null, null], fy: fedOpIncFY, fyb: null, inv: true },
         ]} />

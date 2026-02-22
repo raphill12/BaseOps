@@ -11,12 +11,21 @@ export default function PageRevenue({ QD, B, FY26 }) {
   const rev26  = q26vals(QD.rev);
   const nrr26  = q26vals(QD.nrr);
 
-  // Y/Y ARR growth quarters (vs same quarter prior year)
+  // 2025 quarterly actuals derived from live QD series (not hardcoded)
+  const arr25     = QD.arr.slice(0, 4).map(d => d.total);
+  const corp25    = QD.arr.slice(0, 4).map(d => d.corp);
+  const fed25     = QD.arr.slice(0, 4).map(d => d.fed);
+  const rev25     = QD.rev.slice(0, 4).map(d => d.act);
+  const nrr25     = QD.nrr.slice(0, 4).map(d => d.act);
+  const fedTCV25  = QD.fedTCVQ.slice(0, 4).map(d => d.act);
+  const fedTCV26  = q26vals(QD.fedTCVQ);
+
+  // Y/Y ARR growth quarters (vs same quarter prior year from live data)
   const arrYoY = [
-    { q: 'Q1 26A', act: (arr26[0] / 1612462) - 1, fct: null },
-    { q: 'Q2 26F', act: null, fct: (arr26[1] / 2109500) - 1 },
-    { q: 'Q3 26F', act: null, fct: (arr26[2] / 2385060) - 1 },
-    { q: 'Q4 26F', act: null, fct: (arr26[3] / 2595641) - 1 },
+    { q: 'Q1 26A', act: arr25[0] ? (arr26[0] / arr25[0]) - 1 : null, fct: null },
+    { q: 'Q2 26F', act: null, fct: arr25[1] ? (arr26[1] / arr25[1]) - 1 : null },
+    { q: 'Q3 26F', act: null, fct: arr25[2] ? (arr26[2] / arr25[2]) - 1 : null },
+    { q: 'Q4 26F', act: null, fct: arr25[3] ? (arr26[3] / arr25[3]) - 1 : null },
   ].filter(d => d.act != null || d.fct != null);
 
   return (
@@ -27,7 +36,7 @@ export default function PageRevenue({ QD, B, FY26 }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 22 }}>
         <Card label="Total ARR · FY26F EOP"  value={f$(FY26.totalARR)} meta={`Budget ${f$(B.totalARR[4])}`} pill={vf(vp(FY26.totalARR, B.totalARR[4]))} pillGood={FY26.totalARR >= B.totalARR[4]} color={C.blue} />
         <Card label="Corp ARR · FY26F EOP"   value={f$(FY26.corpARR)}  meta={`Budget ${f$(B.corpARR[4])}`}  pill={vf(vp(FY26.corpARR,  B.corpARR[4]))}  pillGood={FY26.corpARR  >= B.corpARR[4]}  color={C.cyn}  />
-        <Card label="Y/Y Total ARR · Q4 26F" value={fp(arr26[3] / 2595641 - 1)} meta="vs Q4 25A"            pill={`▲ ${fp(arr26[3] / 2595641 - 1)}`}    pillGood={true}                            color={C.grn}  />
+        <Card label="Y/Y Total ARR · Q4 26F" value={fp(arr25[3] ? arr26[3] / arr25[3] - 1 : null)} meta="vs Q4 25A" pill={arr25[3] ? `▲ ${fp(arr26[3] / arr25[3] - 1)}` : '—'} pillGood={true} color={C.grn}  />
         <Card label="Corp NRR · TTM Q4 26F"  value={fp(FY26.nrr)}      meta={`Budget ${fp(B.nrr[4])}`}       pill={fpc(FY26.nrr - B.nrr[4])}             pillGood={FY26.nrr >= B.nrr[4]}            color={C.pur}  />
       </div>
 
@@ -94,13 +103,13 @@ export default function PageRevenue({ QD, B, FY26 }) {
       <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <BvATable rows={[
           { sec: true, lbl: 'ARR Metrics' },
-          { lbl: 'Total ARR (EOP)',         a25: [1612462, 2109500, 2385060, 2595641], a26: arr26,  b26: B.totalARR.slice(0, 4), fy: FY26.totalARR, fyb: B.totalARR[4], h: true },
-          { lbl: 'Corporate ARR (EOP)',      a25: [1313730, 1469000, 1744560, 1955141], a26: corp26, b26: B.corpARR.slice(0, 4),  fy: FY26.corpARR,  fyb: B.corpARR[4]          },
-          { lbl: 'Federal ARR (EOP)',        a25: [298732,  640500,  640500,  640500],  a26: fed26,  b26: B.fedARR.slice(0, 4),   fy: FY26.fedARR,   fyb: B.fedARR[4]           },
-          { lbl: 'Federal TCV (Bookings)',   a25: [448098,  0,       0,       0],       a26: q26vals(QD.fedARR).map(() => null).map((_, i) => [0, 0, FY26.fedTCV * 0.56, FY26.fedTCV * 0.44][i]), b26: B.fedTCV.slice(0, 4), fy: FY26.fedTCV, fyb: B.fedTCV[4] ?? 2250000 },
+          { lbl: 'Total ARR (EOP)',         a25: arr25,    a26: arr26,    b26: B.totalARR.slice(0, 4), fy: FY26.totalARR, fyb: B.totalARR[4], h: true },
+          { lbl: 'Corporate ARR (EOP)',      a25: corp25,   a26: corp26,   b26: B.corpARR.slice(0, 4),  fy: FY26.corpARR,  fyb: B.corpARR[4]          },
+          { lbl: 'Federal ARR (EOP)',        a25: fed25,    a26: fed26,    b26: B.fedARR.slice(0, 4),   fy: FY26.fedARR,   fyb: B.fedARR[4]           },
+          { lbl: 'Federal TCV (Bookings)',   a25: fedTCV25, a26: fedTCV26, b26: B.fedTCV.slice(0, 4),   fy: FY26.fedTCV,   fyb: B.fedTCV[4] ?? 2250000 },
           { sec: true, lbl: 'Revenue & Retention' },
-          { lbl: 'Revenue',                 a25: [369102,  483870,  551089,  628065],  a26: rev26,  b26: B.revenue.slice(0, 4),  fy: FY26.revenue,  fyb: B.revenue[4],  h: true },
-          { lbl: 'Corporate NRR % (TTM)',   a25: [null,    null,    null,    1.105],   a26: nrr26,  b26: B.nrr.slice(0, 4),      fy: FY26.nrr,      fyb: B.nrr[4],      f: fp   },
+          { lbl: 'Revenue',                 a25: rev25,    a26: rev26,    b26: B.revenue.slice(0, 4),  fy: FY26.revenue,  fyb: B.revenue[4],  h: true },
+          { lbl: 'Corporate NRR % (TTM)',   a25: nrr25,    a26: nrr26,    b26: B.nrr.slice(0, 4),      fy: FY26.nrr,      fyb: B.nrr[4],      f: fp   },
         ]} />
       </div>
     </div>

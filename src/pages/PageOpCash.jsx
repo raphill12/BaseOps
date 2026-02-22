@@ -10,6 +10,15 @@ export default function PageOpCash({ QD, B, FY26 }) {
   const cash26 = q26vals(QD.cash);
   const nrr26  = q26vals(QD.nrr);
 
+  // 2025 quarterly actuals derived from live QD series (not hardcoded)
+  const opex25 = QD.opex.slice(0, 4).map(d => d.act);
+  const gm25   = QD.gm.slice(0, 4).map(d => d.act);
+  const cash25 = QD.cash.slice(0, 4).map(d => d.act);
+  const nrr25  = QD.nrr.slice(0, 4).map(d => d.act);
+
+  // Latest headcount from live data (Dec-26F exit)
+  const fy26HC = QD.hc[QD.hc.length - 1]?.v ?? '—';
+
   return (
     <div>
       <SectionHeader title="Operating & Cash · 2025A & 2026A/F vs Budget" />
@@ -19,7 +28,7 @@ export default function PageOpCash({ QD, B, FY26 }) {
         <Card label="OpEx · FY26F total"       value={f$(FY26.opex)} meta={`Budget ${f$(B.opex[4])}`} pill={vf(vp(FY26.opex, B.opex[4]))} pillGood={FY26.opex <= B.opex[4]} color={C.amb} />
         <Card label="Ending Cash · Dec-26F"    value={f$(FY26.cash)} meta={`Budget ${f$(B.cash[4])}`} pill={vf(vp(FY26.cash, B.cash[4]))} pillGood={FY26.cash >= B.cash[4]} color={C.cyn} />
         <Card label="Gross Margin · FY26F avg" value={fp(FY26.gm)}   meta={`Budget ${fp(B.gm[4])}`}   pill={vf(vp(FY26.gm,   B.gm[4]))}   pillGood={FY26.gm   >= B.gm[4]}   color={C.grn} />
-        <Card label="Headcount · Q4 26F"       value="20"             meta="Full-time employees"        color={C.pur} />
+        <Card label="Headcount · FY26F Exit"    value={`${fy26HC}`}    meta="Full-time employees"        color={C.pur} />
       </div>
 
       {/* OpEx + Cash charts */}
@@ -130,10 +139,10 @@ export default function PageOpCash({ QD, B, FY26 }) {
         <SectionHeader title="Operating & Cash Detail" />
         <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
           <BvATable rows={[
-            { lbl: 'Operating Expenses', a25: [1133492, 1105524, 1361137, 1367592], a26: opex26, b26: B.opex.slice(0, 4), fy: FY26.opex, fyb: B.opex[4], inv: true, h: true },
-            { lbl: 'Gross Margin %',     a25: [0.8233,  0.8660,  0.8770,  0.8680],  a26: gm26,   b26: B.gm.slice(0, 4),   fy: FY26.gm,   fyb: B.gm[4],   f: fp             },
-            { lbl: 'Ending Cash (EOP)',  a25: [5600656, 4953894, 4210406, 4002599], a26: cash26, b26: B.cash.slice(0, 4), fy: FY26.cash, fyb: B.cash[4], h: true           },
-            { lbl: 'Corp NRR % (TTM)',   a25: [null,    null,    null,    1.105],   a26: nrr26,  b26: B.nrr.slice(0, 4),  fy: FY26.nrr,  fyb: B.nrr[4],  f: fp             },
+            { lbl: 'Operating Expenses', a25: opex25, a26: opex26, b26: B.opex.slice(0, 4), fy: FY26.opex, fyb: B.opex[4], inv: true, h: true },
+            { lbl: 'Gross Margin %',     a25: gm25,   a26: gm26,   b26: B.gm.slice(0, 4),   fy: FY26.gm,   fyb: B.gm[4],   f: fp             },
+            { lbl: 'Ending Cash (EOP)',  a25: cash25, a26: cash26, b26: B.cash.slice(0, 4), fy: FY26.cash, fyb: B.cash[4], h: true           },
+            { lbl: 'Corp NRR % (TTM)',   a25: nrr25,  a26: nrr26,  b26: B.nrr.slice(0, 4),  fy: FY26.nrr,  fyb: B.nrr[4],  f: fp             },
           ]} />
         </div>
       </div>

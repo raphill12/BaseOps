@@ -202,14 +202,14 @@ export function computeFromRaw(raw) {
   const isA = raw.isAct;
 
   const QTRS = [
-    { lbl: 'Q1 25', s: 0,  e: 3  },
-    { lbl: 'Q2 25', s: 3,  e: 6  },
-    { lbl: 'Q3 25', s: 6,  e: 9  },
-    { lbl: 'Q4 25', s: 9,  e: 12 },
-    { lbl: 'Q1 26', s: 12, e: 15 },
-    { lbl: 'Q2 26', s: 15, e: 18 },
-    { lbl: 'Q3 26', s: 18, e: 21 },
-    { lbl: 'Q4 26', s: 21, e: 24 },
+    { lbl: 'Q1', s: 0,  e: 3  },
+    { lbl: 'Q2', s: 3,  e: 6  },
+    { lbl: 'Q3', s: 6,  e: 9  },
+    { lbl: 'Q4', s: 9,  e: 12 },
+    { lbl: 'Q1', s: 12, e: 15 },
+    { lbl: 'Q2', s: 15, e: 18 },
+    { lbl: 'Q3', s: 18, e: 21 },
+    { lbl: 'Q4', s: 21, e: 24 },
   ];
 
   function qLabel(q, i) {
@@ -375,6 +375,11 @@ export function computeFromRaw(raw) {
     corpNewLogoCum: buildCum('newCorpARR', B.corpNewLogo),
     corpExpCum:     buildCum('expCorpARR', B.corpExp),
     fedTCVCum:      buildCum('fedTCV',     B.fedTCV[4] ?? 2250000),
+
+    corpNewARRQ:   qSeries('newCorpARR',   null),
+    corpExpARRQ:   qSeries('expCorpARR',   null),
+    corpContrARRQ: qSeries('contrCorpARR', null),
+    fedTCVQ:       qSeries('fedTCV',       bud.fedTCV),
 
     corpPL,
     fedPL,

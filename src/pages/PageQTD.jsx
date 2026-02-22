@@ -97,7 +97,7 @@ export default function PageQTD({ QD, B }) {
     { metric: 'New Corp ARR (bookings)',  qtd: qtd.newCorpARR, target: B.corpNewLogo * (1/12), fmt: '$' },
     { metric: 'Exp Corp ARR (bookings)', qtd: qtd.expCorpARR, target: B.corpExp * (1/12),    fmt: '$' },
     { metric: 'Federal TCV (bookings)',  qtd: qtd.fedTCV,     target: 0,              fmt: '$'  },
-    { metric: 'Revenue',                 qtd: qtd.revenue,    target: q1Rev,          fmt: '$'  },
+    { metric: 'Revenue (MTD)',            qtd: qtd.revenue,    target: q1Rev / 3,      fmt: '$'  },
     { metric: 'Corporate NRR % (TTM)',   qtd: qtd.nrr,        target: q1Nrr,          fmt: '%', inv: false },
   ];
 
