@@ -87,8 +87,11 @@ export function parseActData(csv) {
   function findRow(target) {
     const tl = target.toLowerCase();
     if (labelMap[tl] !== undefined) return labelMap[tl];
+    // Only match sheet rows whose label contains our target (not the reverse)
+    // to prevent shorter labels (e.g. 'Corporate Operating') from absorbing
+    // longer targets (e.g. 'Corporate Operating Income').
     for (const [k, ri] of Object.entries(labelMap)) {
-      if (k.includes(tl) || tl.includes(k)) return ri;
+      if (k.includes(tl)) return ri;
     }
     return -1;
   }
@@ -220,7 +223,13 @@ export function computeFromRaw(raw) {
   const qLabels = QTRS.map((q, i) => qLabel(q, i));
   const qIsAct  = QTRS.map((q, i) => i < 4 || isA[q.s]);
 
-  const sum = (arr, s, e) => arr.slice(s, e).reduce((a, v) => a + (v || 0), 0);
+  const sum   = (arr, s, e) => arr.slice(s, e).reduce((a, v) => a + (v || 0), 0);
+  // Like sum, but returns null when every value in the slice is null (avoids 0-bar rendering).
+  const sumPL = (arr, s, e) => {
+    const vals = arr.slice(s, e);
+    if (vals.every(v => v == null)) return null;
+    return vals.reduce((a, v) => a + (v || 0), 0);
+  };
   const eov = (arr, qi)   => arr[QTRS[qi].e - 1];
   const avg = (arr, s, e) => {
     const v = arr.slice(s, e).filter(x => x != null);
@@ -230,7 +239,8 @@ export function computeFromRaw(raw) {
   const lastActIdx = isA.reduce((acc, v, i) => v ? i : acc, 0);
   const latestMo   = raw.months ? raw.months[lastActIdx] : 'Jan-26';
 
-  /** Build a quarterly series with act / fct / bud fields. */
+  /** Build a quarterly series with act / fct / val / bud fields.
+   *  val = act ?? fct — use this single field for consolidated bar charts. */
   function qSeries(metric, budArr, isEOQ = false) {
     return QTRS.map((q, i) => {
       const v    = isEOQ ? eov(m[metric], i) : sum(m[metric], q.s, q.e);
@@ -239,6 +249,7 @@ export function computeFromRaw(raw) {
         q:   qLabels[i],
         act: qIsAct[i] ? v : null,
         fct: !qIsAct[i] ? v : null,
+        val: v ?? null,
         bud: qi26 >= 0 && budArr ? (budArr[qi26] ?? null) : null,
       };
     });
@@ -253,6 +264,7 @@ export function computeFromRaw(raw) {
         q:   qLabels[i],
         act: qIsAct[i] ? v : null,
         fct: !qIsAct[i] ? v : null,
+        val: v ?? null,
         bud: qi26 >= 0 && budArr ? (budArr[qi26] ?? null) : null,
       };
     });
@@ -331,14 +343,14 @@ export function computeFromRaw(raw) {
     q:     qLabels[i + 4],
     rev:   sum(m.corpRev,   s, s + 3),
     opex:  sum(m.corpOpEx,  s, s + 3),
-    opInc: sum(m.corpOpInc, s, s + 3),
+    opInc: sumPL(m.corpOpInc, s, s + 3),
   }));
 
   const fedPL = [12, 15, 18, 21].map((s, i) => ({
     q:     qLabels[i + 4],
     rev:   sum(m.fedRev,   s, s + 3),
     opex:  sum(m.fedOpEx,  s, s + 3),
-    opInc: sum(m.fedOpInc, s, s + 3),
+    opInc: sumPL(m.fedOpInc, s, s + 3),
   }));
 
   const QD = {
@@ -370,7 +382,11 @@ export function computeFromRaw(raw) {
 
     monthlyARR:  (raw.months || []).map((mo, i) => ({ m: mo, v: m.totalARR[i], isAct: isA[i] })),
     monthlyBurn: (raw.months || []).map((mo, i) => ({ m: mo, v: m.cashBurn[i] })),
-    hc:          (raw.months || []).slice(12).map((mo, i) => ({ m: mo, v: m.headcount[12 + i] })),
+    hc: (raw.months || []).slice(12).map((mo, i) => {
+      const hcVal  = m.headcount[12 + i];
+      const arrVal = m.totalARR[12 + i];
+      return { m: mo, v: hcVal, ratio: hcVal && arrVal ? arrVal / hcVal : null };
+    }),
 
     corpNewLogoCum: buildCum('newCorpARR', B.corpNewLogo),
     corpExpCum:     buildCum('expCorpARR', B.corpExp),

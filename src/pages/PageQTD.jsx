@@ -102,7 +102,7 @@ export default function PageQTD({ QD, B }) {
   ];
 
   const opRows = [
-    { metric: 'Operating Expenses', qtd: qtd.opex,     target: B.opex[0],  fmt: '$', inv: true  },
+    { metric: 'Operating Expenses', qtd: qtd.opex,     target: B.opex[0] / 3,  fmt: '$', inv: true  },
     { metric: 'Ending Cash',        qtd: qtd.cash,     target: q1Cash,     fmt: '$'              },
     { metric: 'Gross Margin %',     qtd: qtd.gm,       target: q1Gm,       fmt: '%', inv: false  },
     { metric: 'Cash Burn (MTD)',    qtd: qtd.cashBurn, target: null,        fmt: '$', inv: true  },

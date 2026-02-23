@@ -38,12 +38,9 @@ export default function PageFed({ QD, B, FY26 }) {
             <ComposedChart data={QD.fedARR} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
-              <Bar dataKey="act" name="Actual" radius={[3, 3, 0, 0]}>
-                {QD.fedARR.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : C.act26} />)}
-                <LabelList dataKey="act" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
-              </Bar>
-              <Bar dataKey="fct" name="Forecast" fill={C.fct26} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="fct" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+              <Bar dataKey="val" name="Fed ARR" radius={[3, 3, 0, 0]}>
+                {QD.fedARR.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -83,18 +80,14 @@ export default function PageFed({ QD, B, FY26 }) {
 
       {/* TCV quarterly + P&L */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
-        <ChartCard title="Federal TCV Bookings · Quarterly" sub="vs Budget"
-          legend={<><LegendDot color={C.act25} label="2025A" /><LegendDot color={C.act26} label="Q1 26A" /><LegendDot color={C.fct26} label="Forecast" /><LegendDot color={C.budLine} label="Budget" line dashed /></>}>
+        <ChartCard title="Federal TCV Bookings · Quarterly" sub="vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={240}>
             <ComposedChart data={fedTCVQtly} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
-              <Bar dataKey="act" name="Actual" radius={[3, 3, 0, 0]}>
-                {fedTCVQtly.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : C.act26} />)}
-                <LabelList dataKey="act" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
-              </Bar>
-              <Bar dataKey="fct" name="Forecast" fill={C.fct26} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="fct" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+              <Bar dataKey="val" name="Fed TCV" radius={[3, 3, 0, 0]}>
+                {fedTCVQtly.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>

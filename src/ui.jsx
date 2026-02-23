@@ -106,8 +106,8 @@ export function LegendDot({ color, label, dashed, line }) {
 export const ChartLegendStd = () => (
   <>
     <LegendDot color={C.act25}   label="2025A" />
-    <LegendDot color={C.act26}   label="2026 Actual" />
-    <LegendDot color={C.fct26}   label="2026 Forecast" />
+    <LegendDot color={C.act26}   label="2026A" />
+    <LegendDot color={C.fct26}   label="2026F" />
     <LegendDot color={C.budLine} label="Budget" line dashed />
   </>
 );

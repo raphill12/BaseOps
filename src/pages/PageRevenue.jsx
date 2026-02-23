@@ -22,11 +22,11 @@ export default function PageRevenue({ QD, B, FY26 }) {
 
   // Y/Y ARR growth quarters (vs same quarter prior year from live data)
   const arrYoY = [
-    { q: 'Q1 26A', act: arr25[0] ? (arr26[0] / arr25[0]) - 1 : null, fct: null },
-    { q: 'Q2 26F', act: null, fct: arr25[1] ? (arr26[1] / arr25[1]) - 1 : null },
-    { q: 'Q3 26F', act: null, fct: arr25[2] ? (arr26[2] / arr25[2]) - 1 : null },
-    { q: 'Q4 26F', act: null, fct: arr25[3] ? (arr26[3] / arr25[3]) - 1 : null },
-  ].filter(d => d.act != null || d.fct != null);
+    { q: 'Q1 26A', val: arr25[0] ? (arr26[0] / arr25[0]) - 1 : null },
+    { q: 'Q2 26F', val: arr25[1] ? (arr26[1] / arr25[1]) - 1 : null },
+    { q: 'Q3 26F', val: arr25[2] ? (arr26[2] / arr25[2]) - 1 : null },
+    { q: 'Q4 26F', val: arr25[3] ? (arr26[3] / arr25[3]) - 1 : null },
+  ].filter(d => d.val != null);
 
   return (
     <div>
@@ -58,16 +58,14 @@ export default function PageRevenue({ QD, B, FY26 }) {
         </ChartCard>
 
         <ChartCard title="Y/Y ARR Growth · 2026F"
-          legend={<><LegendDot color={C.act26} label="Q1 Actual" /><LegendDot color={C.fct26} label="Forecast" /></>}>
+          legend={<><LegendDot color={C.act26} label="2026A" /><LegendDot color={C.fct26} label="2026F" /></>}>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={arrYoY} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
-              <Bar dataKey="act" name="Actual"   fill={C.act26} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="act" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
-              </Bar>
-              <Bar dataKey="fct" name="Forecast" fill={C.fct26} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="fct" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+              <Bar dataKey="val" name="Y/Y Growth" radius={[3, 3, 0, 0]}>
+                {arrYoY.map((d, i) => <Cell key={i} fill={d.q.includes('26A') ? C.act26 : C.fct26} />)}
+                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -86,11 +84,9 @@ export default function PageRevenue({ QD, B, FY26 }) {
             <ComposedChart data={QD.nrr} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.9, 1.15]} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
-              <Bar dataKey="act" name="Actual" fill={C.act26} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="act" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
-              </Bar>
-              <Bar dataKey="fct" name="Forecast" fill={C.fct26} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="fct" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+              <Bar dataKey="val" name="NRR" radius={[3, 3, 0, 0]}>
+                {QD.nrr.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
+                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
