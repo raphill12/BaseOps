@@ -32,8 +32,10 @@ function parseNum(v) {
 }
 
 // ─── Act_Data Sheet Parser ──────────────────────────────────────────────────
-// Row 1 = headers. Col A = metric label. Cols G-AD (idx 6-29) = Jan-25 to Dec-26.
-// Headers expected to end with 'A' for actuals or 'F' for forecast.
+// Row 1 = headers.  Col A = metric label.  Col B = scenario ("Act/Fcst" or "Bud").
+// Data columns (Jan-25 … Dec-26) follow.
+// Budget rows carry quarterly targets in the LAST month of each FY26 quarter:
+//   Q1 → Mar-26 (idx 14)  Q2 → Jun-26 (idx 17)  Q3 → Sep-26 (idx 20)  Q4 → Dec-26 (idx 23)
 
 /** Map from JS key → label string to look for in Col A of Act_Data sheet. */
 export const ACT_LABELS = {
@@ -43,24 +45,32 @@ export const ACT_LABELS = {
   fedTCV:       'Federal TCV',
   newCorpARR:   'New Corporate ARR',
   expCorpARR:   'Expansion Corporate ARR',
-  contrCorpARR: 'Contraction',
-  newFedARR:    'New Federal ARR',
-  expFedARR:    'Expansion Federal ARR',
+  contrCorpARR: 'Contraction ARR (Corporate)',
+  newFedARR:    'New Logo ARR (Federal)',
+  expFedARR:    'Expansion ARR (Federal)',
   revenue:      'Revenue',
   opex:         'Operating Expenses',
   endCash:      'Ending Cash',
   gmPct:        'Gross Margin',
-  nrrPct:       'NRR',
+  nrrPct:       'Corporate NRR %',
   cashBurn:     'Cash Burn',
   headcount:    'Headcount',
-  corpRev:      'Corporate Revenue',
-  corpOpEx:     'Corporate Operating',
-  corpOpInc:    'Corporate Operating Income',
+  corpRev:      'Revenue (Corporate)',
+  corpOpEx:     'Operating Expenses (Corporate)',
+  corpOpInc:    'Operating Income (Corporate)',
   cacPayback:   'CAC Payback',
-  fedRev:       'Federal Revenue',
-  fedOpEx:      'Federal Operating',
-  fedOpInc:     'Federal Operating Income',
+  fedRev:       'Revenue (Federal)',
+  fedOpEx:      'Operating Expenses (Federal)',
+  fedOpInc:     'Operating Income (Federal)',
 };
+
+/** Keys that have "Bud" scenario rows in Act_Data. */
+const BUD_METRIC_KEYS = [
+  'totalARR','corpARR','fedARR','fedTCV','newCorpARR','expCorpARR',
+  'revenue','opex','endCash','gmPct','nrrPct',
+];
+/** Flow metrics whose FY = sum(Q1…Q4). Others use FY = Q4 (stock/EOP). */
+const FLOW_METRICS = new Set(['revenue','opex','fedTCV','newCorpARR','expCorpARR']);
 
 export function parseActData(csv) {
   const rows = parseCSV(csv);
@@ -74,30 +84,36 @@ export function parseActData(csv) {
     if (h.match(/jan.?25/i) && startCol === -1) startCol = c;
     if (h.match(/dec.?26/i)) endCol = c;
   }
-  if (startCol === -1) startCol = 6;
-  if (endCol === -1)   endCol   = 29;
+  if (startCol === -1) startCol = 2;   // Col A=label, Col B=scenario
+  if (endCol === -1)   endCol   = startCol + 23;
 
-  // Build label → row-index map
-  const labelMap = {};
+  // Build (label|scenario) → row-index map  (Col A = label, Col B = scenario)
+  const lsMap = {};
   for (let r = 1; r < rows.length; r++) {
-    const lbl = (rows[r][0] || '').trim();
-    if (lbl) labelMap[lbl.toLowerCase()] = r;
+    const lbl = (rows[r][0] || '').trim().toLowerCase();
+    const sc  = (rows[r][1] || '').trim().toLowerCase();
+    if (lbl) {
+      const key = `${lbl}|${sc}`;
+      if (lsMap[key] === undefined) lsMap[key] = r;
+    }
   }
 
-  function findRow(target) {
-    const tl = target.toLowerCase();
-    if (labelMap[tl] !== undefined) return labelMap[tl];
-    // Only match sheet rows whose label contains our target (not the reverse)
-    // to prevent shorter labels (e.g. 'Corporate Operating') from absorbing
-    // longer targets (e.g. 'Corporate Operating Income').
-    for (const [k, ri] of Object.entries(labelMap)) {
-      if (k.includes(tl)) return ri;
+  function findRow(label, scenario) {
+    const tl = label.toLowerCase();
+    const sl = scenario.toLowerCase();
+    // 1. exact match
+    const key = `${tl}|${sl}`;
+    if (lsMap[key] !== undefined) return lsMap[key];
+    // 2. fuzzy — sheet row label contains our target
+    for (const [k, ri] of Object.entries(lsMap)) {
+      const sep = k.lastIndexOf('|');
+      if (k.substring(sep + 1) === sl && k.substring(0, sep).includes(tl)) return ri;
     }
     return -1;
   }
 
-  function getMonthly(label) {
-    const ri = findRow(label);
+  function getMonthly(label, scenario = 'act/fcst') {
+    const ri = findRow(label, scenario);
     if (ri < 0) return Array(24).fill(null);
     const row = rows[ri];
     const vals = [];
@@ -108,22 +124,59 @@ export function parseActData(csv) {
     return vals;
   }
 
-  // Detect actual vs forecast and extract month labels from header
+  // Detect actual vs forecast from header columns
   const isAct = [], months = [];
   for (let c = startCol; c <= endCol && isAct.length < 24; c++) {
     const h = (header[c] || '').trim();
-    isAct.push(h.endsWith('A') || h.match(/-25/) !== null);
+    isAct.push(h.endsWith('A') || h.match(/-25/i) !== null);
     months.push(h.replace(/[AF]$/, '').trim() || `M${c - startCol + 1}`);
   }
 
+  // ── Monthly actuals / forecast ────────────────────────────────────────────
   const monthly = {};
   for (const [key, label] of Object.entries(ACT_LABELS)) {
-    monthly[key] = getMonthly(label);
+    monthly[key] = getMonthly(label, 'act/fcst');
   }
-  // Ensure contraction is always negative
   monthly.contrCorpARR = monthly.contrCorpARR.map(v => v != null ? -Math.abs(v) : null);
 
-  return { monthly, isAct, months };
+  // ── Budget extraction from "Bud" scenario rows ────────────────────────────
+  // Targets sit in the last month of each FY26 quarter:
+  const Q_END = [14, 17, 20, 23]; // Mar-26, Jun-26, Sep-26, Dec-26
+
+  const budget = {};
+  for (const key of BUD_METRIC_KEYS) {
+    const label  = ACT_LABELS[key];
+    if (!label) continue;
+    const budRow = getMonthly(label, 'bud');
+    const qVals  = Q_END.map(i => budRow[i] ?? null);
+    const fy     = FLOW_METRICS.has(key)
+      ? (qVals.some(v => v != null) ? qVals.reduce((s, v) => s + (v || 0), 0) : null)
+      : qVals[3];  // stock/EOP → Q4 = FY exit
+    budget[key] = [...qVals, fy];
+  }
+  // Aliases so computeFromRaw can use its existing key references
+  budget.cash = budget.endCash;
+  budget.nrr  = budget.nrrPct;
+  // Derive totalARR budget if not directly present
+  if (!budget.totalARR && budget.corpARR && budget.fedARR) {
+    budget.totalARR = budget.corpARR.map((v, i) =>
+      v != null && budget.fedARR[i] != null ? v + budget.fedARR[i] : (v ?? budget.fedARR[i] ?? null)
+    );
+  }
+
+  return { monthly, budget, isAct, months };
+}
+
+/** Parse LT_Inputs sheet and return the forecasted cash-out date string. */
+export function parseLTInputs(csv) {
+  const rows = parseCSV(csv);
+  for (const row of rows) {
+    // Search any column in the row for "cash-out" label text
+    if (row.some(cell => (cell || '').toLowerCase().includes('cash-out') || (cell || '').toLowerCase().includes('cash out'))) {
+      return (row[6] || '').trim() || null;
+    }
+  }
+  return null;
 }
 
 // ─── Bud_Data Sheet Parser ──────────────────────────────────────────────────
@@ -322,12 +375,12 @@ export function computeFromRaw(raw) {
     fedARR:      budArr('fedARR'),
     revenue:     budArr('revenue'),
     opex:        budArr('opex'),
-    cash:        budArr('cash'),
+    cash:        budArr('endCash') [0] != null ? budArr('endCash') : budArr('cash'),
     gm:          budArr('gmPct'),
-    nrr:         budArr('nrr'),
+    nrr:         budArr('nrrPct')  [0] != null ? budArr('nrrPct')  : budArr('nrr'),
     fedTCV:      budArr('fedTCV'),
-    corpNewLogo: budArr('corpNewLogo')[4] ?? newCorp26,
-    corpExp:     budArr('corpExp')[4]     ?? expCorp26,
+    corpNewLogo: (budArr('newCorpARR')[4] ?? budArr('corpNewLogo')[4]) ?? newCorp26,
+    corpExp:     (budArr('expCorpARR')[4] ?? budArr('corpExp')[4])     ?? expCorp26,
   };
 
   /** Build a cumulative-YTD series for a metric starting from month index 12. */
@@ -480,11 +533,13 @@ export const FALLBACK = {
     fedARR:      [950000,  964000,  1744000, 2250000, 2250000],
     revenue:     [782000,  899000,  1018000, 1340000, 4039000],
     opex:        [1599000, 1560000, 1685000, 1666000, 6510000],
+    endCash:     [2700000, 1950000, 1300000,  950000,  950000],
     cash:        [2700000, 1950000, 1300000,  950000,  950000],
     gmPct:       [0.82,    0.83,    0.84,    0.85,    0.85   ],
+    nrrPct:      [1.07,    1.09,    1.09,    1.08,    1.08   ],
     nrr:         [1.07,    1.09,    1.09,    1.08,    1.08   ],
     fedTCV:      [0,       0,       1125000, 1125000, 2250000],
-    corpNewLogo: [null, null, null, null, 1044250],
-    corpExp:     [null, null, null, null,  158166],
+    newCorpARR:  [null, null, null, null, 1044250],
+    expCorpARR:  [null, null, null, null,  158166],
   },
 };

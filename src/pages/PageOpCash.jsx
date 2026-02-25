@@ -4,7 +4,7 @@ import { C } from '../config.js';
 import { f$, fp, vp, vf, q26vals } from '../utils.js';
 import { Card, SectionHeader, ChartCard, ChartLegendStd, LegendDot, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
-export default function PageOpCash({ QD, B, FY26 }) {
+export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
   const gm26   = q26vals(QD.gm);
   const opex26 = q26vals(QD.opex);
   const cash26 = q26vals(QD.cash);
@@ -24,11 +24,12 @@ export default function PageOpCash({ QD, B, FY26 }) {
       <SectionHeader title="Operating & Cash · 2025A & 2026A/F vs Budget" />
 
       {/* KPI cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 22 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 10, marginBottom: 22 }}>
         <Card label="OpEx · FY26F total"       value={f$(FY26.opex)} meta={`Budget ${f$(B.opex[4])}`} pill={vf(vp(FY26.opex, B.opex[4]))} pillGood={FY26.opex <= B.opex[4]} color={C.amb} />
         <Card label="Ending Cash · Dec-26F"    value={f$(FY26.cash)} meta={`Budget ${f$(B.cash[4])}`} pill={vf(vp(FY26.cash, B.cash[4]))} pillGood={FY26.cash >= B.cash[4]} color={C.cyn} />
         <Card label="Gross Margin · FY26F avg" value={fp(FY26.gm)}   meta={`Budget ${fp(B.gm[4])}`}   pill={vf(vp(FY26.gm,   B.gm[4]))}   pillGood={FY26.gm   >= B.gm[4]}   color={C.grn} />
-        <Card label="Headcount · FY26F Exit"    value={`${fy26HC}`}    meta="Full-time employees"        color={C.pur} />
+        <Card label="Headcount · FY26F Exit"   value={`${fy26HC}`}   meta="Full-time employees"        color={C.pur} />
+        <Card label="Cash-Out Date · Forecast" value={cashOutDate || '—'} meta="From LT model"          color={C.red} />
       </div>
 
       {/* OpEx + Cash charts */}

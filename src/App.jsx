@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { C, TABS, csvUrl } from './config.js';
-import { parseActData, parseBudData, computeFromRaw, FALLBACK } from './data.js';
+import { parseActData, parseLTInputs, computeFromRaw, FALLBACK } from './data.js';
 import PageQTD      from './pages/PageQTD.jsx';
 import PageOverview from './pages/PageOverview.jsx';
 import PageRevenue  from './pages/PageRevenue.jsx';
@@ -16,6 +16,7 @@ export default function App() {
   const [dataState,   setDataState]   = useState(INIT);
   const [fetchStatus, setFetchStatus] = useState('loading');
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [cashOutDate, setCashOutDate] = useState(null);
   const hasFetched = useRef(false);
 
   const { QD, B, FY26, latestMo } = dataState;
@@ -24,29 +25,34 @@ export default function App() {
   const fetchLive = async () => {
     setFetchStatus('loading');
     try {
-      const [actRes, budRes] = await Promise.all([
+      const [actRes, ltRes] = await Promise.all([
         fetch(csvUrl('Act_Data')),
-        fetch(csvUrl('Bud_Data')),
+        fetch(csvUrl('LT_Inputs')).catch(() => null),
       ]);
       if (!actRes.ok) throw new Error(`Act_Data fetch failed: ${actRes.status}`);
 
-      const [actCsv, budCsv] = await Promise.all([actRes.text(), budRes.text()]);
-
+      const actCsv = await actRes.text();
       const actParsed = parseActData(actCsv);
       if (!actParsed) throw new Error('Could not parse Act_Data');
 
-      const budParsed = budCsv && budRes.ok ? parseBudData(budCsv) : FALLBACK.budget;
-
+      // Budget is now embedded in Act_Data via "Bud" scenario rows
       const raw = {
         months:  actParsed.months,
         isAct:   actParsed.isAct,
         monthly: actParsed.monthly,
-        budget:  budParsed || FALLBACK.budget,
+        budget:  actParsed.budget || FALLBACK.budget,
       };
 
       setDataState(computeFromRaw(raw));
       setLastUpdated(new Date());
       setFetchStatus('live');
+
+      // Parse cash-out date from LT_Inputs
+      if (ltRes?.ok) {
+        const ltCsv = await ltRes.text();
+        const cod = parseLTInputs(ltCsv);
+        if (cod) setCashOutDate(cod);
+      }
     } catch (e) {
       console.warn('Live fetch failed, using fallback data:', e.message);
       setFetchStatus('error');
@@ -69,7 +75,7 @@ export default function App() {
   const st = statusConfig[fetchStatus] || statusConfig.live;
 
   // ── Page router ───────────────────────────────────────────────────────────
-  const pageProps = { QD, B, FY26, latestMo };
+  const pageProps = { QD, B, FY26, latestMo, cashOutDate };
   const pages = {
     qtd:      <PageQTD      {...pageProps} />,
     overview: <PageOverview {...pageProps} />,
