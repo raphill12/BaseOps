@@ -41,10 +41,19 @@ function TableBlock({ title, rows }) {
           </thead>
           <tbody>
             {rows.map((r, i) => {
-              const rem      = r.target ? r.target - r.qtd : null;
-              const good     = r.inv ? r.qtd <= r.target : r.qtd >= r.target;
-              const remFmt   = r.fmt === '%' ? fpc(r.qtd - r.target) : (rem !== null ? f$(Math.abs(rem)) : '—');
-              const remLabel = r.target === 0 ? '—' : rem !== null ? (rem <= 0 ? '✓ Achieved' : `${remFmt} to go`) : '—';
+              const rem  = r.target ? r.target - r.qtd : null;  // positive = under target
+              const good = r.inv ? r.qtd <= r.target : r.qtd >= r.target;
+              const remLabel = (() => {
+                if (!r.target) return '—';
+                if (r.inv) {
+                  // lower is better — show under/over budget
+                  if (rem == null) return '—';
+                  return rem >= 0 ? `${f$(rem)} under` : `${f$(Math.abs(rem))} over`;
+                }
+                if (rem == null) return '—';
+                if (r.fmt === '%') return rem >= 0 ? `${fpc(Math.abs(rem))} to go` : '✓ Achieved';
+                return rem <= 0 ? '✓ Achieved' : `${f$(rem)} to go`;
+              })();
               return (
                 <tr key={i} style={{ borderBottom: `1px solid rgba(30,39,64,.4)` }}>
                   <td style={{ padding: '9px 16px', color: C.txt2 }}>{r.metric}</td>

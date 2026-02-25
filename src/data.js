@@ -268,13 +268,18 @@ export function computeFromRaw(raw) {
     { lbl: 'Q4', s: 21, e: 24 },
   ];
 
+  // A quarter is "actual" only when ALL months in it are actual.
+  function qAllAct(q, i) {
+    return i < 4 || isA.slice(q.s, q.e).every(Boolean);
+  }
+
   function qLabel(q, i) {
     if (i < 4) return q.lbl + ' 25A';
-    return isA[q.s] ? q.lbl + ' 26A' : q.lbl + ' 26F';
+    return qAllAct(q, i) ? q.lbl + ' 26A' : q.lbl + ' 26F';
   }
 
   const qLabels = QTRS.map((q, i) => qLabel(q, i));
-  const qIsAct  = QTRS.map((q, i) => i < 4 || isA[q.s]);
+  const qIsAct  = QTRS.map((q, i) => qAllAct(q, i));
 
   const sum   = (arr, s, e) => arr.slice(s, e).reduce((a, v) => a + (v || 0), 0);
   // Like sum, but returns null when every value in the slice is null (avoids 0-bar rendering).
