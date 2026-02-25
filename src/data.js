@@ -468,8 +468,8 @@ export function computeFromRaw(raw) {
       corpARR:     m.corpARR[lastActIdx],
       fedARR:      m.fedARR[lastActIdx],
       totalARR:    m.totalARR[lastActIdx],
-      revenue:     m.revenue[lastActIdx],
-      opex:        m.opex[lastActIdx],
+      revenue:     sum(m.revenue, 12, lastActIdx + 1),   // cumulative Q1-to-date
+      opex:        sum(m.opex,    12, lastActIdx + 1),   // cumulative Q1-to-date
       cash:        m.endCash[lastActIdx],
       gm:          m.gmPct[lastActIdx],
       nrr:         m.nrrPct[lastActIdx],

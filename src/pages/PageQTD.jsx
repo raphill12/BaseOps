@@ -33,7 +33,7 @@ function TableBlock({ title, rows }) {
           <thead>
             <tr style={{ background: C.surf2 }}>
               <th style={{ padding: '7px 16px', textAlign: 'left',  fontSize: 10, color: C.txt3,    fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.6px' }}>KPI</th>
-              <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.act26,   fontWeight: 700 }}>Actual (MTD)</th>
+              <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.act26,   fontWeight: 700 }}>Actual (QTD / Latest)</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.budLine, fontWeight: 700 }}>Q1 2026 Target</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.txt3,    fontWeight: 600 }}>Go-Get</th>
               <th style={{ padding: '7px 10px', textAlign: 'left',  fontSize: 10, color: C.txt3,    fontWeight: 600, minWidth: 90 }}>Progress</th>
@@ -92,11 +92,11 @@ export default function PageQTD({ QD, B }) {
   const q1Nrr   = qtd.q1BudNrr      || B.nrr[0];
 
   const topCards = [
-    { lbl: `Corp ARR · ${qtd.month}`,      val: f$(qtd.corpARR),     bud: f$(q1Corp),  var: vf(vp(qtd.corpARR, q1Corp)),   good: qtd.corpARR >= q1Corp,  color: C.blue },
-    { lbl: `Revenue · ${qtd.month}`,        val: f$(qtd.revenue),     bud: f$(q1Rev/3), var: vf(vp(qtd.revenue, q1Rev/3)),  good: qtd.revenue >= q1Rev/3, color: C.grn  },
-    { lbl: `Gross Margin · ${qtd.month}`,   val: fp(qtd.gm),          bud: fp(q1Gm),    var: fpc(qtd.gm - q1Gm),            good: qtd.gm >= q1Gm,         color: C.cyn  },
-    { lbl: `Corp NRR (TTM) · ${qtd.month}`, val: fp(qtd.nrr),         bud: fp(q1Nrr),   var: fpc(qtd.nrr - q1Nrr),          good: qtd.nrr >= q1Nrr,       color: C.pur  },
-    { lbl: `Ending Cash · ${qtd.month}`,    val: f$(qtd.cash),        bud: f$(q1Cash),  var: vf(vp(qtd.cash, q1Cash)),      good: qtd.cash >= q1Cash,     color: C.amb  },
+    { lbl: `Corp ARR · ${qtd.month}`,  val: f$(qtd.corpARR), bud: f$(q1Corp),  var: vf(vp(qtd.corpARR, q1Corp)),  good: qtd.corpARR >= q1Corp,  color: C.blue },
+    { lbl: `Revenue · QTD`,            val: f$(qtd.revenue), bud: f$(q1Rev),   var: vf(vp(qtd.revenue, q1Rev)),   good: qtd.revenue >= q1Rev,   color: C.grn  },
+    { lbl: `Gross Margin · ${qtd.month}`, val: fp(qtd.gm),   bud: fp(q1Gm),    var: fpc(qtd.gm - q1Gm),           good: qtd.gm >= q1Gm,         color: C.cyn  },
+    { lbl: `Corp NRR (TTM) · ${qtd.month}`, val: fp(qtd.nrr), bud: fp(q1Nrr), var: fpc(qtd.nrr - q1Nrr),         good: qtd.nrr >= q1Nrr,       color: C.pur  },
+    { lbl: `Ending Cash · ${qtd.month}`, val: f$(qtd.cash),  bud: f$(q1Cash),  var: vf(vp(qtd.cash, q1Cash)),     good: qtd.cash >= q1Cash,     color: C.amb  },
   ];
 
   const topRows = [
@@ -106,12 +106,12 @@ export default function PageQTD({ QD, B }) {
     { metric: 'New Corp ARR (bookings)',  qtd: qtd.newCorpARR, target: B.corpNewLogo * (1/12), fmt: '$' },
     { metric: 'Exp Corp ARR (bookings)', qtd: qtd.expCorpARR, target: B.corpExp * (1/12),    fmt: '$' },
     { metric: 'Federal TCV (bookings)',  qtd: qtd.fedTCV,     target: 0,              fmt: '$'  },
-    { metric: 'Revenue (MTD)',            qtd: qtd.revenue,    target: q1Rev / 3,      fmt: '$'  },
+    { metric: 'Revenue (QTD)',            qtd: qtd.revenue,    target: q1Rev,          fmt: '$'  },
     { metric: 'Corporate NRR % (TTM)',   qtd: qtd.nrr,        target: q1Nrr,          fmt: '%', inv: false },
   ];
 
   const opRows = [
-    { metric: 'Operating Expenses', qtd: qtd.opex,     target: B.opex[0] / 3,  fmt: '$', inv: true  },
+    { metric: 'Operating Expenses (QTD)', qtd: qtd.opex, target: B.opex[0],      fmt: '$', inv: true  },
     { metric: 'Ending Cash',        qtd: qtd.cash,     target: q1Cash,     fmt: '$'              },
     { metric: 'Gross Margin %',     qtd: qtd.gm,       target: q1Gm,       fmt: '%', inv: false  },
     { metric: 'Cash Burn (MTD)',    qtd: qtd.cashBurn, target: null,        fmt: '$', inv: true  },
