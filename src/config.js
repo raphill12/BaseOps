@@ -32,7 +32,7 @@ export const csvUrl = (sheetName) =>
 // ─── Navigation Tabs ───────────────────────────────────────────────────────
 // Reorder, rename, or add tabs here.
 export const TABS = [
-  { id: 'qtd',      label: 'Q1 26 · QTD Snapshot' },
+  { id: 'qtd',      label: 'QTD Snapshot' },
   { id: 'overview', label: 'Overview' },
   { id: 'revenue',  label: 'Revenue & ARR' },
   { id: 'opcash',   label: 'Operating & Cash' },
