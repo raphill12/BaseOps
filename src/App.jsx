@@ -7,6 +7,7 @@ import PageRevenue  from './pages/PageRevenue.jsx';
 import PageOpCash   from './pages/PageOpCash.jsx';
 import PageCorp     from './pages/PageCorp.jsx';
 import PageFed      from './pages/PageFed.jsx';
+import PageLTO      from './pages/PageLTO.jsx';
 
 // Compute initial data from fallback so the UI renders immediately on load.
 const INIT = computeFromRaw(FALLBACK);
@@ -83,6 +84,7 @@ export default function App() {
     opcash:   <PageOpCash   {...pageProps} />,
     corp:     <PageCorp     {...pageProps} />,
     fed:      <PageFed      {...pageProps} />,
+    lto:      <PageLTO      {...pageProps} />,
   };
 
   return (

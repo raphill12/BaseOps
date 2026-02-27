@@ -38,4 +38,5 @@ export const TABS = [
   { id: 'opcash',   label: 'Operating & Cash' },
   { id: 'corp',     label: 'Enterprise' },
   { id: 'fed',      label: 'Federal' },
+  { id: 'lto',      label: 'Long-Term Outlook' },
 ];
