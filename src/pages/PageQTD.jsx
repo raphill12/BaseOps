@@ -80,63 +80,66 @@ function TableBlock({ title, rows }) {
 }
 
 export default function PageQTD({ QD, B }) {
-  const qtd = QD.qtd;
+  const qtd  = QD.qtd;
+  const qi   = qtd.curQIdx ?? 0;       // 0=Q1, 1=Q2, 2=Q3, 3=Q4
+  const curQ = qtd.curQ     || 'Q1';
+  const curQLabel = qtd.curQLabel || 'Q1 2026';
 
-  // Q1 budget targets (index 0 = Q1)
-  const q1Corp  = qtd.q1BudCorpARR  || B.corpARR[0];
-  const q1Fed   = qtd.q1BudFedARR   || B.fedARR[0];
-  const q1Total = qtd.q1BudTotalARR || B.totalARR[0];
-  const q1Rev   = qtd.q1BudRevenue  || B.revenue[0];
-  const q1Cash  = qtd.q1BudCash     || B.cash[0];
-  const q1Gm    = qtd.q1BudGm       || B.gm[0];
-  const q1Nrr   = qtd.q1BudNrr      || B.nrr[0];
+  // Budget targets for the active quarter (live data preferred, fallback to B array)
+  const qCorpBud  = qtd.qBudCorpARR    || B.corpARR[qi];
+  const qFedBud   = qtd.qBudFedARR     || B.fedARR[qi];
+  const qTotalBud = qtd.qBudTotalARR   || B.totalARR[qi];
+  const qRevBud   = qtd.qBudRevenue    || B.revenue[qi];
+  const qCashBud  = qtd.qBudCash       || B.cash[qi];
+  const qGmBud    = qtd.qBudGm         || B.gm[qi];
+  const qNrrBud   = qtd.qBudNrr        || B.nrr[qi];
+  const qOpexBud  = qtd.qBudOpex       || B.opex[qi];
+  const qNewCBud  = qtd.qBudNewCorpARR || B.corpNewLogo / 4;
+  const qExpCBud  = qtd.qBudExpCorpARR || B.corpExp / 4;
 
   const topCards = [
-    { lbl: 'Corp ARR · Q1F',     val: f$(qtd.q1CorpARRFcst), bud: f$(q1Corp),  var: vf(vp(qtd.q1CorpARRFcst, q1Corp)),  good: qtd.q1CorpARRFcst >= q1Corp,  color: C.blue },
-    { lbl: 'Revenue · Q1F',      val: f$(qtd.q1RevFcst),     bud: f$(q1Rev),   var: vf(vp(qtd.q1RevFcst, q1Rev)),       good: qtd.q1RevFcst >= q1Rev,       color: C.grn  },
-    { lbl: 'Gross Margin · Q1F', val: fp(qtd.q1GmFcst),      bud: fp(q1Gm),    var: fpc(qtd.q1GmFcst - q1Gm),           good: qtd.q1GmFcst >= q1Gm,         color: C.cyn  },
-    { lbl: 'Corp NRR · Q1F',     val: fp(qtd.q1NrrFcst),     bud: fp(q1Nrr),   var: fpc(qtd.q1NrrFcst - q1Nrr),         good: qtd.q1NrrFcst >= q1Nrr,       color: C.pur  },
-    { lbl: 'Ending Cash · Q1F',  val: f$(qtd.q1CashFcst),    bud: f$(q1Cash),  var: vf(vp(qtd.q1CashFcst, q1Cash)),     good: qtd.q1CashFcst >= q1Cash,     color: C.amb  },
+    { lbl: `Corp ARR · ${curQ}F`,     val: f$(qtd.qCorpARRFcst), bud: f$(qCorpBud),  var: vf(vp(qtd.qCorpARRFcst, qCorpBud)),  good: qtd.qCorpARRFcst >= qCorpBud,  color: C.blue },
+    { lbl: `Revenue · ${curQ}F`,      val: f$(qtd.qRevFcst),     bud: f$(qRevBud),   var: vf(vp(qtd.qRevFcst, qRevBud)),       good: qtd.qRevFcst >= qRevBud,       color: C.grn  },
+    { lbl: `Gross Margin · ${curQ}F`, val: fp(qtd.qGmFcst),      bud: fp(qGmBud),    var: fpc(qtd.qGmFcst - qGmBud),           good: qtd.qGmFcst >= qGmBud,         color: C.cyn  },
+    { lbl: `Corp NRR · ${curQ}F`,     val: fp(qtd.qNrrFcst),     bud: fp(qNrrBud),   var: fpc(qtd.qNrrFcst - qNrrBud),         good: qtd.qNrrFcst >= qNrrBud,       color: C.pur  },
+    { lbl: `Ending Cash · ${curQ}F`,  val: f$(qtd.qCashFcst),    bud: f$(qCashBud),  var: vf(vp(qtd.qCashFcst, qCashBud)),     good: qtd.qCashFcst >= qCashBud,     color: C.amb  },
   ];
 
   const topRows = [
-    { metric: 'Corporate ARR (EOP)',      qtd: qtd.corpARR,    target: q1Corp,         fmt: '$'  },
-    { metric: 'Federal ARR (EOP)',        qtd: qtd.fedARR,     target: q1Fed,          fmt: '$'  },
-    { metric: 'Total ARR (EOP)',          qtd: qtd.totalARR,   target: q1Total,        fmt: '$'  },
-    { metric: 'New Corp ARR (bookings)',  qtd: qtd.newCorpARR, target: B.corpNewLogo * (1/12), fmt: '$' },
-    { metric: 'Exp Corp ARR (bookings)', qtd: qtd.expCorpARR, target: B.corpExp * (1/12),    fmt: '$' },
-    { metric: 'Federal TCV (bookings)',  qtd: qtd.fedTCV,     target: 0,              fmt: '$'  },
-    { metric: 'Revenue (QTD)',            qtd: qtd.revenue,    target: q1Rev,          fmt: '$'  },
-    { metric: 'Corporate NRR % (TTM)',   qtd: qtd.nrr,        target: q1Nrr,          fmt: '%', inv: false },
+    { metric: 'Corporate ARR (EOP)',      qtd: qtd.corpARR,    target: qCorpBud,  fmt: '$'  },
+    { metric: 'Federal ARR (EOP)',        qtd: qtd.fedARR,     target: qFedBud,   fmt: '$'  },
+    { metric: 'Total ARR (EOP)',          qtd: qtd.totalARR,   target: qTotalBud, fmt: '$'  },
+    { metric: 'New Corp ARR (bookings)',  qtd: qtd.newCorpARR, target: qNewCBud,  fmt: '$'  },
+    { metric: 'Exp Corp ARR (bookings)', qtd: qtd.expCorpARR, target: qExpCBud,  fmt: '$'  },
+    { metric: 'Federal TCV (bookings)',  qtd: qtd.fedTCV,     target: 0,         fmt: '$'  },
+    { metric: 'Revenue (QTD)',           qtd: qtd.revenue,    target: qRevBud,   fmt: '$'  },
+    { metric: 'Corporate NRR % (TTM)',   qtd: qtd.nrr,        target: qNrrBud,   fmt: '%', inv: false },
   ];
 
   const opRows = [
-    { metric: 'Operating Expenses (QTD)', qtd: qtd.opex, target: B.opex[0],      fmt: '$', inv: true  },
-    { metric: 'Ending Cash',        qtd: qtd.cash,     target: q1Cash,     fmt: '$'              },
-    { metric: 'Gross Margin %',     qtd: qtd.gm,       target: q1Gm,       fmt: '%', inv: false  },
-    { metric: 'Cash Burn (MTD)',    qtd: qtd.cashBurn, target: null,        fmt: '$', inv: true  },
+    { metric: 'Operating Expenses (QTD)', qtd: qtd.opex,     target: qOpexBud, fmt: '$', inv: true  },
+    { metric: 'Ending Cash',              qtd: qtd.cash,     target: qCashBud, fmt: '$'              },
+    { metric: 'Gross Margin %',           qtd: qtd.gm,       target: qGmBud,   fmt: '%', inv: false  },
+    { metric: 'Cash Burn (MTD)',          qtd: qtd.cashBurn, target: null,      fmt: '$', inv: true   },
   ];
-
-  const months = Math.round((new Date() - new Date('2026-01-01')) / (1000 * 60 * 60 * 24 * 30)) + 1;
-  const moComplete = Math.min(months, 3);
 
   return (
     <div>
-      <SectionHeader title="QTD Snapshot" right={`Q1 2026 · ${moComplete} of 3 months complete`} />
+      <SectionHeader title="QTD Snapshot" right={`${curQLabel} · ${qtd.moComplete} of 3 months complete`} />
 
       {/* KPI headline cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 10, marginBottom: 24 }}>
         {topCards.map((c, i) => (
           <Card key={i} label={c.lbl} value={c.val}
-            meta={`Q1 Target: ${c.bud}`}
+            meta={`${curQ} Target: ${c.bud}`}
             pill={c.var} pillGood={c.good} color={c.color} />
         ))}
       </div>
 
       {/* Tables */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
-        <TableBlock title="Top-Line KPIs · QTD vs Q1 Target" rows={topRows} />
-        <TableBlock title="Operating KPIs · QTD vs Q1 Target" rows={opRows} />
+        <TableBlock title={`Top-Line KPIs · QTD vs ${curQ} Target`}     rows={topRows} />
+        <TableBlock title={`Operating KPIs · QTD vs ${curQ} Target`}    rows={opRows} />
       </div>
 
     </div>

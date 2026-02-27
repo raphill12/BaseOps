@@ -463,36 +463,59 @@ export function computeFromRaw(raw) {
       v: m.cacPayback ? m.cacPayback[s + 2] : null,
     })),
 
-    qtd: {
-      month:       latestMo,
-      corpARR:     m.corpARR[lastActIdx],
-      fedARR:      m.fedARR[lastActIdx],
-      totalARR:    m.totalARR[lastActIdx],
-      revenue:     sum(m.revenue, 12, lastActIdx + 1),   // cumulative Q1-to-date
-      opex:        sum(m.opex,    12, lastActIdx + 1),   // cumulative Q1-to-date
-      cash:        m.endCash[lastActIdx],
-      gm:          m.gmPct[lastActIdx],
-      nrr:         m.nrrPct[lastActIdx],
-      cashBurn:    m.cashBurn[lastActIdx],
-      newCorpARR:  sum(m.newCorpARR, 12, lastActIdx + 1),
-      expCorpARR:  sum(m.expCorpARR, 12, lastActIdx + 1),
-      fedTCV:      sum(m.fedTCV,     12, lastActIdx + 1),
-      // Q1 2026 budget targets
-      q1BudCorpARR:  bud.corpARR?.[0],
-      q1BudFedARR:   bud.fedARR?.[0],
-      q1BudTotalARR: bud.totalARR?.[0],
-      q1BudRevenue:  bud.revenue?.[0],
-      q1BudOpex:     bud.opex?.[0],
-      q1BudCash:     bud.cash?.[0],
-      q1BudGm:       bud.gmPct?.[0],
-      q1BudNrr:      bud.nrr?.[0],
-      // Q1 2026 full-quarter forecast (all 3 months projected through Mar-26)
-      q1CorpARRFcst: m.corpARR[14],
-      q1RevFcst:     sum(m.revenue, 12, 15),
-      q1GmFcst:      m.gmPct[14],
-      q1NrrFcst:     m.nrrPct[14],
-      q1CashFcst:    m.endCash[14],
-    },
+    qtd: (() => {
+      // Derive the active quarter from the most recent actualized month.
+      // Monthly index 12 = Jan-26, 13 = Feb-26, 14 = Mar-26 (Q1),
+      //                15 = Apr-26 … 17 = Jun-26 (Q2), etc.
+      const curQIdx    = Math.min(3, Math.max(0, Math.floor((lastActIdx - 12) / 3)));
+      const qStart     = 12 + curQIdx * 3;   // first month of active quarter
+      const qEnd       = qStart + 2;          // last  month of active quarter
+      const moComplete = Math.min(lastActIdx - qStart + 1, 3);
+      const curQ       = ['Q1', 'Q2', 'Q3', 'Q4'][curQIdx];
+
+      return {
+        month:       latestMo,
+        curQ,
+        curQLabel:   `${curQ} 2026`,
+        curQIdx,
+        moComplete,
+
+        // Stock / rate metrics — latest actual value
+        corpARR:  m.corpARR[lastActIdx],
+        fedARR:   m.fedARR[lastActIdx],
+        totalARR: m.totalARR[lastActIdx],
+        cash:     m.endCash[lastActIdx],
+        gm:       m.gmPct[lastActIdx],
+        nrr:      m.nrrPct[lastActIdx],
+        cashBurn: m.cashBurn[lastActIdx],
+
+        // Flow metrics — cumulative from start of active quarter to latest actual
+        revenue:    sum(m.revenue,    qStart, lastActIdx + 1),
+        opex:       sum(m.opex,       qStart, lastActIdx + 1),
+        newCorpARR: sum(m.newCorpARR, qStart, lastActIdx + 1),
+        expCorpARR: sum(m.expCorpARR, qStart, lastActIdx + 1),
+        fedTCV:     sum(m.fedTCV,     qStart, lastActIdx + 1),
+
+        // Full-quarter projections for KPI scorecards (actual + forecast through qEnd)
+        qCorpARRFcst: m.corpARR[qEnd],
+        qRevFcst:     sum(m.revenue, qStart, qEnd + 1),
+        qGmFcst:      m.gmPct[qEnd],
+        qNrrFcst:     m.nrrPct[qEnd],
+        qCashFcst:    m.endCash[qEnd],
+
+        // Budget targets for the active quarter
+        qBudCorpARR:    bud.corpARR?.[curQIdx],
+        qBudFedARR:     bud.fedARR?.[curQIdx],
+        qBudTotalARR:   bud.totalARR?.[curQIdx],
+        qBudRevenue:    bud.revenue?.[curQIdx],
+        qBudOpex:       bud.opex?.[curQIdx],
+        qBudCash:       bud.cash?.[curQIdx],
+        qBudGm:         bud.gmPct?.[curQIdx],
+        qBudNrr:        bud.nrr?.[curQIdx],
+        qBudNewCorpARR: bud.newCorpARR?.[curQIdx],
+        qBudExpCorpARR: bud.expCorpARR?.[curQIdx],
+      };
+    })(),
   };
 
   return { QD, B, FY26, latestMo };
