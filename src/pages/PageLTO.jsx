@@ -49,7 +49,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast }) {
   const opx25 = ann(QD.opex, 0), opx26 = ann(QD.opex, 4);
 
   // ── Build dataset for each chart ─────────────────────────────────────────
-  const arrData = [
+  const arrBase = [
     { yr: '2025A', corp: QD.arr[3].corp, fed: QD.arr[3].fed },
     { yr: lbl26,   corp: QD.arr[7].corp, fed: QD.arr[7].fed, bud: B.totalARR[4] },
     ...OUT_YEARS
@@ -60,6 +60,12 @@ export default function PageLTO({ QD, B, ltYears, ltForecast }) {
       }))
       .filter(d => d.corp != null || d.fed != null),
   ];
+  // Add YoY % ARR growth — computed from the stacked totals so it matches the bars exactly
+  const arrData = arrBase.map((d, i) => {
+    const total = (d.corp || 0) + (d.fed || 0);
+    const prev  = i > 0 ? (arrBase[i - 1].corp || 0) + (arrBase[i - 1].fed || 0) : null;
+    return { ...d, yoy: prev ? (total - prev) / prev : null };
+  });
 
   const booksData = [
     { yr: '2025A', newC: ann(QD.corpNewARRQ, 0), expC: ann(QD.corpExpARRQ, 0) },
@@ -142,18 +148,23 @@ export default function PageLTO({ QD, B, ltYears, ltForecast }) {
             <LegendDot color={C.lgrn}    label="2025A Fed" />
             <LegendDot color={col26}     label={`${lbl26} Corp`} />
             <LegendDot color={fy26Done ? '#93c5fd' : '#a5b4fc'} label={`${lbl26} Fed`} />
-            {hasLT && <LegendDot color={C.fct26}   label="Forecast Corp" />}
-            {hasLT && <LegendDot color="#a5b4fc"   label="Forecast Fed" />}
+            {hasLT && <LegendDot color={C.fct26}  label="Forecast Corp" />}
+            {hasLT && <LegendDot color="#a5b4fc"  label="Forecast Fed" />}
+            <LegendDot color={C.pur}     label="YoY Growth" line />
             <LegendDot color={C.budLine} label="FY26 Budget" line dashed />
           </>}>
           <ResponsiveContainer width="100%" height={H}>
-            <ComposedChart data={arrData} margin={MARGIN} barSize={BSIZE}>
-              {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
-              <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
-              <Bar dataKey="corp" name="Corp ARR" stackId="a" radius={[0, 0, 0, 0]}>
+            <ComposedChart data={arrData} margin={{ ...MARGIN, right: 48 }} barSize={BSIZE}>
+              {GRID}<XAxis dataKey="yr" {...XSTYLE} />
+              <YAxis yAxisId="left"  tickFormatter={yFmt$}   {...YSTYLE} />
+              <YAxis yAxisId="right" orientation="right" tickFormatter={yFmtPct}
+                tick={{ fill: C.txt3, fontSize: 10 }} axisLine={false} tickLine={false} width={44} />
+              <Tooltip {...TOOLTIP_STYLE}
+                formatter={(v, name) => name === 'YoY Growth' ? fp(v) : f$(v)} />
+              <Bar yAxisId="left" dataKey="corp" name="Corp ARR" stackId="a" radius={[0, 0, 0, 0]}>
                 {arrData.map((_, i) => <Cell key={i} fill={barColor(i)} />)}
               </Bar>
-              <Bar dataKey="fed" name="Fed ARR" stackId="a" radius={[3, 3, 0, 0]}>
+              <Bar yAxisId="left" dataKey="fed" name="Fed ARR" stackId="a" radius={[3, 3, 0, 0]}>
                 {arrData.map((_, i) => <Cell key={i} fill={fedColor(i)} />)}
                 <LabelList content={({ x, y, width, index }) => {
                   const d = arrData[index];
@@ -162,7 +173,10 @@ export default function PageLTO({ QD, B, ltYears, ltForecast }) {
                   return <text x={x + width / 2} y={y - 8} fill={C.txt3} fontSize={10} textAnchor="middle">{f$(total)}</text>;
                 }} />
               </Bar>
-              <BudLine />
+              <Line yAxisId="left"  dataKey="bud" name="FY26 Budget" stroke={C.budLine}
+                strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 4 }} connectNulls={false} />
+              <Line yAxisId="right" dataKey="yoy" name="YoY Growth" stroke={C.pur}
+                strokeWidth={2} dot={{ fill: C.pur, r: 4 }} connectNulls />
             </ComposedChart>
           </ResponsiveContainer>
         </ChartCard>
