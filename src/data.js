@@ -557,11 +557,17 @@ export function computeFromRaw(raw) {
         fedTCV:     sum(m.fedTCV,     qStart, lastActIdx + 1),
 
         // Full-quarter projections for KPI scorecards (actual + forecast through qEnd)
-        qCorpARRFcst: m.corpARR[qEnd],
-        qRevFcst:     sum(m.revenue, qStart, qEnd + 1),
-        qGmFcst:      m.gmPct[qEnd],
-        qNrrFcst:     m.nrrPct[qEnd],
-        qCashFcst:    m.endCash[qEnd],
+        qCorpARRFcst:    m.corpARR[qEnd],
+        qFedARRFcst:     m.fedARR[qEnd],
+        qTotalARRFcst:   m.totalARR[qEnd],
+        qRevFcst:        sum(m.revenue,    qStart, qEnd + 1),
+        qOpexFcst:       sum(m.opex,       qStart, qEnd + 1),
+        qNewCorpARRFcst: sum(m.newCorpARR, qStart, qEnd + 1),
+        qExpCorpARRFcst: sum(m.expCorpARR, qStart, qEnd + 1),
+        qFedTCVFcst:     sum(m.fedTCV,     qStart, qEnd + 1),
+        qGmFcst:         m.gmPct[qEnd],
+        qNrrFcst:        m.nrrPct[qEnd],
+        qCashFcst:       m.endCash[qEnd],
 
         // Budget targets for the active quarter
         qBudCorpARR:    bud.corpARR?.[curQIdx],
