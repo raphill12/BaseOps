@@ -77,15 +77,18 @@ export function parseActData(csv) {
   if (!rows.length) return null;
   const header = rows[0];
 
-  // Find column range for Jan-25 through Dec-26
+  // Find column range: start at Jan-25, then extend to the last month column in the sheet.
+  // This allows Act_Data to carry data through 2030 (or any future year) without code changes.
   let startCol = -1, endCol = -1;
   for (let c = 0; c < header.length; c++) {
     const h = header[c].trim();
     if (h.match(/jan.?25/i) && startCol === -1) startCol = c;
-    if (h.match(/dec.?26/i)) endCol = c;
+    // Accept any Mon-YY or Mon-YYYY header (with optional trailing A/F) as a data column
+    if (startCol !== -1 && /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[-.\s]?\d{2,4}[AF]?$/i.test(h)) endCol = c;
   }
   if (startCol === -1) startCol = 2;   // Col A=label, Col B=scenario
   if (endCol === -1)   endCol   = startCol + 23;
+  const numMonths = endCol - startCol + 1;
 
   // Build (label|scenario) → row-index map  (Col A = label, Col B = scenario)
   const lsMap = {};
@@ -114,19 +117,17 @@ export function parseActData(csv) {
 
   function getMonthly(label, scenario = 'act/fcst') {
     const ri = findRow(label, scenario);
-    if (ri < 0) return Array(24).fill(null);
+    if (ri < 0) return Array(numMonths).fill(null);
     const row = rows[ri];
     const vals = [];
-    for (let c = startCol; c <= endCol && vals.length < 24; c++) {
-      vals.push(parseNum(row[c] || ''));
-    }
-    while (vals.length < 24) vals.push(null);
+    for (let c = startCol; c <= endCol; c++) vals.push(parseNum(row[c] || ''));
+    while (vals.length < numMonths) vals.push(null);
     return vals;
   }
 
-  // Detect actual vs forecast from header columns
+  // Detect actual vs forecast from header columns (covers all months, not just 24)
   const isAct = [], months = [];
-  for (let c = startCol; c <= endCol && isAct.length < 24; c++) {
+  for (let c = startCol; c <= endCol; c++) {
     const h = (header[c] || '').trim();
     isAct.push(h.endsWith('A') || h.match(/-25/i) !== null);
     months.push(h.replace(/[AF]$/, '').trim() || `M${c - startCol + 1}`);
@@ -577,7 +578,42 @@ export function computeFromRaw(raw) {
     })(),
   };
 
-  return { QD, B, FY26, latestMo };
+  // ── Outer-year annual summaries (2027–2030) ───────────────────────────────
+  // Derived from monthly data beyond index 23 (Dec-26). Each year block is 12
+  // months. sumPL returns null when a slice is entirely null (no data for that
+  // year), so PageLTO can filter those out cleanly.
+  const totalMonths = m.revenue?.length ?? 24;
+  const OUTER_YEARS = [
+    { year: '2027', s: 24, e: 36 },
+    { year: '2028', s: 36, e: 48 },
+    { year: '2029', s: 48, e: 60 },
+    { year: '2030', s: 60, e: 72 },
+  ];
+  const ltYears = {};
+  for (const { year, s, e } of OUTER_YEARS) {
+    if (s >= totalMonths) break;                          // sheet doesn't reach this year
+    const ae  = Math.min(e, totalMonths);                 // clamp to available data
+    const rev = sumPL(m.revenue, s, ae);
+    if (rev == null) continue;                            // skip years with no revenue data
+    const ei = ae - 1;                                    // end-of-year (EOP) index
+    const add = (key, val) => {
+      if (val == null) return;
+      if (!ltYears[key]) ltYears[key] = {};
+      ltYears[key][year] = val;
+    };
+    add('totalARR',   m.totalARR?.[ei]);
+    add('corpARR',    m.corpARR?.[ei]);
+    add('fedARR',     m.fedARR?.[ei]);
+    add('revenue',    rev);
+    add('opex',       sumPL(m.opex,       s, ae));
+    add('endCash',    m.endCash?.[ei]);
+    add('gmPct',      avg(m.gmPct,        s, ae));
+    add('fedTCV',     sumPL(m.fedTCV,     s, ae));
+    add('newCorpARR', sumPL(m.newCorpARR, s, ae));
+    add('expCorpARR', sumPL(m.expCorpARR, s, ae));
+  }
+
+  return { QD, B, FY26, latestMo, ltYears };
 }
 
 // ─── Fallback Data ──────────────────────────────────────────────────────────

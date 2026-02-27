@@ -21,7 +21,7 @@ export default function App() {
   const [ltForecast,  setLtForecast]  = useState(null);
   const hasFetched = useRef(false);
 
-  const { QD, B, FY26, latestMo } = dataState;
+  const { QD, B, FY26, latestMo, ltYears } = dataState;
 
   // ── Live fetch from Google Sheets ────────────────────────────────────────
   const fetchLive = async () => {
@@ -79,7 +79,7 @@ export default function App() {
   const st = statusConfig[fetchStatus] || statusConfig.live;
 
   // ── Page router ───────────────────────────────────────────────────────────
-  const pageProps = { QD, B, FY26, latestMo, cashOutDate, ltForecast };
+  const pageProps = { QD, B, FY26, latestMo, cashOutDate, ltYears, ltForecast };
   const pages = {
     qtd:      <PageQTD      {...pageProps} />,
     overview: <PageOverview {...pageProps} />,

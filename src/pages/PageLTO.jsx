@@ -9,8 +9,16 @@ import { SectionHeader, ChartCard, LegendDot, TOOLTIP_STYLE, GRID, XSTYLE, YSTYL
 
 const OUT_YEARS = ['2027', '2028', '2029', '2030'];
 
-export default function PageLTO({ QD, B, ltForecast }) {
-  const lt = ltForecast || {};
+export default function PageLTO({ QD, B, ltYears, ltForecast }) {
+  // Primary source: Act_Data monthly columns aggregated to annual in computeFromRaw.
+  // Fallback: LT_Inputs sheet (manual annual entries). Act_Data always wins per metric+year.
+  const lt = {};
+  for (const [key, yearMap] of Object.entries(ltForecast || {})) {
+    lt[key] = { ...yearMap };
+  }
+  for (const [key, yearMap] of Object.entries(ltYears || {})) {
+    lt[key] = { ...(lt[key] || {}), ...yearMap };   // Act_Data overrides LT_Inputs
+  }
 
   // Derive 2025A and 2026A/F from existing quarterly series
   const ann  = (s, i0) => s.slice(i0, i0 + 4).reduce((a, d) => a + (d.val ?? 0), 0);
