@@ -1,11 +1,8 @@
-import React from 'react';
-import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, fpc, vp, vf } from '../utils.js';
-import { Card, SectionHeader, ChartCard, LegendDot, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$ } from '../ui.jsx';
+import { Card, SectionHeader } from '../ui.jsx';
 
 // ─── QTD Snapshot Page ─────────────────────────────────────────────────────
-// Shows the latest month's actuals vs the full Q1 2026 budget target.
 
 function GoGetBar({ qtd, target, inv }) {
   if (!target || target === 0) return <span style={{ fontSize: 10, color: C.txt3 }}>N/A</span>;
@@ -24,7 +21,7 @@ function GoGetBar({ qtd, target, inv }) {
   );
 }
 
-function TableBlock({ title, rows }) {
+function TableBlock({ title, rows, curQ }) {
   return (
     <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden' }}>
       <div style={{ padding: '12px 16px', borderBottom: `1px solid ${C.bdr}`, fontSize: 12, fontWeight: 600, color: C.txt }}>{title}</div>
@@ -34,7 +31,7 @@ function TableBlock({ title, rows }) {
             <tr style={{ background: C.surf2 }}>
               <th style={{ padding: '7px 16px', textAlign: 'left',  fontSize: 10, color: C.txt3,    fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.6px' }}>KPI</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.act26,   fontWeight: 700 }}>Actual (QTD / Latest)</th>
-              <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.budLine, fontWeight: 700 }}>Q1 2026 Target</th>
+              <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.budLine, fontWeight: 700 }}>{curQ} 2026 Target</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.txt3,    fontWeight: 600 }}>Go-Get</th>
               <th style={{ padding: '7px 10px', textAlign: 'left',  fontSize: 10, color: C.txt3,    fontWeight: 600, minWidth: 90 }}>Progress</th>
             </tr>
@@ -138,8 +135,8 @@ export default function PageQTD({ QD, B }) {
 
       {/* Tables */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
-        <TableBlock title={`Top-Line KPIs · QTD vs ${curQ} Target`}     rows={topRows} />
-        <TableBlock title={`Operating KPIs · QTD vs ${curQ} Target`}    rows={opRows} />
+        <TableBlock title={`Top-Line KPIs · QTD vs ${curQ} Target`}     rows={topRows} curQ={curQ} />
+        <TableBlock title={`Operating KPIs · QTD vs ${curQ} Target`}    rows={opRows}  curQ={curQ} />
       </div>
 
     </div>

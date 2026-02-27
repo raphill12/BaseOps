@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComposedChart, BarChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
+import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, vp, vf, q26vals } from '../utils.js';
 import { Card, SectionHeader, ChartCard, ChartLegendStd, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';

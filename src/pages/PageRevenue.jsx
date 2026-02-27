@@ -1,4 +1,3 @@
-import React from 'react';
 import { ComposedChart, BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, fpc, vp, vf, q26vals } from '../utils.js';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { C, TABS, csvUrl } from './config.js';
 import { parseActData, parseLTInputs, computeFromRaw, FALLBACK } from './data.js';
 import PageQTD      from './pages/PageQTD.jsx';
