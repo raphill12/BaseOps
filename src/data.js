@@ -486,6 +486,12 @@ export function computeFromRaw(raw) {
       q1BudCash:     bud.cash?.[0],
       q1BudGm:       bud.gmPct?.[0],
       q1BudNrr:      bud.nrr?.[0],
+      // Q1 2026 full-quarter forecast (all 3 months projected through Mar-26)
+      q1CorpARRFcst: m.corpARR[14],
+      q1RevFcst:     sum(m.revenue, 12, 15),
+      q1GmFcst:      m.gmPct[14],
+      q1NrrFcst:     m.nrrPct[14],
+      q1CashFcst:    m.endCash[14],
     },
   };
 

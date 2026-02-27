@@ -92,11 +92,11 @@ export default function PageQTD({ QD, B }) {
   const q1Nrr   = qtd.q1BudNrr      || B.nrr[0];
 
   const topCards = [
-    { lbl: `Corp ARR · ${qtd.month}`,  val: f$(qtd.corpARR), bud: f$(q1Corp),  var: vf(vp(qtd.corpARR, q1Corp)),  good: qtd.corpARR >= q1Corp,  color: C.blue },
-    { lbl: `Revenue · QTD`,            val: f$(qtd.revenue), bud: f$(q1Rev),   var: vf(vp(qtd.revenue, q1Rev)),   good: qtd.revenue >= q1Rev,   color: C.grn  },
-    { lbl: `Gross Margin · ${qtd.month}`, val: fp(qtd.gm),   bud: fp(q1Gm),    var: fpc(qtd.gm - q1Gm),           good: qtd.gm >= q1Gm,         color: C.cyn  },
-    { lbl: `Corp NRR (TTM) · ${qtd.month}`, val: fp(qtd.nrr), bud: fp(q1Nrr), var: fpc(qtd.nrr - q1Nrr),         good: qtd.nrr >= q1Nrr,       color: C.pur  },
-    { lbl: `Ending Cash · ${qtd.month}`, val: f$(qtd.cash),  bud: f$(q1Cash),  var: vf(vp(qtd.cash, q1Cash)),     good: qtd.cash >= q1Cash,     color: C.amb  },
+    { lbl: 'Corp ARR · Q1F',     val: f$(qtd.q1CorpARRFcst), bud: f$(q1Corp),  var: vf(vp(qtd.q1CorpARRFcst, q1Corp)),  good: qtd.q1CorpARRFcst >= q1Corp,  color: C.blue },
+    { lbl: 'Revenue · Q1F',      val: f$(qtd.q1RevFcst),     bud: f$(q1Rev),   var: vf(vp(qtd.q1RevFcst, q1Rev)),       good: qtd.q1RevFcst >= q1Rev,       color: C.grn  },
+    { lbl: 'Gross Margin · Q1F', val: fp(qtd.q1GmFcst),      bud: fp(q1Gm),    var: fpc(qtd.q1GmFcst - q1Gm),           good: qtd.q1GmFcst >= q1Gm,         color: C.cyn  },
+    { lbl: 'Corp NRR · Q1F',     val: fp(qtd.q1NrrFcst),     bud: fp(q1Nrr),   var: fpc(qtd.q1NrrFcst - q1Nrr),         good: qtd.q1NrrFcst >= q1Nrr,       color: C.pur  },
+    { lbl: 'Ending Cash · Q1F',  val: f$(qtd.q1CashFcst),    bud: f$(q1Cash),  var: vf(vp(qtd.q1CashFcst, q1Cash)),     good: qtd.q1CashFcst >= q1Cash,     color: C.amb  },
   ];
 
   const topRows = [
@@ -122,7 +122,7 @@ export default function PageQTD({ QD, B }) {
 
   return (
     <div>
-      <SectionHeader title={`Q1 2026 · QTD Snapshot (${qtd.month} only)`} right={`${moComplete} of 3 months complete`} />
+      <SectionHeader title="QTD Snapshot" right={`Q1 2026 · ${moComplete} of 3 months complete`} />
 
       {/* KPI headline cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 10, marginBottom: 24 }}>
