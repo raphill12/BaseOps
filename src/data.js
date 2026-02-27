@@ -167,16 +167,75 @@ export function parseActData(csv) {
   return { monthly, budget, isAct, months };
 }
 
-/** Parse LT_Inputs sheet and return the forecasted cash-out date string. */
+/** Parse LT_Inputs sheet → { cashOutDate, ltForecast }.
+ *
+ *  ltForecast shape: { [metricKey]: { '2026': val, '2027': val, '2028': val, ... } }
+ *
+ *  Sheet format expected:
+ *    - A header row whose cells contain the year numbers (2026, 2027, 2028, 2029, 2030).
+ *    - One metric row per KPI with the label in Col A and annual values under each year column.
+ *    - A "cash-out" row anywhere (legacy — value read from col G).
+ */
 export function parseLTInputs(csv) {
   const rows = parseCSV(csv);
+  if (!rows.length) return null;
+
+  // ── Cash-out date (legacy: look for a row containing "cash-out") ──────────
+  let cashOutDate = null;
   for (const row of rows) {
-    // Search any column in the row for "cash-out" label text
-    if (row.some(cell => (cell || '').toLowerCase().includes('cash-out') || (cell || '').toLowerCase().includes('cash out'))) {
-      return (row[6] || '').trim() || null;
+    if (row.some(c => /cash.?out/i.test(c || ''))) {
+      cashOutDate = (row[6] || '').trim() || null;
+      break;
     }
   }
-  return null;
+
+  // ── Multi-year annual forecast ────────────────────────────────────────────
+  // Find the header row whose cells include year labels like "2027", "2028" …
+  const FORECAST_YEARS = ['2026', '2027', '2028', '2029', '2030'];
+  let yearCols = {};   // { '2027': colIndex, '2028': colIndex, … }
+  let hRow = -1;
+  for (let r = 0; r < rows.length; r++) {
+    for (let c = 0; c < rows[r].length; c++) {
+      if (FORECAST_YEARS.includes((rows[r][c] || '').trim())) {
+        yearCols[(rows[r][c]).trim()] = c;
+        hRow = r;
+      }
+    }
+    if (hRow >= 0 && Object.keys(yearCols).length >= 2) break;
+  }
+
+  // Metric label → JS key lookup (substring match, case-insensitive)
+  const LT_METRICS = [
+    { key: 'totalARR',   match: ['total arr'] },
+    { key: 'corpARR',    match: ['corporate arr', 'corp arr'] },
+    { key: 'fedARR',     match: ['federal arr', 'fed arr'] },
+    { key: 'fedTCV',     match: ['federal tcv', 'fed tcv'] },
+    { key: 'newCorpARR', match: ['new corp', 'new logo'] },
+    { key: 'expCorpARR', match: ['expansion', 'exp corp'] },
+    { key: 'revenue',    match: ['revenue'] },
+    { key: 'opex',       match: ['operating expenses', 'opex'] },
+    { key: 'endCash',    match: ['ending cash', 'end cash'] },
+    { key: 'gmPct',      match: ['gross margin'] },
+  ];
+
+  const ltForecast = {};
+  if (hRow >= 0) {
+    for (let r = hRow + 1; r < rows.length; r++) {
+      const lbl = (rows[r][0] || '').trim().toLowerCase();
+      if (!lbl) continue;
+      for (const { key, match } of LT_METRICS) {
+        if (ltForecast[key]) continue;                  // already matched
+        if (match.some(m => lbl.includes(m))) {
+          ltForecast[key] = {};
+          for (const [yr, col] of Object.entries(yearCols)) {
+            ltForecast[key][yr] = parseNum(rows[r][col] || '');
+          }
+        }
+      }
+    }
+  }
+
+  return { cashOutDate, ltForecast };
 }
 
 // ─── Bud_Data Sheet Parser ──────────────────────────────────────────────────

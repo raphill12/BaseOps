@@ -18,6 +18,7 @@ export default function App() {
   const [fetchStatus, setFetchStatus] = useState('loading');
   const [lastUpdated, setLastUpdated] = useState(null);
   const [cashOutDate, setCashOutDate] = useState(null);
+  const [ltForecast,  setLtForecast]  = useState(null);
   const hasFetched = useRef(false);
 
   const { QD, B, FY26, latestMo } = dataState;
@@ -48,11 +49,13 @@ export default function App() {
       setLastUpdated(new Date());
       setFetchStatus('live');
 
-      // Parse cash-out date from LT_Inputs
+      // Parse LT_Inputs — cash-out date + 2027-2030 annual forecast
       if (ltRes?.ok) {
-        const ltCsv = await ltRes.text();
-        const cod = parseLTInputs(ltCsv);
-        if (cod) setCashOutDate(cod);
+        const ltCsv   = await ltRes.text();
+        const ltParsed = parseLTInputs(ltCsv);
+        if (ltParsed?.cashOutDate) setCashOutDate(ltParsed.cashOutDate);
+        if (ltParsed?.ltForecast && Object.keys(ltParsed.ltForecast).length > 0)
+          setLtForecast(ltParsed.ltForecast);
       }
     } catch (e) {
       console.warn('Live fetch failed, using fallback data:', e.message);
@@ -76,7 +79,7 @@ export default function App() {
   const st = statusConfig[fetchStatus] || statusConfig.live;
 
   // ── Page router ───────────────────────────────────────────────────────────
-  const pageProps = { QD, B, FY26, latestMo, cashOutDate };
+  const pageProps = { QD, B, FY26, latestMo, cashOutDate, ltForecast };
   const pages = {
     qtd:      <PageQTD      {...pageProps} />,
     overview: <PageOverview {...pageProps} />,

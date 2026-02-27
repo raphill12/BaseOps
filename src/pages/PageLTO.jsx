@@ -4,11 +4,15 @@ import { f$, fp } from '../utils.js';
 import { SectionHeader, ChartCard, LegendDot, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
 // ─── Long-Term Outlook ──────────────────────────────────────────────────────
-// Annual (year-end) summary comparing 2025 Actual vs 2026 Actual/Forecast.
-// All stock metrics use Q4 EOP values; flow metrics use full-year sums.
+// Annual summary: 2025 Actual + 2026 A/F + 2027-2030 Forecast.
+// 2027-2030 data is pulled from the LT_Inputs Google Sheet tab.
 
-export default function PageLTO({ QD, B }) {
-  // Annual aggregation helpers over the 8-quarter QD series (idx 0-3 = 2025, 4-7 = 2026)
+const OUT_YEARS = ['2027', '2028', '2029', '2030'];
+
+export default function PageLTO({ QD, B, ltForecast }) {
+  const lt = ltForecast || {};
+
+  // Derive 2025A and 2026A/F from existing quarterly series
   const ann  = (s, i0) => s.slice(i0, i0 + 4).reduce((a, d) => a + (d.val ?? 0), 0);
   const eop  = (s, i)  => s[i]?.val ?? null;
   const avg4 = (s, i0) => {
@@ -16,64 +20,109 @@ export default function PageLTO({ QD, B }) {
     return v.length ? v.reduce((a, b) => a + b) / v.length : null;
   };
 
-  // FY26 label / color — flip from indigo → blue once all 4 quarters are actual
   const fy26Done = QD.arr.slice(4).every(d => d.isAct);
-  const col26    = fy26Done ? C.act26   : C.fct26;
-  const lbl26    = fy26Done ? '2026A'   : '2026F';
-  // Fed portion of stacked ARR uses a lighter shade for visual layering
-  const fedCol26 = fy26Done ? '#93c5fd' : '#a5b4fc';
+  const col26    = fy26Done ? C.act26  : C.fct26;
+  const lbl26    = fy26Done ? '2026A'  : '2026F';
 
-  // Pre-compute revenue & opex for the opex-as-%-of-revenue line
+  // Color per bar index: 0=2025A (green), 1=2026A/F (blue or indigo), 2+=outer forecast (indigo)
+  const barColor = i => i === 0 ? C.act25 : i === 1 ? col26 : C.fct26;
+
+  // Fed (lighter shades for stacked layering)
+  const fedColor = i => i === 0 ? C.lgrn : i === 1 ? (fy26Done ? '#93c5fd' : '#a5b4fc') : '#a5b4fc';
+
+  // Outer-year values for a metric key — only include years with non-null data
+  const outerBars = (key) =>
+    OUT_YEARS
+      .map(yr => ({ yr: `${yr}F`, val: lt[key]?.[yr] ?? null }))
+      .filter(d => d.val != null);
+
+  // Revenue / opex needed for the opex-as-%-of-revenue line
   const rev25 = ann(QD.rev,  0), rev26 = ann(QD.rev,  4);
   const opx25 = ann(QD.opex, 0), opx26 = ann(QD.opex, 4);
 
-  // ── Chart data sets ──────────────────────────────────────────────────────
+  // ── Build dataset for each chart ─────────────────────────────────────────
   const arrData = [
     { yr: '2025A', corp: QD.arr[3].corp, fed: QD.arr[3].fed },
     { yr: lbl26,   corp: QD.arr[7].corp, fed: QD.arr[7].fed, bud: B.totalARR[4] },
+    ...OUT_YEARS
+      .map(yr => ({
+        yr: `${yr}F`,
+        corp: lt.corpARR?.[yr]  ?? null,
+        fed:  lt.fedARR?.[yr]   ?? null,
+      }))
+      .filter(d => d.corp != null || d.fed != null),
   ];
 
   const booksData = [
     { yr: '2025A', newC: ann(QD.corpNewARRQ, 0), expC: ann(QD.corpExpARRQ, 0) },
     { yr: lbl26,   newC: ann(QD.corpNewARRQ, 4), expC: ann(QD.corpExpARRQ, 4) },
+    ...OUT_YEARS
+      .map(yr => ({
+        yr:   `${yr}F`,
+        newC: lt.newCorpARR?.[yr] ?? null,
+        expC: lt.expCorpARR?.[yr] ?? null,
+      }))
+      .filter(d => d.newC != null || d.expC != null),
   ];
 
   const revData = [
     { yr: '2025A', val: rev25 },
     { yr: lbl26,   val: rev26, bud: B.revenue[4] },
+    ...outerBars('revenue'),
   ];
 
   const fedData = [
     { yr: '2025A', val: ann(QD.fedTCVQ, 0) },
     { yr: lbl26,   val: ann(QD.fedTCVQ, 4), bud: B.fedTCV[4] },
+    ...outerBars('fedTCV'),
   ];
 
   const cashData = [
     { yr: '2025A', val: eop(QD.cash, 3) },
     { yr: lbl26,   val: eop(QD.cash, 7), bud: B.cash[4] },
+    ...outerBars('endCash'),
   ];
 
+  // Opex: need revenue for the %-of-revenue line; outer years use ltForecast for both
   const opxData = [
     { yr: '2025A', val: opx25, pct: rev25 ? opx25 / rev25 : null },
     { yr: lbl26,   val: opx26, pct: rev26 ? opx26 / rev26 : null, bud: B.opex[4] },
+    ...OUT_YEARS
+      .map(yr => {
+        const v = lt.opex?.[yr] ?? null;
+        const r = lt.revenue?.[yr] ?? null;
+        return { yr: `${yr}F`, val: v, pct: (v != null && r) ? v / r : null };
+      })
+      .filter(d => d.val != null),
   ];
 
   const gmData = [
     { yr: '2025A', val: avg4(QD.gm, 0) },
     { yr: lbl26,   val: avg4(QD.gm, 4), bud: B.gm[4] },
+    ...outerBars('gmPct'),
   ];
 
-  // Shared chart constants
+  // Shared chart sizing — narrow bars when we have more years
+  const hasOuterYears = outerBars('revenue').length > 0;
+  const BSIZE  = hasOuterYears ? 38 : 72;
+  const BSIZE2 = hasOuterYears ? 22 : 50;   // side-by-side bookings chart
+  const H      = 270;
+  const MARGIN = { top: 28, right: 16, left: 0, bottom: 0 };
   const lblStyle = { fill: C.txt3, fontSize: 10 };
-  const MARGIN   = { top: 28, right: 16, left: 0, bottom: 0 };
-  const BSIZE    = 72;
-  const H        = 270;
+
+  // Budget dot line — amber dashed, only appears at the 2026 bar (null elsewhere)
+  const BudLine = () => (
+    <Line dataKey="bud" name="FY26 Budget" stroke={C.budLine} strokeDasharray="5 4"
+      strokeWidth={2} dot={{ fill: C.budLine, r: 4 }} connectNulls={false} />
+  );
+
+  const hasLT = hasOuterYears;
 
   return (
     <div>
       <SectionHeader
         title="Long-Term Outlook · Annual Summary"
-        right="2025 Actual vs 2026 Annual Forecast"
+        right={hasLT ? '2025A · 2026A/F · 2027–2030 Forecast' : '2025 Actual vs 2026 Annual Forecast — add 2027–2030 rows to LT_Inputs sheet to extend'}
       />
 
       {/* ── Row 1: Total ARR (stacked) + Corp ARR Bookings ── */}
@@ -84,7 +133,9 @@ export default function PageLTO({ QD, B }) {
             <LegendDot color={C.act25}   label="2025A Corp" />
             <LegendDot color={C.lgrn}    label="2025A Fed" />
             <LegendDot color={col26}     label={`${lbl26} Corp`} />
-            <LegendDot color={fedCol26}  label={`${lbl26} Fed`} />
+            <LegendDot color={fy26Done ? '#93c5fd' : '#a5b4fc'} label={`${lbl26} Fed`} />
+            {hasLT && <LegendDot color={C.fct26}   label="Forecast Corp" />}
+            {hasLT && <LegendDot color="#a5b4fc"   label="Forecast Fed" />}
             <LegendDot color={C.budLine} label="FY26 Budget" line dashed />
           </>}>
           <ResponsiveContainer width="100%" height={H}>
@@ -92,18 +143,18 @@ export default function PageLTO({ QD, B }) {
               {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="corp" name="Corp ARR" stackId="a" radius={[0, 0, 0, 0]}>
-                {arrData.map((d, i) => <Cell key={i} fill={i === 0 ? C.act25 : col26} />)}
+                {arrData.map((_, i) => <Cell key={i} fill={barColor(i)} />)}
               </Bar>
               <Bar dataKey="fed" name="Fed ARR" stackId="a" radius={[3, 3, 0, 0]}>
-                {arrData.map((d, i) => <Cell key={i} fill={i === 0 ? C.lgrn : fedCol26} />)}
+                {arrData.map((_, i) => <Cell key={i} fill={fedColor(i)} />)}
                 <LabelList content={({ x, y, width, index }) => {
                   const d = arrData[index];
                   const total = (d.corp || 0) + (d.fed || 0);
+                  if (!total) return null;
                   return <text x={x + width / 2} y={y - 8} fill={C.txt3} fontSize={10} textAnchor="middle">{f$(total)}</text>;
                 }} />
               </Bar>
-              <Line dataKey="bud" name="FY26 Budget" stroke={C.budLine} strokeDasharray="5 4"
-                strokeWidth={2} dot={{ fill: C.budLine, r: 4 }} connectNulls={false} />
+              <BudLine />
             </ComposedChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -114,13 +165,13 @@ export default function PageLTO({ QD, B }) {
             <LegendDot color={C.pur}  label="Expansion ARR" />
           </>}>
           <ResponsiveContainer width="100%" height={H}>
-            <BarChart data={booksData} margin={MARGIN} barGap={6} barCategoryGap="40%">
+            <BarChart data={booksData} margin={MARGIN} barGap={4} barCategoryGap="35%">
               {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
-              <Bar dataKey="newC" name="New Logo ARR"  fill={C.blue} radius={[3, 3, 0, 0]} barSize={50}>
+              <Bar dataKey="newC" name="New Logo ARR"  fill={C.blue} radius={[3, 3, 0, 0]} barSize={BSIZE2}>
                 <LabelList dataKey="newC" position="top" formatter={v => f$(v)} style={lblStyle} />
               </Bar>
-              <Bar dataKey="expC" name="Expansion ARR" fill={C.pur}  radius={[3, 3, 0, 0]} barSize={50}>
+              <Bar dataKey="expC" name="Expansion ARR" fill={C.pur}  radius={[3, 3, 0, 0]} barSize={BSIZE2}>
                 <LabelList dataKey="expC" position="top" formatter={v => f$(v)} style={lblStyle} />
               </Bar>
             </BarChart>
@@ -139,11 +190,10 @@ export default function PageLTO({ QD, B }) {
               {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Revenue" radius={[3, 3, 0, 0]}>
-                {revData.map((d, i) => <Cell key={i} fill={i === 0 ? C.act25 : col26} />)}
+                {revData.map((_, i) => <Cell key={i} fill={barColor(i)} />)}
                 <LabelList dataKey="val" position="top" formatter={v => f$(v)} style={lblStyle} />
               </Bar>
-              <Line dataKey="bud" name="FY26 Budget" stroke={C.budLine} strokeDasharray="5 4"
-                strokeWidth={2} dot={{ fill: C.budLine, r: 4 }} connectNulls={false} />
+              <BudLine />
             </ComposedChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -155,11 +205,10 @@ export default function PageLTO({ QD, B }) {
               {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Fed TCV" radius={[3, 3, 0, 0]}>
-                {fedData.map((d, i) => <Cell key={i} fill={i === 0 ? C.act25 : col26} />)}
+                {fedData.map((_, i) => <Cell key={i} fill={barColor(i)} />)}
                 <LabelList dataKey="val" position="top" formatter={v => f$(v)} style={lblStyle} />
               </Bar>
-              <Line dataKey="bud" name="FY26 Budget" stroke={C.budLine} strokeDasharray="5 4"
-                strokeWidth={2} dot={{ fill: C.budLine, r: 4 }} connectNulls={false} />
+              <BudLine />
             </ComposedChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -171,11 +220,10 @@ export default function PageLTO({ QD, B }) {
               {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Ending Cash" radius={[3, 3, 0, 0]}>
-                {cashData.map((d, i) => <Cell key={i} fill={i === 0 ? C.act25 : col26} />)}
+                {cashData.map((_, i) => <Cell key={i} fill={barColor(i)} />)}
                 <LabelList dataKey="val" position="top" formatter={v => f$(v)} style={lblStyle} />
               </Bar>
-              <Line dataKey="bud" name="FY26 Budget" stroke={C.budLine} strokeDasharray="5 4"
-                strokeWidth={2} dot={{ fill: C.budLine, r: 4 }} connectNulls={false} />
+              <BudLine />
             </ComposedChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -217,11 +265,10 @@ export default function PageLTO({ QD, B }) {
               {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="Gross Margin %" radius={[3, 3, 0, 0]}>
-                {gmData.map((d, i) => <Cell key={i} fill={i === 0 ? C.cyn : col26} />)}
+                {gmData.map((_, i) => <Cell key={i} fill={i === 0 ? C.cyn : i === 1 ? col26 : C.fct26} />)}
                 <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={lblStyle} />
               </Bar>
-              <Line dataKey="bud" name="FY26 Budget" stroke={C.budLine} strokeDasharray="5 4"
-                strokeWidth={2} dot={{ fill: C.budLine, r: 4 }} connectNulls={false} />
+              <BudLine />
             </ComposedChart>
           </ResponsiveContainer>
         </ChartCard>
