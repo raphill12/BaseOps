@@ -139,15 +139,8 @@ export default function PageQTD({ QD, B }) {
     <div>
       <MdaBar
         title={`${curQLabel} QTD Snapshot`}
-        scope={`${qtd.moComplete} of 3 months complete · ${fcstChecks}/5 key forecasts on/above target`}
-        bullets={[
-          { label: 'Corp ARR forecast',  value: f$(qtd.qCorpARRFcst), note: `${vf(vp(qtd.qCorpARRFcst, qCorpBud))} vs target`,  status: qtd.qCorpARRFcst >= qCorpBud  ? 'good' : 'bad'  },
-          { label: 'Revenue forecast',   value: f$(qtd.qRevFcst),     note: `${vf(vp(qtd.qRevFcst, qRevBud))} vs target`,       status: qtd.qRevFcst     >= qRevBud   ? 'good' : 'bad'  },
-          { label: 'Gross Margin fcst',  value: fp(qtd.qGmFcst),      note: `budget ${fp(qGmBud)}`,                              status: qtd.qGmFcst      >= qGmBud    ? 'good' : 'warn' },
-          { label: 'Ending Cash fcst',   value: f$(qtd.qCashFcst),    note: `${vf(vp(qtd.qCashFcst, qCashBud))} vs target`,     status: qtd.qCashFcst    >= qCashBud  ? 'good' : 'bad'  },
-          { label: 'OpEx forecast',      value: f$(qtd.qOpexFcst),    note: `${f$(Math.abs(opxQDelta))} ${opxQDelta <= 0 ? 'under' : 'over'} budget`, status: opxQDelta <= 0 ? 'good' : 'bad' },
-          { label: 'Corp NRR (latest)',  value: fp(qtd.nrr),          note: `target ${fp(qNrrBud)}`,                             status: qtd.nrr          >= qNrrBud   ? 'good' : 'warn' },
-        ]}
+        scope={`${qtd.moComplete} of 3 months complete · ${fcstChecks}/5 forecasts on or above target`}
+        text={`Through month ${qtd.moComplete} of ${curQ}, the quarter is projecting Corp ARR of ${f$(qtd.qCorpARRFcst)} (${vf(vp(qtd.qCorpARRFcst, qCorpBud))} vs target) and revenue of ${f$(qtd.qRevFcst)} (${vf(vp(qtd.qRevFcst, qRevBud))} vs target), with NRR holding at ${fp(qtd.nrr)} against our ${fp(qNrrBud)} plan. OpEx is tracking ${f$(Math.abs(opxQDelta))} ${opxQDelta <= 0 ? 'under' : 'over'} budget at ${f$(qtd.qOpexFcst)}, and ending cash is forecast at ${f$(qtd.qCashFcst)} (${vf(vp(qtd.qCashFcst, qCashBud))} vs target); gross margin stands at ${fp(qtd.qGmFcst)} vs our ${fp(qGmBud)} plan.`}
       />
       <SectionHeader title="QTD Snapshot" right={`${curQLabel} · ${qtd.moComplete} of 3 months complete`} />
 

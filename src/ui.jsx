@@ -60,10 +60,9 @@ export function Card({ label, lbl, value, val, meta, pill, pillGood, good, color
 
 // ─── MD&A Executive Summary Bar ────────────────────────────────────────────
 
-/** Thin banner at the top of each tab with key KPI attainment and assumptions.
- *  bullets: [{ label, value, note?, status: 'good'|'warn'|'bad'|'neutral' }] */
-export function MdaBar({ title, scope, bullets }) {
-  const dotColor = s => s === 'good' ? C.grn : s === 'warn' ? C.amb : s === 'bad' ? C.red : C.txt3;
+/** CFO-style 2–3 sentence summary at the top of each tab.
+ *  `text` is a React node (string or JSX) with key figures inline. */
+export function MdaBar({ title, scope, text }) {
   return (
     <div style={{
       background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10,
@@ -71,24 +70,13 @@ export function MdaBar({ title, scope, bullets }) {
       padding: '13px 18px', marginBottom: 20,
       display: 'flex', gap: 20, alignItems: 'flex-start',
     }}>
-      {/* Left: label + scope */}
-      <div style={{ minWidth: 155, flexShrink: 0 }}>
+      <div style={{ minWidth: 140, flexShrink: 0 }}>
         <div style={{ fontSize: 9, fontWeight: 700, color: C.blue, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 4 }}>Executive Summary</div>
         <div style={{ fontSize: 12, fontWeight: 600, color: C.txt, lineHeight: 1.4 }}>{title}</div>
-        {scope && <div style={{ fontSize: 10, color: C.txt3, marginTop: 4, lineHeight: 1.5 }}>{scope}</div>}
+        {scope && <div style={{ fontSize: 10, color: C.txt3, marginTop: 3 }}>{scope}</div>}
       </div>
       <div style={{ width: 1, background: C.bdr, alignSelf: 'stretch', flexShrink: 0 }} />
-      {/* Right: bullet grid */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '5px 16px' }}>
-        {bullets.map((b, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 6, overflow: 'hidden' }}>
-            <div style={{ width: 5, height: 5, borderRadius: '50%', flexShrink: 0, marginTop: 1, background: dotColor(b.status) }} />
-            <span style={{ fontSize: 10, color: C.txt3, whiteSpace: 'nowrap' }}>{b.label}:</span>
-            <span style={{ fontSize: 11, color: C.txt, fontFamily: 'monospace', fontWeight: 600, whiteSpace: 'nowrap' }}>{b.value}</span>
-            {b.note && <span style={{ fontSize: 10, color: C.txt3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.note}</span>}
-          </div>
-        ))}
-      </div>
+      <div style={{ flex: 1, fontSize: 11, color: C.txt2, lineHeight: 1.7 }}>{text}</div>
     </div>
   );
 }

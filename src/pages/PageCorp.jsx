@@ -38,14 +38,7 @@ export default function PageCorp({ QD, B, FY26 }) {
       <MdaBar
         title="Enterprise (Corporate) Business"
         scope="2025 Actual · 2026 Actual/Forecast vs Budget"
-        bullets={[
-          { label: 'Corp ARR (exit)',    value: f$(FY26.corpARR), note: `${vf(vp(FY26.corpARR, B.corpARR[4]))} vs budget`,  status: FY26.corpARR >= B.corpARR[4] ? 'good' : 'bad'  },
-          { label: 'YoY Corp ARR (Q4)', value: yoyQ4Corp != null ? fp(yoyQ4Corp) : '—', note: 'vs Q4 25A exit',            status: yoyQ4Corp != null && yoyQ4Corp > 0 ? 'good' : 'neutral' },
-          { label: 'Corp NRR (exit)',   value: fp(FY26.nrr),     note: `budget ${fp(B.nrr[4])}`,                            status: FY26.nrr >= B.nrr[4] ? 'good' : 'warn'        },
-          { label: 'New Logo ARR',      value: f$(newArrFY),     note: `target ${f$(B.corpNewLogo)}`,                       status: newArrFY >= B.corpNewLogo ? 'good' : newArrFY >= B.corpNewLogo * 0.8 ? 'warn' : 'bad' },
-          { label: 'Expansion ARR',     value: f$(expArrFY),     note: `target ${f$(B.corpExp)}`,                           status: expArrFY >= B.corpExp ? 'good' : expArrFY >= B.corpExp * 0.8 ? 'warn' : 'bad' },
-          { label: 'CAC Payback',       value: cacLatest ? `${cacLatest.toFixed(1)} mo` : '—', note: 'T3M rolling',        status: cacLatest == null ? 'neutral' : cacLatest <= 12 ? 'good' : cacLatest <= 18 ? 'warn' : 'bad' },
-        ]}
+        text={`Corporate ARR is forecast to exit FY26 at ${f$(FY26.corpARR)} (${vf(vp(FY26.corpARR, B.corpARR[4]))} vs budget), representing ${yoyQ4Corp != null ? fp(yoyQ4Corp) : '—'} growth vs the Q4 '25 exit; NRR of ${fp(FY26.nrr)} is ${fp(Math.abs(FY26.nrr - B.nrr[4]))} ${FY26.nrr >= B.nrr[4] ? 'above' : 'below'} our ${fp(B.nrr[4])} plan. New logo bookings are pacing at ${f$(newArrFY)} vs the ${f$(B.corpNewLogo)} target, with expansion ARR of ${f$(expArrFY)} vs ${f$(B.corpExp)}${cacLatest ? `; CAC payback stands at ${cacLatest.toFixed(1)} months` : ''}.`}
       />
       <SectionHeader title="Enterprise (Corporate) · 2025A & 2026A/F" />
 

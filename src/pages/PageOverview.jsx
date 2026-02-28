@@ -41,15 +41,8 @@ export default function PageOverview({ QD, B, FY26 }) {
     <div>
       <MdaBar
         title="FY 2026 Full-Year Outlook"
-        scope={`Jan-26 Actual · Feb–Dec Forecast · ${onTrack}/5 headline KPIs on/above budget`}
-        bullets={[
-          { label: 'Total ARR (exit)',  value: f$(FY26.totalARR), note: `${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget`, status: FY26.totalARR >= B.totalARR[4] ? 'good' : 'bad' },
-          { label: 'Revenue',          value: f$(FY26.revenue),  note: `${vf(vp(FY26.revenue,  B.revenue[4]))} vs budget`,  status: FY26.revenue  >= B.revenue[4]  ? 'good' : 'bad' },
-          { label: 'Gross Margin',     value: fp(FY26.gm),       note: `${FY26.gm >= B.gm[4] ? '+' : ''}${((FY26.gm - B.gm[4]) * 100).toFixed(1)}pp vs budget`, status: FY26.gm >= B.gm[4] ? 'good' : 'bad' },
-          { label: 'OpEx',             value: f$(FY26.opex),     note: `${f$(Math.abs(opxDelta))} ${opxDelta <= 0 ? 'under' : 'over'} budget`, status: opxDelta <= 0 ? 'good' : 'bad' },
-          { label: 'Ending Cash',      value: f$(FY26.cash),     note: `${vf(vp(FY26.cash, B.cash[4]))} vs budget`,         status: FY26.cash     >= B.cash[4]     ? 'good' : 'bad' },
-          { label: 'Corp NRR (exit)',  value: fp(FY26.nrr),      note: `budget ${fp(B.nrr[4])}`,                             status: FY26.nrr      >= B.nrr[4]      ? 'good' : 'warn' },
-        ]}
+        scope={`Jan-26 Actual · Feb–Dec Forecast · ${onTrack}/5 KPIs on or above budget`}
+        text={`FY26 is forecast to close at ${f$(FY26.totalARR)} total ARR (${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget) and ${f$(FY26.revenue)} in revenue (${vf(vp(FY26.revenue, B.revenue[4]))} vs plan), with NRR holding at ${fp(FY26.nrr)} against a ${fp(B.nrr[4])} target. Gross margin is tracking at ${fp(FY26.gm)} (${FY26.gm >= B.gm[4] ? '+' : ''}${((FY26.gm - B.gm[4]) * 100).toFixed(1)}pp vs plan), and operating expenses of ${f$(FY26.opex)} are ${f$(Math.abs(opxDelta))} ${opxDelta <= 0 ? 'under' : 'over'} budget. Ending cash of ${f$(FY26.cash)} is ${vf(vp(FY26.cash, B.cash[4]))} vs our ${f$(B.cash[4])} target.`}
       />
       <SectionHeader title="FY 2026 Forecast vs Budget" right="Jan-26A · Feb–Dec 26F" />
 

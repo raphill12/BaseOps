@@ -34,14 +34,7 @@ export default function PageRevenue({ QD, B, FY26 }) {
       <MdaBar
         title="Revenue & ARR"
         scope="2025 Actual · 2026 Actual/Forecast vs Budget"
-        bullets={[
-          { label: 'Total ARR (exit)',   value: f$(FY26.totalARR), note: `${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget`, status: FY26.totalARR >= B.totalARR[4] ? 'good' : 'bad' },
-          { label: 'Corp ARR (exit)',    value: f$(FY26.corpARR),  note: `${vf(vp(FY26.corpARR, B.corpARR[4]))} vs budget`,   status: FY26.corpARR  >= B.corpARR[4]  ? 'good' : 'bad' },
-          { label: 'Revenue',           value: f$(FY26.revenue),  note: `${vf(vp(FY26.revenue, B.revenue[4]))} vs budget`,   status: FY26.revenue  >= B.revenue[4]  ? 'good' : 'bad' },
-          { label: 'YoY ARR (Q4)',      value: yoyQ4 != null ? fp(yoyQ4) : '—', note: 'vs Q4 25A', status: yoyQ4 != null && yoyQ4 > 0 ? 'good' : 'neutral' },
-          { label: 'Corp NRR (exit)',   value: fp(FY26.nrr),      note: `budget ${fp(B.nrr[4])}`,                             status: FY26.nrr      >= B.nrr[4]      ? 'good' : 'warn' },
-          { label: 'Fed TCV',           value: f$(FY26.fedTCV),   note: `budget ${f$(B.fedTCV[4] ?? 2250000)}`,               status: FY26.fedTCV   >= (B.fedTCV[4] ?? 2250000) ? 'good' : 'warn' },
-        ]}
+        text={`The business is tracking to ${f$(FY26.totalARR)} total ARR at year-end — ${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget — with ${yoyQ4 != null ? fp(yoyQ4) : '—'} YoY growth off the Q4 '25 exit. Revenue is projected at ${f$(FY26.revenue)} (${vf(vp(FY26.revenue, B.revenue[4]))} vs budget), supported by NRR of ${fp(FY26.nrr)} vs our ${fp(B.nrr[4])} plan. Federal TCV bookings are pacing at ${f$(FY26.fedTCV)} vs the ${f$(B.fedTCV[4] ?? 2250000)} target.`}
       />
       <SectionHeader title="Revenue & ARR · 2025A & 2026A/F vs Budget" />
 
@@ -60,12 +53,12 @@ export default function PageRevenue({ QD, B, FY26 }) {
           <ResponsiveContainer width="100%" height={220}>
             <LineChart margin={{ top: 16, right: 10, left: 0, bottom: 0 }}>
               {GRID}
-              <XAxis dataKey="m" type="category" data={QD.monthlyARR} {...XSTYLE} interval={2} />
+              <XAxis dataKey="m" type="category" data={QD.monthlyARR.slice(0, 24)} {...XSTYLE} interval={2} />
               <YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
-              <Line data={QD.monthlyARR.slice(0, 12)}  dataKey="v" name="2025A"    stroke={C.act25} strokeWidth={2} dot={false} type="monotone" />
+              <Line data={QD.monthlyARR.slice(0, 12)}  dataKey="v" name="2025A"   stroke={C.act25} strokeWidth={2} dot={false} type="monotone" />
               <Line data={QD.monthlyARR.slice(12, 13)} dataKey="v" name="Jan-26A" stroke={C.act26} strokeWidth={2} dot={{ fill: C.act26, r: 4 }} type="monotone" />
-              <Line data={QD.monthlyARR.slice(12)}     dataKey="v" name="2026F"   stroke={C.fct26} strokeWidth={2} strokeDasharray="4 3" dot={false} type="monotone" />
+              <Line data={QD.monthlyARR.slice(12, 24)} dataKey="v" name="2026F"   stroke={C.fct26} strokeWidth={2} strokeDasharray="4 3" dot={false} type="monotone" />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>

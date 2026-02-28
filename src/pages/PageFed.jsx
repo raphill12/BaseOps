@@ -25,12 +25,7 @@ export default function PageFed({ QD, B, FY26 }) {
       <MdaBar
         title="Federal Business Unit"
         scope="2025 Actual · 2026 Actual/Forecast vs Budget"
-        bullets={[
-          { label: 'Federal ARR (exit)',  value: f$(FY26.fedARR),  note: `${vf(vp(FY26.fedARR, B.fedARR[4]))} vs budget`,   status: FY26.fedARR  >= B.fedARR[4] ? 'good' : 'bad'  },
-          { label: 'Federal TCV (FY26)', value: f$(FY26.fedTCV),  note: `${vf(vp(FY26.fedTCV, fedTCVBud))} vs budget`,      status: FY26.fedTCV  >= fedTCVBud   ? 'good' : FY26.fedTCV >= fedTCVBud * 0.8 ? 'warn' : 'bad' },
-          { label: 'Federal Revenue',    value: f$(fedRevFY),     note: 'FY26 forecast',                                     status: 'neutral'                                       },
-          { label: 'Federal Op Income',  value: f$(fedOpIncFY),   note: 'investment phase',                                  status: 'neutral'                                       },
-        ]}
+        text={`The federal segment is forecast to exit FY26 at ${f$(FY26.fedARR)} ARR (${vf(vp(FY26.fedARR, B.fedARR[4]))} vs budget), with TCV bookings of ${f$(FY26.fedTCV)} against our ${f$(fedTCVBud)} target (${vf(vp(FY26.fedTCV, fedTCVBud))}). Federal revenue is projected at ${f$(fedRevFY)} for the year, with operating income of ${f$(fedOpIncFY)} reflecting the planned investment-phase build-out.`}
       />
       <SectionHeader title="Federal Breakout · 2025A & 2026A/F" />
 

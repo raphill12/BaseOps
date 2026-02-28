@@ -26,14 +26,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
       <MdaBar
         title="Operating Performance & Cash"
         scope="2025 Actual · 2026 Actual/Forecast vs Budget"
-        bullets={[
-          { label: 'OpEx (FY26F)',        value: f$(FY26.opex),  note: `${f$(Math.abs(opxDelta))} ${opxDelta <= 0 ? 'under' : 'over'} budget`, status: opxDelta <= 0 ? 'good' : 'bad' },
-          { label: 'Gross Margin (avg)',  value: fp(FY26.gm),    note: `budget ${fp(B.gm[4])}`,                                                  status: FY26.gm   >= B.gm[4]   ? 'good' : 'warn' },
-          { label: 'Ending Cash (Dec)',   value: f$(FY26.cash),  note: `${vf(vp(FY26.cash, B.cash[4]))} vs budget`,                              status: FY26.cash >= B.cash[4] ? 'good' : 'bad'  },
-          { label: 'Cash-Out Date',       value: cashOutDate || '—', note: 'from LT model',                                                      status: 'neutral' },
-          { label: 'Headcount (exit)',    value: `${fy26HC} FTE`, note: 'Dec-26F',                                                               status: 'neutral' },
-          { label: 'Latest Burn',         value: latestBurn != null ? f$(latestBurn) : '—', note: 'MTD · negative = inflow',                     status: latestBurn != null && latestBurn > 0 ? 'warn' : 'neutral' },
-        ]}
+        text={`Operating expenses of ${f$(FY26.opex)} are ${f$(Math.abs(opxDelta))} ${opxDelta <= 0 ? 'under' : 'over'} budget, with gross margin tracking at ${fp(FY26.gm)} vs our ${fp(B.gm[4])} plan; ${fy26HC} FTE at Dec-26 exit with latest monthly burn of ${latestBurn != null ? f$(latestBurn) : '—'}. Ending cash of ${f$(FY26.cash)} is ${vf(vp(FY26.cash, B.cash[4]))} vs our ${f$(B.cash[4])} budget${cashOutDate ? `; at current burn rates the LT model projects a cash-out date of ${cashOutDate}` : ''}.`}
       />
       <SectionHeader title="Operating & Cash · 2025A & 2026A/F vs Budget" />
 
