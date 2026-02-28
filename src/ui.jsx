@@ -66,12 +66,12 @@ export function MdaBar({ title, scope, text }) {
   return (
     <div style={{
       background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10,
-      borderLeft: `3px solid ${C.blue}`,
+      borderLeft: `3px solid ${C.amb}`,
       padding: '13px 18px', marginBottom: 20,
       display: 'flex', gap: 20, alignItems: 'flex-start',
     }}>
       <div style={{ minWidth: 140, flexShrink: 0 }}>
-        <div style={{ fontSize: 9, fontWeight: 700, color: C.blue, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 4 }}>Executive Summary</div>
+        <div style={{ fontSize: 9, fontWeight: 700, color: C.amb, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 4 }}>Executive Summary</div>
         <div style={{ fontSize: 12, fontWeight: 600, color: C.txt, lineHeight: 1.4 }}>{title}</div>
         {scope && <div style={{ fontSize: 10, color: C.txt3, marginTop: 3 }}>{scope}</div>}
       </div>

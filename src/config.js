@@ -1,25 +1,33 @@
 // ─── Color Palette ─────────────────────────────────────────────────────────
 // Edit these to retheme the entire dashboard at once.
 export const C = {
-  blue:   '#3b82f6',
-  grn:    '#10b981',
-  amb:    '#f59e0b',
-  red:    '#ef4444',
-  pur:    '#8b5cf6',
-  cyn:    '#06b6d4',
-  lgrn:   '#34d399',
-  txt:    '#e2e8f0',
-  txt2:   '#94a3b8',
-  txt3:   '#475569',
-  surf:   '#111520',
-  surf2:  '#161c2e',
-  bdr:    '#1e2740',
-  bg:     '#0a0d14',
-  // Series colors
-  act25:    '#10b981',  // 2025 actuals  → green
-  act26:    '#3b82f6',  // 2026 actuals  → blue
-  fct26:    '#818cf8',  // 2026 forecast → indigo
-  budLine:  '#f59e0b',  // Budget line   → amber
+  // Accent colors (from brand palette)
+  blue:    '#85C9FF',   // sky blue
+  pur:     '#9151B9',   // purple
+  cyn:     '#BD268E',   // magenta
+
+  // Status signals — keep semantic green/red/yellow
+  grn:     '#22c55e',   // good / on-track
+  red:     '#FF0066',   // bad / over-budget (hot pink from palette)
+  amb:     '#F8DC02',   // warning / primary accent (yellow from palette)
+  lgrn:    '#c084fc',   // Federal stacked-bar component (light purple)
+
+  // Typography
+  txt:     '#FFFFFF',   // primary text
+  txt2:    '#9ca3af',   // secondary text
+  txt3:    '#4b5563',   // tertiary / axis labels
+
+  // Surfaces — true-black theme
+  surf:    '#111111',   // card / panel background
+  surf2:   '#1a1a1a',   // table headers, elevated surfaces
+  bdr:     '#2a2a2a',   // borders
+  bg:      '#080808',   // page background
+
+  // Chart series
+  act25:   '#85C9FF',   // 2025 actuals  → sky blue
+  act26:   '#F8DC02',   // 2026 actuals  → yellow (primary)
+  fct26:   '#9151B9',   // 2026 forecast → purple
+  budLine: '#BD268E',   // budget / target line → magenta
 };
 
 // ─── Google Sheets Config ──────────────────────────────────────────────────

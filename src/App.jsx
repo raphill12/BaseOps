@@ -102,7 +102,7 @@ export default function App() {
         {/* Logo + title */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
-            width: 32, height: 32, background: C.blue, borderRadius: 8,
+            width: 32, height: 32, background: C.amb, borderRadius: 8,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#fff',
           }}>BO</div>
@@ -163,8 +163,8 @@ export default function App() {
           <div key={t.id} onClick={() => setTab(t.id)} style={{
             padding: '10px 16px', fontSize: 12, fontWeight: 500,
             cursor: 'pointer', whiteSpace: 'nowrap',
-            borderBottom: `2px solid ${tab === t.id ? C.blue : 'transparent'}`,
-            color: tab === t.id ? C.blue : C.txt3,
+            borderBottom: `2px solid ${tab === t.id ? C.amb : 'transparent'}`,
+            color: tab === t.id ? C.amb : C.txt3,
             transition: 'all .15s',
           }}>
             {t.label}

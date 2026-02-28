@@ -36,7 +36,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
   const barColor = i => i === 0 ? C.act25 : i === 1 ? col26 : C.fct26;
 
   // Fed (lighter shades for stacked layering)
-  const fedColor = i => i === 0 ? C.lgrn : i === 1 ? (fy26Done ? '#93c5fd' : '#a5b4fc') : '#a5b4fc';
+  const fedColor = i => i === 0 ? C.lgrn : i === 1 ? C.cyn : C.cyn;
 
   // Outer-year values for a metric key — only include years with non-null data
   const outerBars = (key) =>
@@ -166,9 +166,9 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
             <LegendDot color={C.act25}   label="2025A Corp" />
             <LegendDot color={C.lgrn}    label="2025A Fed" />
             <LegendDot color={col26}     label={`${lbl26} Corp`} />
-            <LegendDot color={fy26Done ? '#93c5fd' : '#a5b4fc'} label={`${lbl26} Fed`} />
+            <LegendDot color={C.cyn}             label={`${lbl26} Fed`} />
             {hasLT && <LegendDot color={C.fct26}  label="Forecast Corp" />}
-            {hasLT && <LegendDot color="#a5b4fc"  label="Forecast Fed" />}
+            {hasLT && <LegendDot color={C.cyn}    label="Forecast Fed" />}
             <LegendDot color={C.pur}     label="YoY Growth" line />
             <LegendDot color={C.budLine} label="FY26 Budget" line dashed />
           </>}>
