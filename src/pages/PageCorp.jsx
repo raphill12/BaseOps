@@ -19,7 +19,7 @@ export default function PageCorp({ QD, B, FY26 }) {
   const expCorp26   = q26vals(QD.corpExpARRQ);
   const contrCorp26 = q26vals(QD.corpContrARRQ);
 
-  // Y/Y Corp ARR growth per quarter (vs same quarter prior year from live data)
+  // Y/Y Enterprise ARR growth per quarter (vs same quarter prior year from live data)
   const corpARRYoY = [
     { q: 'Q1 26A', val: corp25[0] ? (corp26[0] / corp25[0]) - 1 : null },
     { q: 'Q2 26F', val: corp25[1] ? (corp26[1] / corp25[1]) - 1 : null },
@@ -36,28 +36,28 @@ export default function PageCorp({ QD, B, FY26 }) {
   return (
     <div>
       <MdaBar
-        title="Enterprise (Enterprise) Business"
+        title="Enterprise Business"
         scope="2025 Actual · 2026 Actual/Forecast vs Budget"
         text={`Enterprise ARR is forecast to exit FY26 at ${f$(FY26.corpARR)} (${vf(vp(FY26.corpARR, B.corpARR[4]))} vs budget), representing ${yoyQ4Corp != null ? fp(yoyQ4Corp) : '—'} growth vs the Q4 '25 exit; NRR of ${fp(FY26.nrr)} is ${fp(Math.abs(FY26.nrr - B.nrr[4]))} ${FY26.nrr >= B.nrr[4] ? 'above' : 'below'} our ${fp(B.nrr[4])} plan. New logo bookings are pacing at ${f$(newArrFY)} vs the ${f$(B.corpNewLogo)} target, with expansion ARR of ${f$(expArrFY)} vs ${f$(B.corpExp)}${cacLatest ? `; CAC payback stands at ${cacLatest.toFixed(1)} months` : ''}.`}
       />
-      <SectionHeader title="Enterprise (Enterprise) · 2025A & 2026A/F" />
+      <SectionHeader title="Enterprise · 2025A & 2026A/F" />
 
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 22 }}>
-        <Card label="Corp ARR · FY26F EOP"   value={f$(FY26.corpARR)} meta={`Budget ${f$(B.corpARR[4])}`} pill={vf(vp(FY26.corpARR, B.corpARR[4]))} pillGood={FY26.corpARR >= B.corpARR[4]} color={C.blue} />
-        <Card label="Y/Y Corp ARR · Q4 26F"  value={fp(corp25[3] ? corp26[3] / corp25[3] - 1 : null)} meta="vs Q4 25A" pill={corp25[3] ? `▲ ${fp(corp26[3] / corp25[3] - 1)}` : '—'} pillGood={true} color={C.grn}  />
-        <Card label="Corp NRR · TTM Q4 26F"  value={fp(FY26.nrr)}    meta={`Budget ${fp(B.nrr[4])}`}       pill={fpc(FY26.nrr - B.nrr[4])}           pillGood={FY26.nrr >= B.nrr[4]}         color={C.pur}  />
+        <Card label="Enterprise ARR · FY26F EOP"   value={f$(FY26.corpARR)} meta={`Budget ${f$(B.corpARR[4])}`} pill={vf(vp(FY26.corpARR, B.corpARR[4]))} pillGood={FY26.corpARR >= B.corpARR[4]} color={C.blue} />
+        <Card label="Y/Y Enterprise ARR · Q4 26F"  value={fp(corp25[3] ? corp26[3] / corp25[3] - 1 : null)} meta="vs Q4 25A" pill={corp25[3] ? `▲ ${fp(corp26[3] / corp25[3] - 1)}` : '—'} pillGood={true} color={C.grn}  />
+        <Card label="Enterprise NRR · TTM Q4 26F"  value={fp(FY26.nrr)}    meta={`Budget ${fp(B.nrr[4])}`}       pill={fpc(FY26.nrr - B.nrr[4])}           pillGood={FY26.nrr >= B.nrr[4]}         color={C.pur}  />
         <Card label="CAC Payback · Latest"   value={QD.corpCAC.filter(d => d.v != null).slice(-1)[0]?.v ? `${QD.corpCAC.filter(d => d.v != null).slice(-1)[0].v.toFixed(1)} mo` : '—'} meta="T3M rolling" color={C.amb} />
       </div>
 
-      {/* Corp ARR vs budget + waterfall */}
+      {/* Enterprise ARR vs budget + waterfall */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
         <ChartCard title="Enterprise ARR (EOP)" sub="vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={240}>
             <ComposedChart data={QD.corpARR} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
-              <Bar dataKey="val" name="Corp ARR" radius={[3, 3, 0, 0]}>
+              <Bar dataKey="val" name="Enterprise ARR" radius={[3, 3, 0, 0]}>
                 {QD.corpARR.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
                 <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
               </Bar>
@@ -66,7 +66,7 @@ export default function PageCorp({ QD, B, FY26 }) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Corp ARR Waterfall · Q4 25A → FY26 Exit"
+        <ChartCard title="Enterprise ARR Waterfall · Q4 25A → FY26 Exit"
           legend={<><LegendDot color={C.act26} label="Anchor" /><LegendDot color={C.grn} label="Add" /><LegendDot color={C.red} label="Churn" /></>}>
           <WaterfallChart data={QD.corpWaterfall} height={240} />
         </ChartCard>
@@ -75,7 +75,7 @@ export default function PageCorp({ QD, B, FY26 }) {
       {/* Bookings cumulative attainment */}
       <SectionHeader title="Bookings · Monthly Cumulative Attainment vs FY26 Target" />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
-        <ChartCard title="New Corp ARR Bookings · Cumulative YTD" sub={`FY26 Target: ${f$(B.corpNewLogo)}`}
+        <ChartCard title="New Enterprise ARR Bookings · Cumulative YTD" sub={`FY26 Target: ${f$(B.corpNewLogo)}`}
           legend={<><LegendDot color={C.act26} label="Actual" /><LegendDot color={C.fct26} label="Forecast" /><LegendDot color={C.budLine} label="Annual Target" line dashed /></>}>
           <ResponsiveContainer width="100%" height={220}>
             <ComposedChart data={QD.corpNewLogoCum} margin={{ top: 20, right: 10, left: 0, bottom: 20 }}>
@@ -95,7 +95,7 @@ export default function PageCorp({ QD, B, FY26 }) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Expansion Corp ARR Bookings · Cumulative YTD" sub={`FY26 Target: ${f$(B.corpExp)}`}
+        <ChartCard title="Expansion Enterprise ARR Bookings · Cumulative YTD" sub={`FY26 Target: ${f$(B.corpExp)}`}
           legend={<><LegendDot color={C.act26} label="Actual" /><LegendDot color={C.fct26} label="Forecast" /><LegendDot color={C.budLine} label="Annual Target" line dashed /></>}>
           <ResponsiveContainer width="100%" height={220}>
             <ComposedChart data={QD.corpExpCum} margin={{ top: 20, right: 10, left: 0, bottom: 20 }}>
@@ -118,7 +118,7 @@ export default function PageCorp({ QD, B, FY26 }) {
 
       {/* P&L / NRR / CAC */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 20 }}>
-        <ChartCard title="Corp Revenue & Op Income · 2026"
+        <ChartCard title="Enterprise Revenue & Op Income · 2026"
           legend={<><LegendDot color={C.grn} label="Revenue" /><LegendDot color={C.red} label="Op Income" /></>}>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={QD.corpPL} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
@@ -172,7 +172,7 @@ export default function PageCorp({ QD, B, FY26 }) {
           { lbl: 'Contraction ARR',        a25: contrCorp25, a26: contrCorp26, b26: [null, null, null, null], fy: null,          fyb: null, inv: true },
           { lbl: 'Enterprise NRR % (TTM)', a25: nrr25,       a26: nrr26,       b26: B.nrr.slice(0, 4),     fy: FY26.nrr,     fyb: B.nrr[4], f: fp },
           { lbl: 'Revenue (Enterprise)',   a25: [null,   null,   null,   null],       a26: QD.corpPL.map(d => d.rev),   b26: [null, null, null, null], fy: QD.corpPL.reduce((s, d) => s + (d.rev || 0), 0),   fyb: null, h: true },
-          { lbl: 'Op Income (Corp)',      a25: [null,   null,   null,   null],       a26: QD.corpPL.map(d => d.opInc), b26: [null, null, null, null], fy: QD.corpPL.reduce((s, d) => s + (d.opInc || 0), 0), fyb: null, inv: true },
+          { lbl: 'Op Income (Enterprise)',      a25: [null,   null,   null,   null],       a26: QD.corpPL.map(d => d.opInc), b26: [null, null, null, null], fy: QD.corpPL.reduce((s, d) => s + (d.opInc || 0), 0), fyb: null, inv: true },
           { lbl: 'CAC Payback T3M (mo)', a25: [null,   null,   null,   null],       a26: QD.corpCAC.map(d => d.v),    b26: [null, null, null, null], fy: QD.corpCAC.filter(d => d.v != null).slice(-1)[0]?.v ?? null, fyb: null, inv: true, f: fn },
         ]} />
       </div>

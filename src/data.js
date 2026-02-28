@@ -482,9 +482,9 @@ export function computeFromRaw(raw) {
     fedARR:  qSeries('fedARR',   bud.fedARR,  true),
 
     waterfall:     buildWaterfall(eov(m.totalARR, 3), [
-      { name: 'New Corp',   val: newCorp26 },
-      { name: 'Exp Corp',   val: expCorp26 },
-      { name: 'Corp Churn', val: conCorp26 },
+      { name: 'New Enterprise',   val: newCorp26 },
+      { name: 'Exp Enterprise',   val: expCorp26 },
+      { name: 'Enterprise Churn', val: conCorp26 },
       { name: 'New Fed',    val: newFed26  },
       { name: 'Fed Exp',    val: expFed26  },
     ]),

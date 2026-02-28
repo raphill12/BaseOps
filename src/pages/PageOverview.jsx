@@ -52,19 +52,19 @@ export default function PageOverview({ QD, B, FY26 }) {
       </div>
 
       {/* ARR stacked chart */}
-      <SectionHeader title="Total ARR · Stacked Corp + Federal" />
+      <SectionHeader title="Total ARR · Stacked Enterprise + Federal" />
       <div style={{ marginBottom: 20 }}>
         <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, padding: 18 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: C.txt }}>Total ARR by Quarter · Corp + Federal vs Budget</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.txt }}>Total ARR by Quarter · Enterprise + Federal vs Budget</div>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', fontSize: 10, color: C.txt2 }}>
               {[
-                { color: C.act25,          label: 'Corp 25A' },
+                { color: C.act25,          label: 'Enterprise 25A' },
                 { color: `${C.act25}66`,   label: 'Fed 25A'  },
-                { color: C.act26,          label: 'Corp 26A' },
-                { color: C.fct26,          label: 'Corp 26F' },
+                { color: C.act26,          label: 'Enterprise 26A' },
+                { color: C.fct26,          label: 'Enterprise 26F' },
                 { color: C.budLine,        label: 'Budget', line: true, dashed: true },
               ].map((leg, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -83,7 +83,7 @@ export default function PageOverview({ QD, B, FY26 }) {
               <XAxis dataKey="q" {...XSTYLE} />
               <YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={(v, n) => [f$(v), n]} />
-              <Bar dataKey="corp" name="Corp ARR" stackId="a">
+              <Bar dataKey="corp" name="Enterprise ARR" stackId="a">
                 {QD.arr.map((d, i) => (
                   <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />
                 ))}
@@ -172,7 +172,7 @@ export default function PageOverview({ QD, B, FY26 }) {
           { lbl: 'Gross Margin %',      a25: gm25,   a26: gm26,   b26: B.gm.slice(0, 4),       fy: FY26.gm,       fyb: B.gm[4],       f: fp   },
           { lbl: 'Operating Expenses',  a25: opex25, a26: opex26, b26: B.opex.slice(0, 4),     fy: FY26.opex,     fyb: B.opex[4],     inv: true, h: true },
           { lbl: 'Ending Cash',         a25: cash25, a26: cash26, b26: B.cash.slice(0, 4),     fy: FY26.cash,     fyb: B.cash[4]                  },
-          { lbl: 'Corp NRR % (TTM)',    a25: nrr25,  a26: nrr26,  b26: B.nrr.slice(0, 4),      fy: FY26.nrr,      fyb: B.nrr[4],      f: fp   },
+          { lbl: 'Enterprise NRR % (TTM)',    a25: nrr25,  a26: nrr26,  b26: B.nrr.slice(0, 4),      fy: FY26.nrr,      fyb: B.nrr[4],      f: fp   },
         ]} />
       </div>
     </div>

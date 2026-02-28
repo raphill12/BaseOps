@@ -158,16 +158,16 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
         right={hasLT ? '2025A · 2026A/F · 2027–2030 Forecast' : '2025 Actual vs 2026 Annual Forecast — add 2027–2030 rows to LT_Inputs sheet to extend'}
       />
 
-      {/* ── Row 1: Total ARR (stacked) + Corp ARR Bookings ── */}
+      {/* ── Row 1: Total ARR (stacked) + Enterprise ARR Bookings ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
 
         <ChartCard title="Total ARR (Year-End EOP)" sub="Enterprise + Federal · stacked"
           legend={<>
-            <LegendDot color={C.act25}   label="2025A Corp" />
+            <LegendDot color={C.act25}   label="2025A Enterprise" />
             <LegendDot color={C.lgrn}    label="2025A Fed" />
-            <LegendDot color={col26}     label={`${lbl26} Corp`} />
+            <LegendDot color={col26}     label={`${lbl26} Enterprise`} />
             <LegendDot color={C.cyn}             label={`${lbl26} Fed`} />
-            {hasLT && <LegendDot color={C.fct26}  label="Forecast Corp" />}
+            {hasLT && <LegendDot color={C.fct26}  label="Forecast Enterprise" />}
             {hasLT && <LegendDot color={C.cyn}    label="Forecast Fed" />}
             <LegendDot color={C.pur}     label="YoY Growth" line />
             <LegendDot color={C.budLine} label="FY26 Budget" line dashed />
@@ -180,7 +180,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
                 tick={{ fill: C.txt3, fontSize: 10 }} axisLine={false} tickLine={false} width={44} />
               <Tooltip {...TOOLTIP_STYLE}
                 formatter={(v, name) => name === 'YoY Growth' ? fp(v) : f$(v)} />
-              <Bar yAxisId="left" dataKey="corp" name="Corp ARR" stackId="a" radius={[0, 0, 0, 0]}>
+              <Bar yAxisId="left" dataKey="corp" name="Enterprise ARR" stackId="a" radius={[0, 0, 0, 0]}>
                 {arrData.map((_, i) => <Cell key={i} fill={barColor(i)} />)}
               </Bar>
               <Bar yAxisId="left" dataKey="fed" name="Fed ARR" stackId="a" radius={[3, 3, 0, 0]}>
@@ -200,7 +200,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Corp ARR Bookings · Annual" sub="New Logo & Expansion (FY totals)"
+        <ChartCard title="Enterprise ARR Bookings · Annual" sub="New Logo & Expansion (FY totals)"
           legend={<>
             <LegendDot color={C.blue} label="New Logo ARR" />
             <LegendDot color={C.pur}  label="Expansion ARR" />

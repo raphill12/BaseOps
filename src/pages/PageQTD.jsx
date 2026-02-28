@@ -100,10 +100,10 @@ export default function PageQTD({ QD, B }) {
   const qExpCBud  = qtd.qBudExpCorpARR || B.corpExp / 4;
 
   const topCards = [
-    { lbl: `Corp ARR · ${curQ}F`,     val: f$(qtd.qCorpARRFcst), bud: f$(qCorpBud),  var: vf(vp(qtd.qCorpARRFcst, qCorpBud)),  good: qtd.qCorpARRFcst >= qCorpBud,  color: C.blue },
+    { lbl: `Enterprise ARR · ${curQ}F`,     val: f$(qtd.qCorpARRFcst), bud: f$(qCorpBud),  var: vf(vp(qtd.qCorpARRFcst, qCorpBud)),  good: qtd.qCorpARRFcst >= qCorpBud,  color: C.blue },
     { lbl: `Revenue · ${curQ}F`,      val: f$(qtd.qRevFcst),     bud: f$(qRevBud),   var: vf(vp(qtd.qRevFcst, qRevBud)),       good: qtd.qRevFcst >= qRevBud,       color: C.grn  },
     { lbl: `Gross Margin · ${curQ}F`, val: fp(qtd.qGmFcst),      bud: fp(qGmBud),    var: fpc(qtd.qGmFcst - qGmBud),           good: qtd.qGmFcst >= qGmBud,         color: C.cyn  },
-    { lbl: `Corp NRR · ${curQ}F`,     val: fp(qtd.qNrrFcst),     bud: fp(qNrrBud),   var: fpc(qtd.qNrrFcst - qNrrBud),         good: qtd.qNrrFcst >= qNrrBud,       color: C.pur  },
+    { lbl: `Enterprise NRR · ${curQ}F`,     val: fp(qtd.qNrrFcst),     bud: fp(qNrrBud),   var: fpc(qtd.qNrrFcst - qNrrBud),         good: qtd.qNrrFcst >= qNrrBud,       color: C.pur  },
     { lbl: `Ending Cash · ${curQ}F`,  val: f$(qtd.qCashFcst),    bud: f$(qCashBud),  var: vf(vp(qtd.qCashFcst, qCashBud)),     good: qtd.qCashFcst >= qCashBud,     color: C.amb  },
   ];
 
@@ -111,8 +111,8 @@ export default function PageQTD({ QD, B }) {
     { metric: 'Enterprise ARR (EOP)',      qtd: qtd.corpARR,    fcst: qtd.qCorpARRFcst,    target: qCorpBud,  fmt: '$'  },
     { metric: 'Federal ARR (EOP)',        qtd: qtd.fedARR,     fcst: qtd.qFedARRFcst,     target: qFedBud,   fmt: '$'  },
     { metric: 'Total ARR (EOP)',          qtd: qtd.totalARR,   fcst: qtd.qTotalARRFcst,   target: qTotalBud, fmt: '$'  },
-    { metric: 'New Corp ARR (bookings)',  qtd: qtd.newCorpARR, fcst: qtd.qNewCorpARRFcst, target: qNewCBud,  fmt: '$'  },
-    { metric: 'Exp Corp ARR (bookings)', qtd: qtd.expCorpARR, fcst: qtd.qExpCorpARRFcst, target: qExpCBud,  fmt: '$'  },
+    { metric: 'New Enterprise ARR (bookings)',  qtd: qtd.newCorpARR, fcst: qtd.qNewCorpARRFcst, target: qNewCBud,  fmt: '$'  },
+    { metric: 'Exp Enterprise ARR (bookings)', qtd: qtd.expCorpARR, fcst: qtd.qExpCorpARRFcst, target: qExpCBud,  fmt: '$'  },
     { metric: 'Federal TCV (bookings)',  qtd: qtd.fedTCV,     fcst: qtd.qFedTCVFcst,     target: 0,         fmt: '$'  },
     { metric: 'Revenue (QTD)',           qtd: qtd.revenue,    fcst: qtd.qRevFcst,         target: qRevBud,   fmt: '$'  },
     { metric: 'Enterprise NRR % (TTM)',   qtd: qtd.nrr,        fcst: qtd.qNrrFcst,         target: qNrrBud,   fmt: '%', inv: false },
@@ -140,7 +140,7 @@ export default function PageQTD({ QD, B }) {
       <MdaBar
         title={`${curQLabel} QTD Snapshot`}
         scope={`${qtd.moComplete} of 3 months complete · ${fcstChecks}/5 forecasts on or above target`}
-        text={`Through month ${qtd.moComplete} of ${curQ}, the quarter is projecting Corp ARR of ${f$(qtd.qCorpARRFcst)} (${vf(vp(qtd.qCorpARRFcst, qCorpBud))} vs target) and revenue of ${f$(qtd.qRevFcst)} (${vf(vp(qtd.qRevFcst, qRevBud))} vs target), with NRR holding at ${fp(qtd.nrr)} against our ${fp(qNrrBud)} plan. OpEx is tracking ${f$(Math.abs(opxQDelta))} ${opxQDelta <= 0 ? 'under' : 'over'} budget at ${f$(qtd.qOpexFcst)}, and ending cash is forecast at ${f$(qtd.qCashFcst)} (${vf(vp(qtd.qCashFcst, qCashBud))} vs target); gross margin stands at ${fp(qtd.qGmFcst)} vs our ${fp(qGmBud)} plan.`}
+        text={`Through month ${qtd.moComplete} of ${curQ}, the quarter is projecting Enterprise ARR of ${f$(qtd.qCorpARRFcst)} (${vf(vp(qtd.qCorpARRFcst, qCorpBud))} vs target) and revenue of ${f$(qtd.qRevFcst)} (${vf(vp(qtd.qRevFcst, qRevBud))} vs target), with NRR holding at ${fp(qtd.nrr)} against our ${fp(qNrrBud)} plan. OpEx is tracking ${f$(Math.abs(opxQDelta))} ${opxQDelta <= 0 ? 'under' : 'over'} budget at ${f$(qtd.qOpexFcst)}, and ending cash is forecast at ${f$(qtd.qCashFcst)} (${vf(vp(qtd.qCashFcst, qCashBud))} vs target); gross margin stands at ${fp(qtd.qGmFcst)} vs our ${fp(qGmBud)} plan.`}
       />
       <SectionHeader title="QTD Snapshot" right={`${curQLabel} · ${qtd.moComplete} of 3 months complete`} />
 

@@ -145,7 +145,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
             { lbl: 'Operating Expenses', a25: opex25, a26: opex26, b26: B.opex.slice(0, 4), fy: FY26.opex, fyb: B.opex[4], inv: true, h: true },
             { lbl: 'Gross Margin %',     a25: gm25,   a26: gm26,   b26: B.gm.slice(0, 4),   fy: FY26.gm,   fyb: B.gm[4],   f: fp             },
             { lbl: 'Ending Cash (EOP)',  a25: cash25, a26: cash26, b26: B.cash.slice(0, 4), fy: FY26.cash, fyb: B.cash[4], h: true           },
-            { lbl: 'Corp NRR % (TTM)',   a25: nrr25,  a26: nrr26,  b26: B.nrr.slice(0, 4),  fy: FY26.nrr,  fyb: B.nrr[4],  f: fp             },
+            { lbl: 'Enterprise NRR % (TTM)',   a25: nrr25,  a26: nrr26,  b26: B.nrr.slice(0, 4),  fy: FY26.nrr,  fyb: B.nrr[4],  f: fp             },
           ]} />
         </div>
       </div>
