@@ -451,7 +451,7 @@ export function computeFromRaw(raw) {
   /** Build a cumulative-YTD series for a metric starting from month index 12. */
   function buildCum(metric, target) {
     let cum = 0;
-    return (raw.months || []).slice(12).map((mo, i) => {
+    return (raw.months || []).slice(12, 24).map((mo, i) => {
       cum += m[metric][12 + i] || 0;
       return { m: mo, v: cum, tgt: target };
     });
@@ -498,9 +498,9 @@ export function computeFromRaw(raw) {
       { name: 'Expansion', val: expFed26 },
     ]),
 
-    monthlyARR:  (raw.months || []).map((mo, i) => ({ m: mo, v: m.totalARR[i], isAct: isA[i] })),
-    monthlyBurn: (raw.months || []).map((mo, i) => ({ m: mo, v: m.cashBurn[i] })),
-    hc: (raw.months || []).slice(12).map((mo, i) => {
+    monthlyARR:  (raw.months || []).slice(0, 24).map((mo, i) => ({ m: mo, v: m.totalARR[i], isAct: isA[i] })),
+    monthlyBurn: (raw.months || []).slice(0, 24).map((mo, i) => ({ m: mo, v: m.cashBurn[i] })),
+    hc: (raw.months || []).slice(12, 24).map((mo, i) => {
       const hcVal  = m.headcount[12 + i];
       const arrVal = m.totalARR[12 + i];
       return { m: mo, v: hcVal, ratio: hcVal && arrVal ? arrVal / hcVal : null };
