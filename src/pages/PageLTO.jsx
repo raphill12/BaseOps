@@ -161,7 +161,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
       {/* ── Row 1: Total ARR (stacked) + Corp ARR Bookings ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
 
-        <ChartCard title="Total ARR (Year-End EOP)" sub="Corporate + Federal · stacked"
+        <ChartCard title="Total ARR (Year-End EOP)" sub="Enterprise + Federal · stacked"
           legend={<>
             <LegendDot color={C.act25}   label="2025A Corp" />
             <LegendDot color={C.lgrn}    label="2025A Fed" />

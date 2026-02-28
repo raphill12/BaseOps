@@ -108,14 +108,14 @@ export default function PageQTD({ QD, B }) {
   ];
 
   const topRows = [
-    { metric: 'Corporate ARR (EOP)',      qtd: qtd.corpARR,    fcst: qtd.qCorpARRFcst,    target: qCorpBud,  fmt: '$'  },
+    { metric: 'Enterprise ARR (EOP)',      qtd: qtd.corpARR,    fcst: qtd.qCorpARRFcst,    target: qCorpBud,  fmt: '$'  },
     { metric: 'Federal ARR (EOP)',        qtd: qtd.fedARR,     fcst: qtd.qFedARRFcst,     target: qFedBud,   fmt: '$'  },
     { metric: 'Total ARR (EOP)',          qtd: qtd.totalARR,   fcst: qtd.qTotalARRFcst,   target: qTotalBud, fmt: '$'  },
     { metric: 'New Corp ARR (bookings)',  qtd: qtd.newCorpARR, fcst: qtd.qNewCorpARRFcst, target: qNewCBud,  fmt: '$'  },
     { metric: 'Exp Corp ARR (bookings)', qtd: qtd.expCorpARR, fcst: qtd.qExpCorpARRFcst, target: qExpCBud,  fmt: '$'  },
     { metric: 'Federal TCV (bookings)',  qtd: qtd.fedTCV,     fcst: qtd.qFedTCVFcst,     target: 0,         fmt: '$'  },
     { metric: 'Revenue (QTD)',           qtd: qtd.revenue,    fcst: qtd.qRevFcst,         target: qRevBud,   fmt: '$'  },
-    { metric: 'Corporate NRR % (TTM)',   qtd: qtd.nrr,        fcst: qtd.qNrrFcst,         target: qNrrBud,   fmt: '%', inv: false },
+    { metric: 'Enterprise NRR % (TTM)',   qtd: qtd.nrr,        fcst: qtd.qNrrFcst,         target: qNrrBud,   fmt: '%', inv: false },
   ];
 
   const opRows = [

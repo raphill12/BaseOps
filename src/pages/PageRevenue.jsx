@@ -85,7 +85,7 @@ export default function PageRevenue({ QD, B, FY26 }) {
           <WaterfallChart data={QD.waterfall} height={260} />
         </ChartCard>
 
-        <ChartCard title="Corporate NRR % (TTM)" sub="Quarterly vs Budget" legend={<ChartLegendStd />}>
+        <ChartCard title="Enterprise NRR % (TTM)" sub="Quarterly vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={260}>
             <ComposedChart data={QD.nrr} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.9, 1.15]} />
@@ -106,12 +106,12 @@ export default function PageRevenue({ QD, B, FY26 }) {
         <BvATable rows={[
           { sec: true, lbl: 'ARR Metrics' },
           { lbl: 'Total ARR (EOP)',         a25: arr25,    a26: arr26,    b26: B.totalARR.slice(0, 4), fy: FY26.totalARR, fyb: B.totalARR[4], h: true },
-          { lbl: 'Corporate ARR (EOP)',      a25: corp25,   a26: corp26,   b26: B.corpARR.slice(0, 4),  fy: FY26.corpARR,  fyb: B.corpARR[4]          },
+          { lbl: 'Enterprise ARR (EOP)',      a25: corp25,   a26: corp26,   b26: B.corpARR.slice(0, 4),  fy: FY26.corpARR,  fyb: B.corpARR[4]          },
           { lbl: 'Federal ARR (EOP)',        a25: fed25,    a26: fed26,    b26: B.fedARR.slice(0, 4),   fy: FY26.fedARR,   fyb: B.fedARR[4]           },
           { lbl: 'Federal TCV (Bookings)',   a25: fedTCV25, a26: fedTCV26, b26: B.fedTCV.slice(0, 4),   fy: FY26.fedTCV,   fyb: B.fedTCV[4] ?? 2250000 },
           { sec: true, lbl: 'Revenue & Retention' },
           { lbl: 'Revenue',                 a25: rev25,    a26: rev26,    b26: B.revenue.slice(0, 4),  fy: FY26.revenue,  fyb: B.revenue[4],  h: true },
-          { lbl: 'Corporate NRR % (TTM)',   a25: nrr25,    a26: nrr26,    b26: B.nrr.slice(0, 4),      fy: FY26.nrr,      fyb: B.nrr[4],      f: fp   },
+          { lbl: 'Enterprise NRR % (TTM)',   a25: nrr25,    a26: nrr26,    b26: B.nrr.slice(0, 4),      fy: FY26.nrr,      fyb: B.nrr[4],      f: fp   },
         ]} />
       </div>
     </div>

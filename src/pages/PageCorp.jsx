@@ -36,11 +36,11 @@ export default function PageCorp({ QD, B, FY26 }) {
   return (
     <div>
       <MdaBar
-        title="Enterprise (Corporate) Business"
+        title="Enterprise (Enterprise) Business"
         scope="2025 Actual · 2026 Actual/Forecast vs Budget"
-        text={`Corporate ARR is forecast to exit FY26 at ${f$(FY26.corpARR)} (${vf(vp(FY26.corpARR, B.corpARR[4]))} vs budget), representing ${yoyQ4Corp != null ? fp(yoyQ4Corp) : '—'} growth vs the Q4 '25 exit; NRR of ${fp(FY26.nrr)} is ${fp(Math.abs(FY26.nrr - B.nrr[4]))} ${FY26.nrr >= B.nrr[4] ? 'above' : 'below'} our ${fp(B.nrr[4])} plan. New logo bookings are pacing at ${f$(newArrFY)} vs the ${f$(B.corpNewLogo)} target, with expansion ARR of ${f$(expArrFY)} vs ${f$(B.corpExp)}${cacLatest ? `; CAC payback stands at ${cacLatest.toFixed(1)} months` : ''}.`}
+        text={`Enterprise ARR is forecast to exit FY26 at ${f$(FY26.corpARR)} (${vf(vp(FY26.corpARR, B.corpARR[4]))} vs budget), representing ${yoyQ4Corp != null ? fp(yoyQ4Corp) : '—'} growth vs the Q4 '25 exit; NRR of ${fp(FY26.nrr)} is ${fp(Math.abs(FY26.nrr - B.nrr[4]))} ${FY26.nrr >= B.nrr[4] ? 'above' : 'below'} our ${fp(B.nrr[4])} plan. New logo bookings are pacing at ${f$(newArrFY)} vs the ${f$(B.corpNewLogo)} target, with expansion ARR of ${f$(expArrFY)} vs ${f$(B.corpExp)}${cacLatest ? `; CAC payback stands at ${cacLatest.toFixed(1)} months` : ''}.`}
       />
-      <SectionHeader title="Enterprise (Corporate) · 2025A & 2026A/F" />
+      <SectionHeader title="Enterprise (Enterprise) · 2025A & 2026A/F" />
 
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 22 }}>
@@ -52,7 +52,7 @@ export default function PageCorp({ QD, B, FY26 }) {
 
       {/* Corp ARR vs budget + waterfall */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
-        <ChartCard title="Corporate ARR (EOP)" sub="vs Budget" legend={<ChartLegendStd />}>
+        <ChartCard title="Enterprise ARR (EOP)" sub="vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={240}>
             <ComposedChart data={QD.corpARR} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
@@ -134,7 +134,7 @@ export default function PageCorp({ QD, B, FY26 }) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Corporate NRR % (TTM)" sub="vs Budget" legend={<ChartLegendStd />}>
+        <ChartCard title="Enterprise NRR % (TTM)" sub="vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={220}>
             <ComposedChart data={QD.nrr} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.9, 1.15]} />
@@ -166,12 +166,12 @@ export default function PageCorp({ QD, B, FY26 }) {
       <SectionHeader title="Enterprise Detail" />
       <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <BvATable rows={[
-          { lbl: 'Corporate ARR (EOP)',    a25: corp25,      a26: corp26,      b26: B.corpARR.slice(0, 4), fy: FY26.corpARR, fyb: B.corpARR[4], h: true },
+          { lbl: 'Enterprise ARR (EOP)',    a25: corp25,      a26: corp26,      b26: B.corpARR.slice(0, 4), fy: FY26.corpARR, fyb: B.corpARR[4], h: true },
           { lbl: 'New Logo ARR',           a25: newCorp25,   a26: newCorp26,   b26: [null, null, null, null], fy: B.corpNewLogo, fyb: B.corpNewLogo },
           { lbl: 'Expansion ARR',          a25: expCorp25,   a26: expCorp26,   b26: [null, null, null, null], fy: B.corpExp,     fyb: B.corpExp     },
           { lbl: 'Contraction ARR',        a25: contrCorp25, a26: contrCorp26, b26: [null, null, null, null], fy: null,          fyb: null, inv: true },
-          { lbl: 'Corporate NRR % (TTM)', a25: nrr25,       a26: nrr26,       b26: B.nrr.slice(0, 4),     fy: FY26.nrr,     fyb: B.nrr[4], f: fp },
-          { lbl: 'Revenue (Corporate)',   a25: [null,   null,   null,   null],       a26: QD.corpPL.map(d => d.rev),   b26: [null, null, null, null], fy: QD.corpPL.reduce((s, d) => s + (d.rev || 0), 0),   fyb: null, h: true },
+          { lbl: 'Enterprise NRR % (TTM)', a25: nrr25,       a26: nrr26,       b26: B.nrr.slice(0, 4),     fy: FY26.nrr,     fyb: B.nrr[4], f: fp },
+          { lbl: 'Revenue (Enterprise)',   a25: [null,   null,   null,   null],       a26: QD.corpPL.map(d => d.rev),   b26: [null, null, null, null], fy: QD.corpPL.reduce((s, d) => s + (d.rev || 0), 0),   fyb: null, h: true },
           { lbl: 'Op Income (Corp)',      a25: [null,   null,   null,   null],       a26: QD.corpPL.map(d => d.opInc), b26: [null, null, null, null], fy: QD.corpPL.reduce((s, d) => s + (d.opInc || 0), 0), fyb: null, inv: true },
           { lbl: 'CAC Payback T3M (mo)', a25: [null,   null,   null,   null],       a26: QD.corpCAC.map(d => d.v),    b26: [null, null, null, null], fy: QD.corpCAC.filter(d => d.v != null).slice(-1)[0]?.v ?? null, fyb: null, inv: true, f: fn },
         ]} />

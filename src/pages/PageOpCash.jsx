@@ -86,7 +86,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Corporate NRR % (TTM)" sub="Quarterly vs Budget" legend={<ChartLegendStd />}>
+        <ChartCard title="Enterprise NRR % (TTM)" sub="Quarterly vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={220}>
             <ComposedChart data={QD.nrr} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.9, 1.15]} />
