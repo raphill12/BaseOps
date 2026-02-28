@@ -99,17 +99,11 @@ export default function App() {
         padding: '14px 28px', borderBottom: `1px solid ${C.bdr}`,
         background: C.surf, position: 'sticky', top: 0, zIndex: 100,
       }}>
-        {/* Logo + title */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 32, height: 32, background: C.amb, borderRadius: 8,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#fff',
-          }}>BO</div>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-.3px' }}>Base Ops</div>
-            <div style={{ fontSize: 11, color: C.txt2 }}>Financial Dashboard · 2025–2026</div>
-          </div>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <img src="/logo.jpg" alt="Base Operations"
+            style={{ height: 38, borderRadius: 6, background: '#fff', padding: '3px 10px', display: 'block' }} />
+          <div style={{ fontSize: 11, color: C.txt3 }}>Financial Dashboard · 2025–2026</div>
         </div>
 
         {/* Legend + status badge */}
