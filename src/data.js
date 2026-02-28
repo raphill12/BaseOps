@@ -40,24 +40,24 @@ function parseNum(v) {
 /** Map from JS key → label string to look for in Col A of Act_Data sheet. */
 export const ACT_LABELS = {
   totalARR:     'Total ARR',
-  corpARR:      'Enterprise ARR',
+  corpARR:      'Corporate ARR',
   fedARR:       'Federal ARR',
   fedTCV:       'Federal TCV',
-  newCorpARR:   'New Enterprise ARR',
-  expCorpARR:   'Expansion Enterprise ARR',
-  contrCorpARR: 'Contraction ARR (Enterprise)',
+  newCorpARR:   'New Corporate ARR',
+  expCorpARR:   'Expansion Corporate ARR',
+  contrCorpARR: 'Contraction ARR (Corporate)',
   newFedARR:    'New Logo ARR (Federal)',
   expFedARR:    'Expansion ARR (Federal)',
   revenue:      'Revenue',
   opex:         'Operating Expenses',
   endCash:      'Ending Cash',
   gmPct:        'Gross Margin',
-  nrrPct:       'Enterprise NRR %',
+  nrrPct:       'Corporate NRR %',
   cashBurn:     'Cash Burn',
   headcount:    'Headcount',
-  corpRev:      'Revenue (Enterprise)',
-  corpOpEx:     'Operating Expenses (Enterprise)',
-  corpOpInc:    'Operating Income (Enterprise)',
+  corpRev:      'Revenue (Corporate)',
+  corpOpEx:     'Operating Expenses (Corporate)',
+  corpOpInc:    'Operating Income (Corporate)',
   cacPayback:   'CAC Payback',
   fedRev:       'Revenue (Federal)',
   fedOpEx:      'Operating Expenses (Federal)',
@@ -208,7 +208,7 @@ export function parseLTInputs(csv) {
   // Metric label → JS key lookup (substring match, case-insensitive)
   const LT_METRICS = [
     { key: 'totalARR',   match: ['total arr'] },
-    { key: 'corpARR',    match: ['enterprise arr', 'corp arr'] },
+    { key: 'corpARR',    match: ['corporate arr', 'corp arr'] },
     { key: 'fedARR',     match: ['federal arr', 'fed arr'] },
     { key: 'fedTCV',     match: ['federal tcv', 'fed tcv'] },
     { key: 'newCorpARR', match: ['new corp', 'new logo'] },
@@ -244,7 +244,7 @@ export function parseLTInputs(csv) {
 
 /** Map from JS key → array of label strings to search for in Col A of Bud_Data. */
 export const BUD_LABELS = {
-  corpARR:     ['enterprise arr', 'corp arr'],
+  corpARR:     ['corporate arr', 'corp arr'],
   fedARR:      ['federal arr', 'fed arr'],
   revenue:     ['revenue'],
   opex:        ['operating expenses', 'opex'],
@@ -252,7 +252,7 @@ export const BUD_LABELS = {
   gmPct:       ['gross margin'],
   nrr:         ['nrr'],
   fedTCV:      ['federal tcv', 'fed tcv'],
-  corpNewLogo: ['new logo', 'new enterprise arr', 'new corp'],
+  corpNewLogo: ['new logo', 'new corporate arr', 'new corp'],
   corpExp:     ['expansion arr', 'expansion corp'],
 };
 
