@@ -1,7 +1,7 @@
 import { ComposedChart, BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, fpc, vp, vf, q26vals } from '../utils.js';
-import { Card, SectionHeader, ChartCard, ChartLegendStd, LegendDot, WaterfallChart, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
+import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, LegendDot, WaterfallChart, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
 export default function PageRevenue({ QD, B, FY26 }) {
   const corp26 = q26vals(QD.corpARR);
@@ -27,8 +27,22 @@ export default function PageRevenue({ QD, B, FY26 }) {
     { q: 'Q4 26F', val: arr25[3] ? (arr26[3] / arr25[3]) - 1 : null },
   ].filter(d => d.val != null);
 
+  const yoyQ4 = arr25[3] ? arr26[3] / arr25[3] - 1 : null;
+
   return (
     <div>
+      <MdaBar
+        title="Revenue & ARR"
+        scope="2025 Actual · 2026 Actual/Forecast vs Budget"
+        bullets={[
+          { label: 'Total ARR (exit)',   value: f$(FY26.totalARR), note: `${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget`, status: FY26.totalARR >= B.totalARR[4] ? 'good' : 'bad' },
+          { label: 'Corp ARR (exit)',    value: f$(FY26.corpARR),  note: `${vf(vp(FY26.corpARR, B.corpARR[4]))} vs budget`,   status: FY26.corpARR  >= B.corpARR[4]  ? 'good' : 'bad' },
+          { label: 'Revenue',           value: f$(FY26.revenue),  note: `${vf(vp(FY26.revenue, B.revenue[4]))} vs budget`,   status: FY26.revenue  >= B.revenue[4]  ? 'good' : 'bad' },
+          { label: 'YoY ARR (Q4)',      value: yoyQ4 != null ? fp(yoyQ4) : '—', note: 'vs Q4 25A', status: yoyQ4 != null && yoyQ4 > 0 ? 'good' : 'neutral' },
+          { label: 'Corp NRR (exit)',   value: fp(FY26.nrr),      note: `budget ${fp(B.nrr[4])}`,                             status: FY26.nrr      >= B.nrr[4]      ? 'good' : 'warn' },
+          { label: 'Fed TCV',           value: f$(FY26.fedTCV),   note: `budget ${f$(B.fedTCV[4] ?? 2250000)}`,               status: FY26.fedTCV   >= (B.fedTCV[4] ?? 2250000) ? 'good' : 'warn' },
+        ]}
+      />
       <SectionHeader title="Revenue & ARR · 2025A & 2026A/F vs Budget" />
 
       {/* KPI cards */}

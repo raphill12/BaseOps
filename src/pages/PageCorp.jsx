@@ -1,7 +1,7 @@
 import { ComposedChart, BarChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, fpc, fn, vp, vf, q26vals } from '../utils.js';
-import { Card, SectionHeader, ChartCard, ChartLegendStd, LegendDot, WaterfallChart, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
+import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, LegendDot, WaterfallChart, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
 export default function PageCorp({ QD, B, FY26 }) {
   const corp26 = q26vals(QD.corpARR);
@@ -27,8 +27,26 @@ export default function PageCorp({ QD, B, FY26 }) {
     { q: 'Q4 26F', val: corp25[3] ? (corp26[3] / corp25[3]) - 1 : null },
   ].filter(d => d.val != null);
 
+  const cacLatest = QD.corpCAC.filter(d => d.v != null).slice(-1)[0]?.v;
+  const yoyQ4Corp = corp25[3] ? corp26[3] / corp25[3] - 1 : null;
+  // Full-year new + expansion bookings YTD (cumulative)
+  const newArrFY  = newCorp26.reduce((s, v) => s + (v || 0), 0) + newCorp25.reduce((s, v) => s + (v || 0), 0) * 0; // use 26 only
+  const expArrFY  = expCorp26.reduce((s, v) => s + (v || 0), 0);
+
   return (
     <div>
+      <MdaBar
+        title="Enterprise (Corporate) Business"
+        scope="2025 Actual · 2026 Actual/Forecast vs Budget"
+        bullets={[
+          { label: 'Corp ARR (exit)',    value: f$(FY26.corpARR), note: `${vf(vp(FY26.corpARR, B.corpARR[4]))} vs budget`,  status: FY26.corpARR >= B.corpARR[4] ? 'good' : 'bad'  },
+          { label: 'YoY Corp ARR (Q4)', value: yoyQ4Corp != null ? fp(yoyQ4Corp) : '—', note: 'vs Q4 25A exit',            status: yoyQ4Corp != null && yoyQ4Corp > 0 ? 'good' : 'neutral' },
+          { label: 'Corp NRR (exit)',   value: fp(FY26.nrr),     note: `budget ${fp(B.nrr[4])}`,                            status: FY26.nrr >= B.nrr[4] ? 'good' : 'warn'        },
+          { label: 'New Logo ARR',      value: f$(newArrFY),     note: `target ${f$(B.corpNewLogo)}`,                       status: newArrFY >= B.corpNewLogo ? 'good' : newArrFY >= B.corpNewLogo * 0.8 ? 'warn' : 'bad' },
+          { label: 'Expansion ARR',     value: f$(expArrFY),     note: `target ${f$(B.corpExp)}`,                           status: expArrFY >= B.corpExp ? 'good' : expArrFY >= B.corpExp * 0.8 ? 'warn' : 'bad' },
+          { label: 'CAC Payback',       value: cacLatest ? `${cacLatest.toFixed(1)} mo` : '—', note: 'T3M rolling',        status: cacLatest == null ? 'neutral' : cacLatest <= 12 ? 'good' : cacLatest <= 18 ? 'warn' : 'bad' },
+        ]}
+      />
       <SectionHeader title="Enterprise (Corporate) · 2025A & 2026A/F" />
 
       {/* KPI cards */}

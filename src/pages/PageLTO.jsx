@@ -1,7 +1,7 @@
 import { ComposedChart, BarChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp } from '../utils.js';
-import { SectionHeader, ChartCard, LegendDot, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
+import { MdaBar, SectionHeader, ChartCard, LegendDot, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
 // ─── Long-Term Outlook ──────────────────────────────────────────────────────
 // Annual summary: 2025 Actual + 2026 A/F + 2027-2030 Forecast.
@@ -9,7 +9,7 @@ import { SectionHeader, ChartCard, LegendDot, TOOLTIP_STYLE, GRID, XSTYLE, YSTYL
 
 const OUT_YEARS = ['2027', '2028', '2029', '2030'];
 
-export default function PageLTO({ QD, B, ltYears, ltForecast }) {
+export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
   // Primary source: Act_Data monthly columns aggregated to annual in computeFromRaw.
   // Fallback: LT_Inputs sheet (manual annual entries). Act_Data always wins per metric+year.
   const lt = {};
@@ -132,8 +132,35 @@ export default function PageLTO({ QD, B, ltYears, ltForecast }) {
 
   const hasLT = hasOuterYears;
 
+  // MDA computations — derived from arrData + ltYears
+  const arr25Total = (arrData[0]?.corp || 0) + (arrData[0]?.fed || 0);
+  const arr26Total = (arrData[1]?.corp || 0) + (arrData[1]?.fed || 0);
+  const arrLast    = arrData[arrData.length - 1];
+  const arrLastTot = arrLast ? (arrLast.corp || 0) + (arrLast.fed || 0) : null;
+  // CAGR from 2025A to last available year
+  const ltYearCount = arrData.length - 1;  // years from 2025 to last year
+  const cagr = (arr25Total && arrLastTot && ltYearCount > 1)
+    ? Math.pow(arrLastTot / arr25Total, 1 / ltYearCount) - 1
+    : null;
+  const mdaRev25 = ann(QD.rev, 0);
+  const mdaRev26 = ann(QD.rev, 4);
+  const revLast = hasLT ? lt.revenue?.[OUT_YEARS[OUT_YEARS.length - 1]] : null;
+
   return (
     <div>
+      <MdaBar
+        title="Long-Term Outlook"
+        scope={hasLT ? '2025A · 2026A/F · 2027–2030 Forecast' : '2025A · 2026A/F — add 2027–2030 in LT_Inputs to extend'}
+        bullets={[
+          { label: 'FY25A Total ARR',   value: f$(arr25Total), note: 'base year',                                   status: 'neutral' },
+          { label: 'FY26F Total ARR',   value: f$(arr26Total), note: arr25Total ? `${fp(arr26Total / arr25Total - 1)} YoY` : undefined, status: arr26Total > arr25Total ? 'good' : 'warn' },
+          ...(hasLT && arrLastTot ? [{ label: `${arrLast.yr} ARR`, value: f$(arrLastTot), note: cagr ? `${fp(cagr)} CAGR from 2025A` : undefined, status: 'good' }] : []),
+          { label: 'FY25A Revenue',     value: f$(mdaRev25), note: 'annual actual',   status: 'neutral' },
+          { label: 'FY26F Revenue',     value: f$(mdaRev26), note: mdaRev25 ? `${fp(mdaRev26 / mdaRev25 - 1)} YoY` : undefined, status: mdaRev26 > mdaRev25 ? 'good' : 'warn' },
+          ...(hasLT && revLast ? [{ label: `${OUT_YEARS[OUT_YEARS.length - 1]}F Revenue`, value: f$(revLast), note: 'LT forecast', status: 'neutral' }] : []),
+          ...(cashOutDate ? [{ label: 'Cash-Out Date', value: cashOutDate, note: 'from LT model', status: 'neutral' }] : []),
+        ]}
+      />
       <SectionHeader
         title="Long-Term Outlook · Annual Summary"
         right={hasLT ? '2025A · 2026A/F · 2027–2030 Forecast' : '2025 Actual vs 2026 Annual Forecast — add 2027–2030 rows to LT_Inputs sheet to extend'}

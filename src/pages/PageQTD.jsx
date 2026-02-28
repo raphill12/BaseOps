@@ -1,6 +1,6 @@
 import { C } from '../config.js';
 import { f$, fp, fpc, vp, vf } from '../utils.js';
-import { Card, SectionHeader } from '../ui.jsx';
+import { Card, MdaBar, SectionHeader } from '../ui.jsx';
 
 // ─── QTD Snapshot Page ─────────────────────────────────────────────────────
 
@@ -125,8 +125,30 @@ export default function PageQTD({ QD, B }) {
     { metric: 'Cash Burn (MTD)',          qtd: qtd.cashBurn, fcst: null,            target: null,      fmt: '$', inv: true   },
   ];
 
+  // Count how many quarter forecasts are on/above target
+  const fcstChecks = [
+    qtd.qCorpARRFcst  >= qCorpBud,
+    qtd.qRevFcst      >= qRevBud,
+    qtd.qGmFcst       >= qGmBud,
+    qtd.qCashFcst     >= qCashBud,
+    qtd.qOpexFcst     <= qOpexBud,
+  ].filter(Boolean).length;
+  const opxQDelta = qtd.qOpexFcst - qOpexBud;
+
   return (
     <div>
+      <MdaBar
+        title={`${curQLabel} QTD Snapshot`}
+        scope={`${qtd.moComplete} of 3 months complete · ${fcstChecks}/5 key forecasts on/above target`}
+        bullets={[
+          { label: 'Corp ARR forecast',  value: f$(qtd.qCorpARRFcst), note: `${vf(vp(qtd.qCorpARRFcst, qCorpBud))} vs target`,  status: qtd.qCorpARRFcst >= qCorpBud  ? 'good' : 'bad'  },
+          { label: 'Revenue forecast',   value: f$(qtd.qRevFcst),     note: `${vf(vp(qtd.qRevFcst, qRevBud))} vs target`,       status: qtd.qRevFcst     >= qRevBud   ? 'good' : 'bad'  },
+          { label: 'Gross Margin fcst',  value: fp(qtd.qGmFcst),      note: `budget ${fp(qGmBud)}`,                              status: qtd.qGmFcst      >= qGmBud    ? 'good' : 'warn' },
+          { label: 'Ending Cash fcst',   value: f$(qtd.qCashFcst),    note: `${vf(vp(qtd.qCashFcst, qCashBud))} vs target`,     status: qtd.qCashFcst    >= qCashBud  ? 'good' : 'bad'  },
+          { label: 'OpEx forecast',      value: f$(qtd.qOpexFcst),    note: `${f$(Math.abs(opxQDelta))} ${opxQDelta <= 0 ? 'under' : 'over'} budget`, status: opxQDelta <= 0 ? 'good' : 'bad' },
+          { label: 'Corp NRR (latest)',  value: fp(qtd.nrr),          note: `target ${fp(qNrrBud)}`,                             status: qtd.nrr          >= qNrrBud   ? 'good' : 'warn' },
+        ]}
+      />
       <SectionHeader title="QTD Snapshot" right={`${curQLabel} · ${qtd.moComplete} of 3 months complete`} />
 
       {/* KPI headline cards */}

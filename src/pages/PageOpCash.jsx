@@ -1,7 +1,7 @@
 import { ComposedChart, BarChart, Bar, Line, XAxis, YAxis, Tooltip, ReferenceLine, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, vp, vf, q26vals } from '../utils.js';
-import { Card, SectionHeader, ChartCard, ChartLegendStd, LegendDot, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
+import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, LegendDot, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
 export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
   const gm26   = q26vals(QD.gm);
@@ -18,8 +18,23 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
   // Latest headcount from live data (Dec-26F exit)
   const fy26HC = QD.hc[QD.hc.length - 1]?.v ?? '—';
 
+  const opxDelta = FY26.opex - B.opex[4];
+  const latestBurn = QD.monthlyBurn[QD.monthlyBurn.length - 1]?.v;
+
   return (
     <div>
+      <MdaBar
+        title="Operating Performance & Cash"
+        scope="2025 Actual · 2026 Actual/Forecast vs Budget"
+        bullets={[
+          { label: 'OpEx (FY26F)',        value: f$(FY26.opex),  note: `${f$(Math.abs(opxDelta))} ${opxDelta <= 0 ? 'under' : 'over'} budget`, status: opxDelta <= 0 ? 'good' : 'bad' },
+          { label: 'Gross Margin (avg)',  value: fp(FY26.gm),    note: `budget ${fp(B.gm[4])}`,                                                  status: FY26.gm   >= B.gm[4]   ? 'good' : 'warn' },
+          { label: 'Ending Cash (Dec)',   value: f$(FY26.cash),  note: `${vf(vp(FY26.cash, B.cash[4]))} vs budget`,                              status: FY26.cash >= B.cash[4] ? 'good' : 'bad'  },
+          { label: 'Cash-Out Date',       value: cashOutDate || '—', note: 'from LT model',                                                      status: 'neutral' },
+          { label: 'Headcount (exit)',    value: `${fy26HC} FTE`, note: 'Dec-26F',                                                               status: 'neutral' },
+          { label: 'Latest Burn',         value: latestBurn != null ? f$(latestBurn) : '—', note: 'MTD · negative = inflow',                     status: latestBurn != null && latestBurn > 0 ? 'warn' : 'neutral' },
+        ]}
+      />
       <SectionHeader title="Operating & Cash · 2025A & 2026A/F vs Budget" />
 
       {/* KPI cards */}

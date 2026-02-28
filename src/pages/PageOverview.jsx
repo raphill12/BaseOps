@@ -1,7 +1,7 @@
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, vp, vf, q26vals } from '../utils.js';
-import { Card, SectionHeader, ChartCard, ChartLegendStd, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
+import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
 export default function PageOverview({ QD, B, FY26 }) {
   // 2025 quarterly actuals derived from live QD series (not hardcoded)
@@ -28,8 +28,29 @@ export default function PageOverview({ QD, B, FY26 }) {
   const cash26 = q26vals(QD.cash);
   const nrr26  = q26vals(QD.nrr);
 
+  const onTrack = [
+    FY26.totalARR >= B.totalARR[4],
+    FY26.revenue  >= B.revenue[4],
+    FY26.gm       >= B.gm[4],
+    FY26.opex     <= B.opex[4],
+    FY26.cash     >= B.cash[4],
+  ].filter(Boolean).length;
+  const opxDelta = FY26.opex - B.opex[4];
+
   return (
     <div>
+      <MdaBar
+        title="FY 2026 Full-Year Outlook"
+        scope={`Jan-26 Actual · Feb–Dec Forecast · ${onTrack}/5 headline KPIs on/above budget`}
+        bullets={[
+          { label: 'Total ARR (exit)',  value: f$(FY26.totalARR), note: `${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget`, status: FY26.totalARR >= B.totalARR[4] ? 'good' : 'bad' },
+          { label: 'Revenue',          value: f$(FY26.revenue),  note: `${vf(vp(FY26.revenue,  B.revenue[4]))} vs budget`,  status: FY26.revenue  >= B.revenue[4]  ? 'good' : 'bad' },
+          { label: 'Gross Margin',     value: fp(FY26.gm),       note: `${FY26.gm >= B.gm[4] ? '+' : ''}${((FY26.gm - B.gm[4]) * 100).toFixed(1)}pp vs budget`, status: FY26.gm >= B.gm[4] ? 'good' : 'bad' },
+          { label: 'OpEx',             value: f$(FY26.opex),     note: `${f$(Math.abs(opxDelta))} ${opxDelta <= 0 ? 'under' : 'over'} budget`, status: opxDelta <= 0 ? 'good' : 'bad' },
+          { label: 'Ending Cash',      value: f$(FY26.cash),     note: `${vf(vp(FY26.cash, B.cash[4]))} vs budget`,         status: FY26.cash     >= B.cash[4]     ? 'good' : 'bad' },
+          { label: 'Corp NRR (exit)',  value: fp(FY26.nrr),      note: `budget ${fp(B.nrr[4])}`,                             status: FY26.nrr      >= B.nrr[4]      ? 'good' : 'warn' },
+        ]}
+      />
       <SectionHeader title="FY 2026 Forecast vs Budget" right="Jan-26A · Feb–Dec 26F" />
 
       {/* KPI cards */}

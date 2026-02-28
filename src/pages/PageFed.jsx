@@ -1,7 +1,7 @@
 import { ComposedChart, BarChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, vp, vf, q26vals } from '../utils.js';
-import { Card, SectionHeader, ChartCard, ChartLegendStd, LegendDot, WaterfallChart, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$ } from '../ui.jsx';
+import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, LegendDot, WaterfallChart, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$ } from '../ui.jsx';
 
 export default function PageFed({ QD, B, FY26 }) {
   const fed26 = q26vals(QD.fedARR);
@@ -18,8 +18,20 @@ export default function PageFed({ QD, B, FY26 }) {
   // Federal TCV by quarter — derived from live data
   const fedTCVQtly = QD.fedTCVQ;
 
+  const fedTCVBud = B.fedTCV[4] ?? 2250000;
+
   return (
     <div>
+      <MdaBar
+        title="Federal Business Unit"
+        scope="2025 Actual · 2026 Actual/Forecast vs Budget"
+        bullets={[
+          { label: 'Federal ARR (exit)',  value: f$(FY26.fedARR),  note: `${vf(vp(FY26.fedARR, B.fedARR[4]))} vs budget`,   status: FY26.fedARR  >= B.fedARR[4] ? 'good' : 'bad'  },
+          { label: 'Federal TCV (FY26)', value: f$(FY26.fedTCV),  note: `${vf(vp(FY26.fedTCV, fedTCVBud))} vs budget`,      status: FY26.fedTCV  >= fedTCVBud   ? 'good' : FY26.fedTCV >= fedTCVBud * 0.8 ? 'warn' : 'bad' },
+          { label: 'Federal Revenue',    value: f$(fedRevFY),     note: 'FY26 forecast',                                     status: 'neutral'                                       },
+          { label: 'Federal Op Income',  value: f$(fedOpIncFY),   note: 'investment phase',                                  status: 'neutral'                                       },
+        ]}
+      />
       <SectionHeader title="Federal Breakout · 2025A & 2026A/F" />
 
       {/* KPI cards */}
