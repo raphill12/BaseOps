@@ -46,7 +46,7 @@ export default function PageCorp({ QD, B, FY26 }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 22 }}>
         <Card label="Enterprise ARR · FY26F EOP"   value={f$(FY26.corpARR)} meta={`Budget ${f$(B.corpARR[4])}`} pill={vf(vp(FY26.corpARR, B.corpARR[4]))} pillGood={FY26.corpARR >= B.corpARR[4]} color={C.blue} />
         <Card label="Y/Y Enterprise ARR · Q4 26F"  value={fp(corp25[3] ? corp26[3] / corp25[3] - 1 : null)} meta="vs Q4 25A" pill={corp25[3] ? `▲ ${fp(corp26[3] / corp25[3] - 1)}` : '—'} pillGood={true} color={C.grn}  />
-        <Card label="Enterprise NRR · TTM Q4 26F"  value={fp(FY26.nrr)}    meta={`Budget ${fp(B.nrr[4])}`}       pill={fpc(FY26.nrr - B.nrr[4])}           pillGood={FY26.nrr >= B.nrr[4]}         color={C.pur}  />
+        <Card label="Enterprise NRR · TTM Q4 26F"  value={fp(FY26.nrr)}    meta={`Budget ${fp(B.nrr[4])}`}       pill={fpc(FY26.nrr - B.nrr[4])}           pillGood={FY26.nrr >= B.nrr[4]}         color={C.blue} />
         <Card label="CAC Payback · Latest"   value={QD.corpCAC.filter(d => d.v != null).slice(-1)[0]?.v ? `${QD.corpCAC.filter(d => d.v != null).slice(-1)[0].v.toFixed(1)} mo` : '—'} meta="T3M rolling" color={C.amb} />
       </div>
 

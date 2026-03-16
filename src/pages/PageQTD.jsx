@@ -102,8 +102,8 @@ export default function PageQTD({ QD, B }) {
   const topCards = [
     { lbl: `Enterprise ARR · ${curQ}F`,     val: f$(qtd.qCorpARRFcst), bud: f$(qCorpBud),  var: vf(vp(qtd.qCorpARRFcst, qCorpBud)),  good: qtd.qCorpARRFcst >= qCorpBud,  color: C.blue },
     { lbl: `Revenue · ${curQ}F`,      val: f$(qtd.qRevFcst),     bud: f$(qRevBud),   var: vf(vp(qtd.qRevFcst, qRevBud)),       good: qtd.qRevFcst >= qRevBud,       color: C.grn  },
-    { lbl: `Gross Margin · ${curQ}F`, val: fp(qtd.qGmFcst),      bud: fp(qGmBud),    var: fpc(qtd.qGmFcst - qGmBud),           good: qtd.qGmFcst >= qGmBud,         color: C.cyn  },
-    { lbl: `Enterprise NRR · ${curQ}F`,     val: fp(qtd.qNrrFcst),     bud: fp(qNrrBud),   var: fpc(qtd.qNrrFcst - qNrrBud),         good: qtd.qNrrFcst >= qNrrBud,       color: C.pur  },
+    { lbl: `Gross Margin · ${curQ}F`, val: fp(qtd.qGmFcst),      bud: fp(qGmBud),    var: fpc(qtd.qGmFcst - qGmBud),           good: qtd.qGmFcst >= qGmBud,         color: C.blue },
+    { lbl: `Enterprise NRR · ${curQ}F`,     val: fp(qtd.qNrrFcst),     bud: fp(qNrrBud),   var: fpc(qtd.qNrrFcst - qNrrBud),         good: qtd.qNrrFcst >= qNrrBud,       color: C.blue },
     { lbl: `Ending Cash · ${curQ}F`,  val: f$(qtd.qCashFcst),    bud: f$(qCashBud),  var: vf(vp(qtd.qCashFcst, qCashBud)),     good: qtd.qCashFcst >= qCashBud,     color: C.amb  },
   ];
 

@@ -35,8 +35,8 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
   // Color per bar index: 0=2025A (green), 1=2026A/F (blue or indigo), 2+=outer forecast (indigo)
   const barColor = i => i === 0 ? C.act25 : i === 1 ? col26 : C.fct26;
 
-  // Fed (lighter shades for stacked layering)
-  const fedColor = i => i === 0 ? C.lgrn : i === 1 ? C.cyn : C.cyn;
+  // Fed (same blue as corporate for stacked layering)
+  const fedColor = () => C.blue;
 
   // Outer-year values for a metric key — only include years with non-null data
   const outerBars = (key) =>
@@ -164,12 +164,12 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
         <ChartCard title="Total ARR (Year-End EOP)" sub="Enterprise + Federal · stacked"
           legend={<>
             <LegendDot color={C.act25}   label="2025A Enterprise" />
-            <LegendDot color={C.lgrn}    label="2025A Fed" />
+            <LegendDot color={C.blue}    label="2025A Fed" />
             <LegendDot color={col26}     label={`${lbl26} Enterprise`} />
-            <LegendDot color={C.cyn}             label={`${lbl26} Fed`} />
+            <LegendDot color={C.blue}            label={`${lbl26} Fed`} />
             {hasLT && <LegendDot color={C.fct26}  label="Forecast Enterprise" />}
-            {hasLT && <LegendDot color={C.cyn}    label="Forecast Fed" />}
-            <LegendDot color={C.pur}     label="YoY Growth" line />
+            {hasLT && <LegendDot color={C.blue}   label="Forecast Fed" />}
+            <LegendDot color={C.blue}    label="YoY Growth" line />
             <LegendDot color={C.budLine} label="FY26 Budget" line dashed />
           </>}>
           <ResponsiveContainer width="100%" height={H}>
@@ -194,25 +194,25 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               </Bar>
               <Line yAxisId="left"  dataKey="bud" name="FY26 Budget" stroke={C.budLine}
                 strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 4 }} connectNulls={false} />
-              <Line yAxisId="right" dataKey="yoy" name="YoY Growth" stroke={C.pur}
-                strokeWidth={2} dot={{ fill: C.pur, r: 4 }} connectNulls />
+              <Line yAxisId="right" dataKey="yoy" name="YoY Growth" stroke={C.blue}
+                strokeWidth={2} dot={{ fill: C.blue, r: 4 }} connectNulls />
             </ComposedChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard title="Enterprise ARR Bookings · Annual" sub="New Logo & Expansion (FY totals)"
           legend={<>
-            <LegendDot color={C.blue} label="New Logo ARR" />
-            <LegendDot color={C.pur}  label="Expansion ARR" />
+            <LegendDot color={C.act26} label="New Logo ARR" />
+            <LegendDot color={C.blue}  label="Expansion ARR" />
           </>}>
           <ResponsiveContainer width="100%" height={H}>
             <BarChart data={booksData} margin={MARGIN} barGap={4} barCategoryGap="35%">
               {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
-              <Bar dataKey="newC" name="New Logo ARR"  fill={C.blue} radius={[3, 3, 0, 0]} barSize={BSIZE2}>
+              <Bar dataKey="newC" name="New Logo ARR"  fill={C.act26} radius={[3, 3, 0, 0]} barSize={BSIZE2}>
                 <LabelList dataKey="newC" position="top" formatter={v => f$(v)} style={lblStyle} />
               </Bar>
-              <Bar dataKey="expC" name="Expansion ARR" fill={C.pur}  radius={[3, 3, 0, 0]} barSize={BSIZE2}>
+              <Bar dataKey="expC" name="Expansion ARR" fill={C.blue}  radius={[3, 3, 0, 0]} barSize={BSIZE2}>
                 <LabelList dataKey="expC" position="top" formatter={v => f$(v)} style={lblStyle} />
               </Bar>
             </BarChart>
@@ -306,7 +306,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="Gross Margin %" radius={[3, 3, 0, 0]}>
-                {gmData.map((_, i) => <Cell key={i} fill={i === 0 ? C.cyn : i === 1 ? col26 : C.fct26} />)}
+                {gmData.map((_, i) => <Cell key={i} fill={i === 0 ? C.blue : i === 1 ? col26 : C.fct26} />)}
                 <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={lblStyle} />
               </Bar>
               <BudLine />

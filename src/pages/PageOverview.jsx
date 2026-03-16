@@ -15,9 +15,9 @@ export default function PageOverview({ QD, B, FY26 }) {
   const cards = [
     { lbl: 'Total ARR · FY26F EOP',    val: f$(FY26.totalARR), meta: `Budget ${f$(B.totalARR[4])}`, pill: vf(vp(FY26.totalARR, B.totalARR[4])), good: FY26.totalARR >= B.totalARR[4], color: C.blue },
     { lbl: 'Revenue · FY26F',           val: f$(FY26.revenue),  meta: `Budget ${f$(B.revenue[4])}`,  pill: vf(vp(FY26.revenue,  B.revenue[4])),  good: FY26.revenue  >= B.revenue[4],  color: C.grn  },
-    { lbl: 'Gross Margin · FY26F avg',  val: fp(FY26.gm),       meta: `Budget ${fp(B.gm[4])}`,       pill: vf(vp(FY26.gm,       B.gm[4])),       good: FY26.gm       >= B.gm[4],       color: C.cyn  },
+    { lbl: 'Gross Margin · FY26F avg',  val: fp(FY26.gm),       meta: `Budget ${fp(B.gm[4])}`,       pill: vf(vp(FY26.gm,       B.gm[4])),       good: FY26.gm       >= B.gm[4],       color: C.blue },
     { lbl: 'OpEx · FY26F total',        val: f$(FY26.opex),     meta: `Budget ${f$(B.opex[4])}`,     pill: vf(vp(FY26.opex,     B.opex[4])),     good: FY26.opex     <= B.opex[4],     color: C.amb  },
-    { lbl: 'Ending Cash · Dec-26F',     val: f$(FY26.cash),     meta: `Budget ${f$(B.cash[4])}`,     pill: vf(vp(FY26.cash,     B.cash[4])),     good: FY26.cash     >= B.cash[4],     color: C.pur  },
+    { lbl: 'Ending Cash · Dec-26F',     val: f$(FY26.cash),     meta: `Budget ${f$(B.cash[4])}`,     pill: vf(vp(FY26.cash,     B.cash[4])),     good: FY26.cash     >= B.cash[4],     color: C.blue },
   ];
 
   // Extract live 2026 quarterly values from QD series

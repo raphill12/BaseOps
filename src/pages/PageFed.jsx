@@ -54,7 +54,7 @@ export default function PageFed({ QD, B, FY26 }) {
         </ChartCard>
 
         <ChartCard title="Fed ARR Waterfall · Q4 25A → FY26 Exit"
-          legend={<><LegendDot color={C.act26} label="Anchor" /><LegendDot color={C.grn} label="New Logo" /><LegendDot color={C.cyn} label="Expansion" /></>}>
+          legend={<><LegendDot color={C.act26} label="Anchor" /><LegendDot color={C.grn} label="New Logo" /><LegendDot color={C.blue} label="Expansion" /></>}>
           <WaterfallChart data={QD.fedWaterfall} height={240} />
         </ChartCard>
       </div>

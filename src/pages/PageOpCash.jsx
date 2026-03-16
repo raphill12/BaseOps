@@ -33,9 +33,9 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 10, marginBottom: 22 }}>
         <Card label="OpEx · FY26F total"       value={f$(FY26.opex)} meta={`Budget ${f$(B.opex[4])}`} pill={vf(vp(FY26.opex, B.opex[4]))} pillGood={FY26.opex <= B.opex[4]} color={C.amb} />
-        <Card label="Ending Cash · Dec-26F"    value={f$(FY26.cash)} meta={`Budget ${f$(B.cash[4])}`} pill={vf(vp(FY26.cash, B.cash[4]))} pillGood={FY26.cash >= B.cash[4]} color={C.cyn} />
+        <Card label="Ending Cash · Dec-26F"    value={f$(FY26.cash)} meta={`Budget ${f$(B.cash[4])}`} pill={vf(vp(FY26.cash, B.cash[4]))} pillGood={FY26.cash >= B.cash[4]} color={C.blue} />
         <Card label="Gross Margin · FY26F avg" value={fp(FY26.gm)}   meta={`Budget ${fp(B.gm[4])}`}   pill={vf(vp(FY26.gm,   B.gm[4]))}   pillGood={FY26.gm   >= B.gm[4]}   color={C.grn} />
-        <Card label="Headcount · FY26F Exit"   value={`${fy26HC}`}   meta="Full-time employees"        color={C.pur} />
+        <Card label="Headcount · FY26F Exit"   value={`${fy26HC}`}   meta="Full-time employees"        color={C.blue} />
         <Card label="Cash-Out Date · Forecast" value={cashOutDate || '—'} meta="From LT model"          color={C.red} />
       </div>
 
@@ -118,7 +118,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
 
       {/* Headcount */}
       <ChartCard title="Headcount (Full-Time) · 2026F" sub="Monthly with ARR per employee"
-        legend={<><LegendDot color={C.pur} label="Headcount" /><LegendDot color={C.act26} label="ARR / HC" line /></>}>
+        legend={<><LegendDot color={C.blue} label="Headcount" /><LegendDot color={C.act26} label="ARR / HC" line /></>}>
         <ResponsiveContainer width="100%" height={200}>
           <ComposedChart data={QD.hc} margin={{ top: 20, right: 55, left: 0, bottom: 0 }}>
             {GRID}
@@ -129,7 +129,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
             <Tooltip {...TOOLTIP_STYLE} formatter={(v, name) =>
               name === 'Headcount' ? [`${Math.round(v)}`, name] : [yFmt$(v), 'ARR / HC']
             } />
-            <Bar yAxisId="left" dataKey="v" name="Headcount" fill={C.pur} radius={[3, 3, 0, 0]}>
+            <Bar yAxisId="left" dataKey="v" name="Headcount" fill={C.blue} radius={[3, 3, 0, 0]}>
               <LabelList dataKey="v" position="top" formatter={v => v || ''} style={{ fill: C.txt3, fontSize: 9 }} />
             </Bar>
             <Line yAxisId="right" dataKey="ratio" name="ARR / HC" stroke={C.act26} strokeWidth={2} dot={false} type="monotone" connectNulls={false} />
