@@ -25,7 +25,7 @@ export const C = {
 
   // Chart series
   act25:   '#85C9FF',   // 2025 actuals  → sky blue
-  act26:   '#F59E0B',   // 2026 actuals  → amber (softer than yellow)
+  act26:   '#85C9FF',   // 2026 actuals  → sky blue
   fct26:   '#9151B9',   // 2026 forecast → purple
   budLine: '#BD268E',   // budget / target line → magenta
 };
