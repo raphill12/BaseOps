@@ -23,8 +23,8 @@ export const C = {
   // Chart series
   act25:   '#85C9FF',   // 2025 actuals  → blue (tertiary)
   act26:   '#F8DC02',   // 2026 actuals  → yellow (secondary)
-  fct26:   '#FFFFFF',   // 2026 forecast → white
-  budLine: '#FFFFFF',   // budget / target line → white (dashed)
+  fct26:   '#6B7280',   // 2026 forecast → gray
+  budLine: '#6B7280',   // budget / target line → gray (dashed)
 };
 
 // ─── Google Sheets Config ──────────────────────────────────────────────────
