@@ -1,6 +1,22 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Component } from 'react';
 import { C, TABS, csvUrl } from './config.js';
 import { parseActData, parseLTInputs, computeFromRaw, FALLBACK } from './data.js';
+
+class PageErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { err: null }; }
+  static getDerivedStateFromError(err) { return { err }; }
+  render() {
+    if (this.state.err) {
+      return (
+        <div style={{ padding: 32, color: C.red, fontFamily: 'monospace', fontSize: 12 }}>
+          <strong>Page render error:</strong><br />
+          {this.state.err.message}
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 import PageQTD      from './pages/PageQTD.jsx';
 import PageOverview from './pages/PageOverview.jsx';
 import PageRevenue  from './pages/PageRevenue.jsx';
@@ -171,7 +187,7 @@ export default function App() {
 
       {/* ── Page content ── */}
       <div style={{ padding: '24px 28px', maxWidth: 1600, margin: '0 auto' }}>
-        {pages[tab]}
+        <PageErrorBoundary key={tab}>{pages[tab]}</PageErrorBoundary>
       </div>
 
       {/* ── Footer ── */}

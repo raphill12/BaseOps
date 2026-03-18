@@ -137,19 +137,22 @@ export const ChartLegendStd = () => (
 
 // ─── Waterfall Chart ───────────────────────────────────────────────────────
 
+const WF_TICK = { fill: C.txt3, fontSize: 9 };
+
 export function WaterfallChart({ data, height = 240 }) {
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} margin={{ top: 28, right: 10, left: 0, bottom: 40 }}>
+      <BarChart data={data} margin={{ top: 28, right: 10, left: 0, bottom: 5 }}>
         {GRID}
         <XAxis
           dataKey="name"
-          {...XSTYLE}
+          tick={WF_TICK}
+          axisLine={{ stroke: C.bdr }}
+          tickLine={false}
           interval={0}
           angle={-35}
           textAnchor="end"
-          tick={{ ...XSTYLE.tick, fontSize: 9 }}
-          height={50}
+          height={52}
         />
         <YAxis tickFormatter={yFmt$} {...YSTYLE} />
         <Tooltip
@@ -165,17 +168,9 @@ export function WaterfallChart({ data, height = 240 }) {
             content={({ x, y, width, index }) => {
               const d = data[index];
               if (!d) return null;
-              const label = f$(d.val);
               return (
-                <text
-                  x={x + width / 2}
-                  y={y - 8}
-                  fill={C.txt2}
-                  fontSize={9}
-                  textAnchor="middle"
-                  style={{ pointerEvents: 'none' }}
-                >
-                  {label}
+                <text x={x + width / 2} y={y - 6} fill={C.txt2} fontSize={9} textAnchor="middle">
+                  {f$(d.val)}
                 </text>
               );
             }}
