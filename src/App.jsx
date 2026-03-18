@@ -33,8 +33,15 @@ export default function App() {
       ]);
       if (!actRes.ok) throw new Error(`Act_Data fetch failed: ${actRes.status}`);
 
-      const actCsv = await actRes.text();
-      const actParsed = parseActData(actCsv);
+      // Read both bodies in parallel, then parse LT_Inputs first so its toggle
+      // date (G2) can be passed into parseActData to set the actuals cut-off.
+      const [actCsv, ltCsv] = await Promise.all([
+        actRes.text(),
+        ltRes?.ok ? ltRes.text() : Promise.resolve(null),
+      ]);
+
+      const ltParsed  = ltCsv ? parseLTInputs(ltCsv) : null;
+      const actParsed = parseActData(actCsv, ltParsed?.toggleDate ?? null);
       if (!actParsed) throw new Error('Could not parse Act_Data');
 
       // Budget is now embedded in Act_Data via "Bud" scenario rows
@@ -49,14 +56,10 @@ export default function App() {
       setLastUpdated(new Date());
       setFetchStatus('live');
 
-      // Parse LT_Inputs — cash-out date + 2027-2030 annual forecast
-      if (ltRes?.ok) {
-        const ltCsv   = await ltRes.text();
-        const ltParsed = parseLTInputs(ltCsv);
-        if (ltParsed?.cashOutDate) setCashOutDate(ltParsed.cashOutDate);
-        if (ltParsed?.ltForecast && Object.keys(ltParsed.ltForecast).length > 0)
-          setLtForecast(ltParsed.ltForecast);
-      }
+      // Propagate LT_Inputs side-data — cash-out date + 2027-2030 annual forecast
+      if (ltParsed?.cashOutDate) setCashOutDate(ltParsed.cashOutDate);
+      if (ltParsed?.ltForecast && Object.keys(ltParsed.ltForecast).length > 0)
+        setLtForecast(ltParsed.ltForecast);
     } catch (e) {
       console.warn('Live fetch failed, using fallback data:', e.message);
       setFetchStatus('error');

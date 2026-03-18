@@ -72,7 +72,7 @@ const BUD_METRIC_KEYS = [
 /** Flow metrics whose FY = sum(Q1…Q4). Others use FY = Q4 (stock/EOP). */
 const FLOW_METRICS = new Set(['revenue','opex','fedTCV','newCorpARR','expCorpARR']);
 
-export function parseActData(csv) {
+export function parseActData(csv, toggleDate = null) {
   const rows = parseCSV(csv);
   if (!rows.length) return null;
   const header = rows[0];
@@ -133,6 +133,16 @@ export function parseActData(csv) {
     months.push(h.replace(/[AF]$/, '').trim() || `M${c - startCol + 1}`);
   }
 
+  // Override isAct with the authoritative toggle date from LT_Inputs G2 if provided.
+  // All months up to and including the toggle date are actual; all after are forecast.
+  if (toggleDate) {
+    const norm = toggleDate.trim();
+    const cutIdx = months.findIndex(m => m.toLowerCase() === norm.toLowerCase());
+    if (cutIdx >= 0) {
+      for (let i = 0; i < isAct.length; i++) isAct[i] = i <= cutIdx;
+    }
+  }
+
   // ── Monthly actuals / forecast ────────────────────────────────────────────
   const monthly = {};
   for (const [key, label] of Object.entries(ACT_LABELS)) {
@@ -180,6 +190,12 @@ export function parseActData(csv) {
 export function parseLTInputs(csv) {
   const rows = parseCSV(csv);
   if (!rows.length) return null;
+
+  // ── Toggle date (G2) and current-quarter start (G3) ──────────────────────
+  // G2 = last actual month label, e.g. "Feb-26"
+  // G3 = first month of the current quarter, e.g. "Jan-26"
+  const toggleDate  = (rows[1]?.[6] || '').trim() || null;
+  const curQtrStart = (rows[2]?.[6] || '').trim() || null;
 
   // ── Cash-out date (legacy: look for a row containing "cash-out") ──────────
   let cashOutDate = null;
@@ -236,7 +252,7 @@ export function parseLTInputs(csv) {
     }
   }
 
-  return { cashOutDate, ltForecast };
+  return { cashOutDate, ltForecast, toggleDate, curQtrStart };
 }
 
 // ─── Bud_Data Sheet Parser ──────────────────────────────────────────────────
