@@ -133,9 +133,15 @@ export function parseActData(csv, toggleDate = null) {
     months.push(h.replace(/[AF]$/, '').trim() || `M${c - startCol + 1}`);
   }
 
-  // Override isAct with the authoritative toggle date from LT_Inputs G2 if provided.
-  // All months up to and including the toggle date are actual; all after are forecast.
-  if (toggleDate) {
+  // Override isAct with the toggle date from LT_Inputs G2 only when the sheet
+  // lacks explicit A/F column suffixes.  If any 2026 column carries an 'A' or 'F'
+  // suffix the headers are self-describing — trust them and skip the override so
+  // that actuals advance automatically as new months are locked in the sheet.
+  const headersAreExplicit = (header || [])
+    .slice(startCol)
+    .some(h => /[AF]$/.test((h || '').trim()) && /(26|27|28|29|30)/i.test(h));
+
+  if (toggleDate && !headersAreExplicit) {
     const norm = toggleDate.trim();
     const cutIdx = months.findIndex(m => m.toLowerCase() === norm.toLowerCase());
     if (cutIdx >= 0) {
