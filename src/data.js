@@ -125,31 +125,46 @@ export function parseActData(csv, toggleDate = null) {
     return vals;
   }
 
-  // Detect actual vs forecast from header columns (covers all months, not just 24)
+  // ── Build months array and initial isAct from column headers ────────────────
   const isAct = [], months = [];
   for (let c = startCol; c <= endCol; c++) {
     const h = (header[c] || '').trim();
-    isAct.push(h.endsWith('A') || h.match(/-25/i) !== null);
-    months.push(h.replace(/[AF]$/, '').trim() || `M${c - startCol + 1}`);
+    isAct.push(/A$/i.test(h) || /[-\s]25/i.test(h));   // case-insensitive initial pass
+    months.push(h.replace(/[AF]$/i, '').trim() || `M${c - startCol + 1}`);
   }
 
-  // ── Override isAct — priority order: ────────────────────────────────────────
-  // 1. Explicit A/F column suffixes (e.g. "Feb-26A", "Mar-26F") → most reliable
-  // 2. Pure "act" scenario rows → find last non-null month automatically
-  // 3. G2 toggle date from LT_Inputs → manual setting, last resort
+  // ── Determine actuals cut-off — 3-strategy priority ─────────────────────────
+  //
+  // Strategy 1 (most reliable): column headers carry explicit A/F suffixes.
+  //   Two conventions are supported:
+  //   a) Both suffixes used  ("Jan-26A", "Feb-26A", "Mar-26F"): A = actual
+  //   b) F-only on forecasts ("Jan-26",  "Feb-26",  "Mar-26F"): no F = actual
+  //
+  // Strategy 2: sheet has pure "act" / "actual" scenario rows whose data ends
+  //   at the last locked actual month — last non-null column = cut-off.
+  //
+  // Strategy 3 (fallback): G2 in LT_Inputs holds the last actual month label.
+  //   A/F suffix on the G2 value is stripped before matching.
 
-  const headersAreExplicit = (header || [])
-    .slice(startCol)
-    .some(h => /[AF]$/i.test((h || '').trim()) && /-(26|27|28|29|30)/i.test(h));
+  const hSlice   = (header || []).slice(startCol).map(h => (h || '').trim());
+  const has26A   = hSlice.some(h => /A$/i.test(h) && /[-\s](26|27|28|29|30)/i.test(h));
+  const has26F   = hSlice.some(h => /F$/i.test(h) && /[-\s](26|27|28|29|30)/i.test(h));
 
-  if (!headersAreExplicit) {
-    // Strategy 2: scan rows whose scenario is exactly "act" or "actual" — these
-    // rows are only populated through the last locked actual month, so the last
-    // non-null column index is the auto-detected cut-off.
+  if (has26A || has26F) {
+    // Strategy 1: re-derive isAct precisely from suffixes
+    for (let j = 0; j < isAct.length; j++) {
+      const h = (header[startCol + j] || '').trim();
+      if (/[-\s]25/i.test(h)) { isAct[j] = true; continue; }
+      if (has26A) isAct[j] = /A$/i.test(h);      // A present → use A as marker
+      else        isAct[j] = !/F$/i.test(h);      // F-only   → absence of F = actual
+    }
+  } else {
+    // Strategy 2: scan rows whose scenario is exactly "act" / "actual" — these
+    // are only populated through the last locked month.
     let autoIdx = -1;
     for (const [key, ri] of Object.entries(lsMap)) {
-      const sc = key.split('|').pop().trim();
-      if (sc === 'act' || sc === 'actual') {
+      const sc = key.split('|').pop().trim().toLowerCase();
+      if (sc === 'act' || sc === 'actual' || sc === 'actuals') {
         const row = rows[ri];
         for (let c = endCol; c >= startCol; c--) {
           const v = (row[c] || '').trim();
@@ -161,12 +176,12 @@ export function parseActData(csv, toggleDate = null) {
       }
     }
 
-    const cutIdx = autoIdx >= 0
-      ? autoIdx
-      : (() => {
-          if (!toggleDate) return -1;
-          return months.findIndex(m => m.toLowerCase() === toggleDate.trim().toLowerCase());
-        })();
+    // Strategy 3: G2 toggle date (strip trailing A/F before matching)
+    const cutIdx = autoIdx >= 0 ? autoIdx : (() => {
+      if (!toggleDate) return -1;
+      const norm = toggleDate.trim().replace(/[AF]$/i, '').trim();
+      return months.findIndex(m => m.toLowerCase() === norm.toLowerCase());
+    })();
 
     if (cutIdx >= 0) {
       for (let i = 0; i < isAct.length; i++) isAct[i] = i <= cutIdx;
@@ -576,7 +591,7 @@ export function computeFromRaw(raw) {
       const curQIdx    = Math.min(3, Math.max(0, Math.floor((lastActIdx - 12) / 3)));
       const qStart     = 12 + curQIdx * 3;   // first month of active quarter
       const qEnd       = qStart + 2;          // last  month of active quarter
-      const moComplete = Math.min(lastActIdx - qStart + 1, 3);
+      const moComplete = Math.max(0, Math.min(lastActIdx - qStart + 1, 3));
       const curQ       = ['Q1', 'Q2', 'Q3', 'Q4'][curQIdx];
 
       return {

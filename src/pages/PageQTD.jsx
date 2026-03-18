@@ -30,7 +30,7 @@ function TableBlock({ title, rows, curQ }) {
           <thead>
             <tr style={{ background: C.surf2 }}>
               <th style={{ padding: '7px 16px', textAlign: 'left',  fontSize: 10, color: C.txt3,    fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.6px' }}>KPI</th>
-              <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.act26,   fontWeight: 700 }}>Actual (QTD / Latest)</th>
+              <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.act26,   fontWeight: 700 }}>Actual thru {curQ} · {qtd.month}</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.fct26,   fontWeight: 700 }}>{curQ} Forecast</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.budLine, fontWeight: 700 }}>{curQ} Target</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.txt3,    fontWeight: 600 }}>Go-Get</th>
@@ -86,6 +86,7 @@ export default function PageQTD({ QD, B }) {
   const qi   = qtd.curQIdx ?? 0;       // 0=Q1, 1=Q2, 2=Q3, 3=Q4
   const curQ = qtd.curQ     || 'Q1';
   const curQLabel = qtd.curQLabel || 'Q1 2026';
+  const moLeft = 3 - qtd.moComplete;   // forecast months remaining in quarter
 
   // Budget targets for the active quarter (live data preferred, fallback to B array)
   const qCorpBud  = qtd.qBudCorpARR    || B.corpARR[qi];
@@ -139,10 +140,10 @@ export default function PageQTD({ QD, B }) {
     <div>
       <MdaBar
         title={`${curQLabel} QTD Snapshot`}
-        scope={`${qtd.moComplete} of 3 months complete · ${fcstChecks}/5 forecasts on or above target`}
-        text={`Through month ${qtd.moComplete} of ${curQ}, the quarter is projecting Enterprise ARR of ${f$(qtd.qCorpARRFcst)} (${vf(vp(qtd.qCorpARRFcst, qCorpBud))} vs target) and revenue of ${f$(qtd.qRevFcst)} (${vf(vp(qtd.qRevFcst, qRevBud))} vs target), with NRR holding at ${fp(qtd.nrr)} against our ${fp(qNrrBud)} plan. OpEx is tracking ${f$(Math.abs(opxQDelta))} ${opxQDelta <= 0 ? 'under' : 'over'} budget at ${f$(qtd.qOpexFcst)}, and ending cash is forecast at ${f$(qtd.qCashFcst)} (${vf(vp(qtd.qCashFcst, qCashBud))} vs target); gross margin stands at ${fp(qtd.qGmFcst)} vs our ${fp(qGmBud)} plan.`}
+        scope={`${qtd.moComplete} of 3 months actualized through ${qtd.month}${moLeft > 0 ? ` · ${moLeft} month${moLeft > 1 ? 's' : ''} forecast` : ''} · ${fcstChecks}/5 forecasts on or above target`}
+        text={`Through ${qtd.month} (month ${qtd.moComplete} of ${curQ}), the quarter is projecting Enterprise ARR of ${f$(qtd.qCorpARRFcst)} (${vf(vp(qtd.qCorpARRFcst, qCorpBud))} vs target) and revenue of ${f$(qtd.qRevFcst)} (${vf(vp(qtd.qRevFcst, qRevBud))} vs target), with NRR holding at ${fp(qtd.nrr)} against our ${fp(qNrrBud)} plan. OpEx is tracking ${f$(Math.abs(opxQDelta))} ${opxQDelta <= 0 ? 'under' : 'over'} budget at ${f$(qtd.qOpexFcst)}, and ending cash is forecast at ${f$(qtd.qCashFcst)} (${vf(vp(qtd.qCashFcst, qCashBud))} vs target); gross margin stands at ${fp(qtd.qGmFcst)} vs our ${fp(qGmBud)} plan.`}
       />
-      <SectionHeader title="QTD Snapshot" right={`${curQLabel} · ${qtd.moComplete} of 3 months complete`} />
+      <SectionHeader title="QTD Snapshot" right={`${curQLabel} · ${qtd.moComplete} of 3 months actualized through ${qtd.month}`} />
 
       {/* KPI headline cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 10, marginBottom: 24 }}>
