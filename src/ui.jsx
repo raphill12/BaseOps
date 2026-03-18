@@ -140,9 +140,17 @@ export const ChartLegendStd = () => (
 export function WaterfallChart({ data, height = 240 }) {
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} margin={{ top: 24, right: 10, left: 0, bottom: 0 }}>
+      <BarChart data={data} margin={{ top: 28, right: 10, left: 0, bottom: 40 }}>
         {GRID}
-        <XAxis dataKey="name" {...XSTYLE} />
+        <XAxis
+          dataKey="name"
+          {...XSTYLE}
+          interval={0}
+          angle={-35}
+          textAnchor="end"
+          tick={{ ...XSTYLE.tick, fontSize: 9 }}
+          height={50}
+        />
         <YAxis tickFormatter={yFmt$} {...YSTYLE} />
         <Tooltip
           {...TOOLTIP_STYLE}
@@ -154,12 +162,20 @@ export function WaterfallChart({ data, height = 240 }) {
             <Cell key={i} fill={d.type === 'anchor' ? C.act26 : d.type === 'pos' ? C.grn : C.red} />
           ))}
           <LabelList
-            content={({ x, y, width, value, index }) => {
+            content={({ x, y, width, index }) => {
               const d = data[index];
               if (!d) return null;
+              const label = f$(d.val);
               return (
-                <text x={x + width / 2} y={y - 6} fill={C.txt2} fontSize={9} textAnchor="middle">
-                  {f$(d.val)}
+                <text
+                  x={x + width / 2}
+                  y={y - 8}
+                  fill={C.txt2}
+                  fontSize={9}
+                  textAnchor="middle"
+                  style={{ pointerEvents: 'none' }}
+                >
+                  {label}
                 </text>
               );
             }}

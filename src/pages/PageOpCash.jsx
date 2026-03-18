@@ -44,7 +44,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
         <ChartCard title="Operating Expenses · Quarterly" sub="vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={240}>
             <ComposedChart data={QD.opex} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
-              {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
+              {GRID}<XAxis dataKey="q" {...XSTYLE} interval={0} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="OpEx" radius={[3, 3, 0, 0]}>
                 {QD.opex.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
@@ -58,7 +58,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
         <ChartCard title="Ending Cash · Quarterly" sub="vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={240}>
             <ComposedChart data={QD.cash} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
-              {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
+              {GRID}<XAxis dataKey="q" {...XSTYLE} interval={0} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Ending Cash" radius={[3, 3, 0, 0]}>
                 {QD.cash.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
@@ -75,7 +75,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
         <ChartCard title="Gross Margin %" sub="Quarterly avg vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={220}>
             <ComposedChart data={QD.gm} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
-              {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.7, 0.95]} />
+              {GRID}<XAxis dataKey="q" {...XSTYLE} interval={0} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.7, 0.95]} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="Gross Margin" radius={[3, 3, 0, 0]}>
                 {QD.gm.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
@@ -89,7 +89,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
         <ChartCard title="Enterprise NRR % (TTM)" sub="Quarterly vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={220}>
             <ComposedChart data={QD.nrr} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
-              {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.9, 1.15]} />
+              {GRID}<XAxis dataKey="q" {...XSTYLE} interval={0} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.9, 1.15]} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="NRR" radius={[3, 3, 0, 0]}>
                 {QD.nrr.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}

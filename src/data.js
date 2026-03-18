@@ -133,17 +133,41 @@ export function parseActData(csv, toggleDate = null) {
     months.push(h.replace(/[AF]$/, '').trim() || `M${c - startCol + 1}`);
   }
 
-  // Override isAct with the toggle date from LT_Inputs G2 only when the sheet
-  // lacks explicit A/F column suffixes.  If any 2026 column carries an 'A' or 'F'
-  // suffix the headers are self-describing — trust them and skip the override so
-  // that actuals advance automatically as new months are locked in the sheet.
+  // ── Override isAct — priority order: ────────────────────────────────────────
+  // 1. Explicit A/F column suffixes (e.g. "Feb-26A", "Mar-26F") → most reliable
+  // 2. Pure "act" scenario rows → find last non-null month automatically
+  // 3. G2 toggle date from LT_Inputs → manual setting, last resort
+
   const headersAreExplicit = (header || [])
     .slice(startCol)
-    .some(h => /[AF]$/.test((h || '').trim()) && /(26|27|28|29|30)/i.test(h));
+    .some(h => /[AF]$/i.test((h || '').trim()) && /-(26|27|28|29|30)/i.test(h));
 
-  if (toggleDate && !headersAreExplicit) {
-    const norm = toggleDate.trim();
-    const cutIdx = months.findIndex(m => m.toLowerCase() === norm.toLowerCase());
+  if (!headersAreExplicit) {
+    // Strategy 2: scan rows whose scenario is exactly "act" or "actual" — these
+    // rows are only populated through the last locked actual month, so the last
+    // non-null column index is the auto-detected cut-off.
+    let autoIdx = -1;
+    for (const [key, ri] of Object.entries(lsMap)) {
+      const sc = key.split('|').pop().trim();
+      if (sc === 'act' || sc === 'actual') {
+        const row = rows[ri];
+        for (let c = endCol; c >= startCol; c--) {
+          const v = (row[c] || '').trim();
+          if (v !== '' && parseNum(v) !== null) {
+            autoIdx = Math.max(autoIdx, c - startCol);
+            break;
+          }
+        }
+      }
+    }
+
+    const cutIdx = autoIdx >= 0
+      ? autoIdx
+      : (() => {
+          if (!toggleDate) return -1;
+          return months.findIndex(m => m.toLowerCase() === toggleDate.trim().toLowerCase());
+        })();
+
     if (cutIdx >= 0) {
       for (let i = 0; i < isAct.length; i++) isAct[i] = i <= cutIdx;
     }
@@ -425,14 +449,14 @@ export function computeFromRaw(raw) {
 
   /** Build a waterfall bridge chart starting from `start`. */
   function buildWaterfall(start, steps) {
-    const data = [{ name: 'Q4 25A\nExit', start: 0, bar: start, val: start, type: 'anchor' }];
+    const data = [{ name: 'Q4 25A', start: 0, bar: start, val: start, type: 'anchor' }];
     let running = start;
     for (const s of steps) {
       if (s.val >= 0) data.push({ name: s.name, start: running,         bar: s.val,  val: s.val, type: 'pos' });
       else            data.push({ name: s.name, start: running + s.val, bar: -s.val, val: s.val, type: 'neg' });
       running += s.val;
     }
-    data.push({ name: 'FY26\nExit', start: 0, bar: running, val: running, type: 'anchor' });
+    data.push({ name: 'FY26', start: 0, bar: running, val: running, type: 'anchor' });
     return data;
   }
 
@@ -504,9 +528,9 @@ export function computeFromRaw(raw) {
     fedARR:  qSeries('fedARR',   bud.fedARR,  true),
 
     waterfall:     buildWaterfall(eov(m.totalARR, 3), [
-      { name: 'New Enterprise',   val: newCorp26 },
-      { name: 'Exp Enterprise',   val: expCorp26 },
-      { name: 'Enterprise Churn', val: conCorp26 },
+      { name: 'New Corp',   val: newCorp26 },
+      { name: 'Exp Corp',   val: expCorp26 },
+      { name: 'Corp Churn', val: conCorp26 },
       { name: 'New Fed',    val: newFed26  },
       { name: 'Fed Exp',    val: expFed26  },
     ]),
