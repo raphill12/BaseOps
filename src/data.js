@@ -651,7 +651,7 @@ export const FALLBACK = {
   ],
   isAct: [
     true,true,true,true,true,true,true,true,true,true,true,true,
-    true,false,false,false,false,false,false,false,false,false,false,false,
+    true,true,false,false,false,false,false,false,false,false,false,false,
   ],
   monthly: {
     totalARR:     [1217050,1599712,1612462,1615904,2081030,2109500,2109500,2118500,2385060,2455060,2486091,2595641,2781737,2782341,3077399,3238419,3276900,3436610,3511610,4419943,4539870,4618370,5360036,5433456],

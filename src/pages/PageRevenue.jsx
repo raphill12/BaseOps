@@ -1,9 +1,9 @@
 import { ComposedChart, BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
-import { f$, fp, fpc, vp, vf, q26vals } from '../utils.js';
+import { f$, fp, fpc, vp, vf, q26vals, actMos26 } from '../utils.js';
 import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, LegendDot, WaterfallChart, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
-export default function PageRevenue({ QD, B, FY26 }) {
+export default function PageRevenue({ QD, B, FY26, latestMo }) {
   const corp26 = q26vals(QD.corpARR);
   const fed26  = q26vals(QD.fedARR);
   const arr26  = QD.arr.slice(4).map(d => d.total);
@@ -29,6 +29,9 @@ export default function PageRevenue({ QD, B, FY26 }) {
 
   const yoyQ4 = arr25[3] ? arr26[3] / arr25[3] - 1 : null;
 
+  // Number of 2026 actual months (e.g. "Feb-26" → 2) — drives the monthly ARR line split
+  const nAct26 = actMos26(latestMo) || 1;
+
   return (
     <div>
       <MdaBar
@@ -49,16 +52,16 @@ export default function PageRevenue({ QD, B, FY26 }) {
       {/* Monthly ARR line + Y/Y growth */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14, marginBottom: 20 }}>
         <ChartCard title="Total ARR · Monthly Progression" sub="Jan-25A → Dec-26F"
-          legend={<><LegendDot color={C.act25} label="2025 Actual" /><LegendDot color={C.act26} label="Jan-26 Actual" /><LegendDot color={C.fct26} label="2026 Forecast" /></>}>
+          legend={<><LegendDot color={C.act25} label="2025 Actual" /><LegendDot color={C.act26} label={`${latestMo} Actual`} /><LegendDot color={C.fct26} label="2026 Forecast" /></>}>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart margin={{ top: 16, right: 10, left: 0, bottom: 0 }}>
               {GRID}
               <XAxis dataKey="m" type="category" data={QD.monthlyARR} {...XSTYLE} interval={2} />
               <YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
-              <Line data={QD.monthlyARR.slice(0, 12)}  dataKey="v" name="2025A"   stroke={C.act25} strokeWidth={2} dot={false} type="monotone" />
-              <Line data={QD.monthlyARR.slice(12, 13)} dataKey="v" name="Jan-26A" stroke={C.act26} strokeWidth={2} dot={{ fill: C.act26, r: 4 }} type="monotone" />
-              <Line data={QD.monthlyARR.slice(12)}     dataKey="v" name="2026F"   stroke={C.fct26} strokeWidth={2} strokeDasharray="4 3" dot={false} type="monotone" />
+              <Line data={QD.monthlyARR.slice(0, 12)}                dataKey="v" name="2025A"            stroke={C.act25} strokeWidth={2} dot={false} type="monotone" />
+              <Line data={QD.monthlyARR.slice(12, 12 + nAct26)}     dataKey="v" name={`${latestMo}A`}    stroke={C.act26} strokeWidth={2} dot={{ fill: C.act26, r: 4 }} type="monotone" />
+              <Line data={QD.monthlyARR.slice(11 + nAct26)}         dataKey="v" name="2026F"             stroke={C.fct26} strokeWidth={2} strokeDasharray="4 3" dot={false} type="monotone" />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>

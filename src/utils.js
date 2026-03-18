@@ -38,3 +38,23 @@ export function vf(v) {
 export function q26vals(series) {
   return series.slice(4).map(d => d.act ?? d.fct ?? null);
 }
+
+const _MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/** Return the month label immediately after the given one. "Feb-26" → "Mar-26". */
+export function nextMo(mo) {
+  if (!mo) return null;
+  const [mon, yr] = mo.split('-');
+  const idx = _MO.indexOf(mon);
+  if (idx < 0) return null;
+  return idx === 11
+    ? `${_MO[0]}-${String(Number(yr) + 1).padStart(2, '0')}`
+    : `${_MO[idx + 1]}-${yr}`;
+}
+
+/** Number of actual 2026 months implied by latestMo. "Feb-26" → 2, "Jan-26" → 1. */
+export function actMos26(latestMo) {
+  if (!latestMo?.endsWith('-26')) return 0;
+  const idx = _MO.indexOf(latestMo.split('-')[0]);
+  return idx < 0 ? 0 : idx + 1;
+}

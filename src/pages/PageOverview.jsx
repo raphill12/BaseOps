@@ -1,9 +1,9 @@
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
-import { f$, fp, vp, vf, q26vals } from '../utils.js';
+import { f$, fp, vp, vf, q26vals, nextMo } from '../utils.js';
 import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
 
-export default function PageOverview({ QD, B, FY26 }) {
+export default function PageOverview({ QD, B, FY26, latestMo }) {
   // 2025 quarterly actuals derived from live QD series (not hardcoded)
   const arr25  = QD.arr.slice(0, 4).map(d => d.total);
   const rev25  = QD.rev.slice(0, 4).map(d => d.act);
@@ -28,6 +28,12 @@ export default function PageOverview({ QD, B, FY26 }) {
   const cash26 = q26vals(QD.cash);
   const nrr26  = q26vals(QD.nrr);
 
+  // Dynamic month range labels derived from live toggle date
+  const nxtMon  = nextMo(latestMo)?.split('-')[0];   // e.g. "Mar"
+  const actLbl  = `${latestMo} Actual`;
+  const fctLbl  = nxtMon ? `${nxtMon}–Dec Forecast` : null;
+  const fctLbl2 = nxtMon ? `${nxtMon}–Dec 26F` : null;
+
   const onTrack = [
     FY26.totalARR >= B.totalARR[4],
     FY26.revenue  >= B.revenue[4],
@@ -41,10 +47,10 @@ export default function PageOverview({ QD, B, FY26 }) {
     <div>
       <MdaBar
         title="FY 2026 Full-Year Outlook"
-        scope={`Jan-26 Actual · Feb–Dec Forecast · ${onTrack}/5 KPIs on or above budget`}
+        scope={`${actLbl}${fctLbl ? ` · ${fctLbl}` : ''} · ${onTrack}/5 KPIs on or above budget`}
         text={`FY26 is forecast to close at ${f$(FY26.totalARR)} total ARR (${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget) and ${f$(FY26.revenue)} in revenue (${vf(vp(FY26.revenue, B.revenue[4]))} vs plan), with NRR holding at ${fp(FY26.nrr)} against a ${fp(B.nrr[4])} target. Gross margin is tracking at ${fp(FY26.gm)} (${FY26.gm >= B.gm[4] ? '+' : ''}${((FY26.gm - B.gm[4]) * 100).toFixed(1)}pp vs plan), and operating expenses of ${f$(FY26.opex)} are ${f$(Math.abs(opxDelta))} ${opxDelta <= 0 ? 'under' : 'over'} budget. Ending cash of ${f$(FY26.cash)} is ${vf(vp(FY26.cash, B.cash[4]))} vs our ${f$(B.cash[4])} target.`}
       />
-      <SectionHeader title="FY 2026 Forecast vs Budget" right="Jan-26A · Feb–Dec 26F" />
+      <SectionHeader title="FY 2026 Forecast vs Budget" right={`${latestMo}A${fctLbl2 ? ` · ${fctLbl2}` : ''}`} />
 
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 10, marginBottom: 24 }}>
