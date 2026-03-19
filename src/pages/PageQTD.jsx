@@ -21,7 +21,7 @@ function GoGetBar({ fcst, target, inv }) {
   );
 }
 
-function TableBlock({ title, rows, curQ }) {
+function TableBlock({ title, rows, curQ, latestMo }) {
   return (
     <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden' }}>
       <div style={{ padding: '12px 16px', borderBottom: `1px solid ${C.bdr}`, fontSize: 12, fontWeight: 600, color: C.txt }}>{title}</div>
@@ -30,7 +30,7 @@ function TableBlock({ title, rows, curQ }) {
           <thead>
             <tr style={{ background: C.surf2 }}>
               <th style={{ padding: '7px 16px', textAlign: 'left',  fontSize: 10, color: C.txt3,    fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.6px' }}>KPI</th>
-              <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.act26,   fontWeight: 700 }}>Actual thru {curQ} · {qtd.month}</th>
+              <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.act26,   fontWeight: 700 }}>Actual thru {curQ} · {latestMo}</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.fct26,   fontWeight: 700 }}>{curQ} Forecast</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.budLine, fontWeight: 700 }}>{curQ} Target</th>
               <th style={{ padding: '7px 10px', textAlign: 'right', fontSize: 10, color: C.txt3,    fontWeight: 600 }}>Go-Get</th>
@@ -156,8 +156,8 @@ export default function PageQTD({ QD, B }) {
 
       {/* Tables */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
-        <TableBlock title={`Top-Line KPIs · QTD vs ${curQ} Target`}     rows={topRows} curQ={curQ} />
-        <TableBlock title={`Operating KPIs · QTD vs ${curQ} Target`}    rows={opRows}  curQ={curQ} />
+        <TableBlock title={`Top-Line KPIs · QTD vs ${curQ} Target`}     rows={topRows} curQ={curQ} latestMo={qtd.month} />
+        <TableBlock title={`Operating KPIs · QTD vs ${curQ} Target`}    rows={opRows}  curQ={curQ} latestMo={qtd.month} />
       </div>
 
     </div>
