@@ -161,34 +161,42 @@ export function parseActData(csv, toggleDate = null) {
       else        isAct[j] = !/F$/i.test(h);      // F-only   → absence of F = actual
     }
   } else {
-    // Strategy 2: scan rows whose scenario is exactly "act" / "actual" — these
-    // are only populated through the last locked month.
-    let autoIdx = -1;
-    for (const [key, ri] of Object.entries(lsMap)) {
-      const sc = key.split('|').pop().trim().toLowerCase();
-      if (sc === 'act' || sc === 'actual' || sc === 'actuals') {
-        const row = rows[ri];
-        for (let c = endCol; c >= startCol; c--) {
-          const v = (row[c] || '').trim();
-          if (v !== '' && parseNum(v) !== null) {
-            autoIdx = Math.max(autoIdx, c - startCol);
-            break;
-          }
-        }
-      }
-    }
+    // Strategy 3 (G2 toggle date) takes priority over strategy 2 (act row scan)
+    // because G2 is the explicit user-set "last actual month" field.
+    // Strategy 2 is a fallback for when G2 is absent.
 
     // Strategy 3: G2 toggle date (strip trailing A/F before matching)
-    const cutIdx = autoIdx >= 0 ? autoIdx : (() => {
+    const g2Idx = (() => {
       if (!toggleDate) return -1;
       const norm = toggleDate.trim().replace(/[AF]$/i, '').trim();
       return months.findIndex(m => m.toLowerCase() === norm.toLowerCase());
     })();
 
-    _strategy = autoIdx >= 0
-      ? `2 (act row scan, autoIdx=${autoIdx} → ${months[autoIdx]})`
-      : cutIdx >= 0
-        ? `3 (G2 toggle date "${toggleDate}" → cutIdx=${cutIdx} → ${months[cutIdx]})`
+    // Strategy 2: scan rows whose scenario is exactly "act" / "actual" — these
+    // are only populated through the last locked month.
+    let autoIdx = -1;
+    if (g2Idx < 0) {
+      for (const [key, ri] of Object.entries(lsMap)) {
+        const sc = key.split('|').pop().trim().toLowerCase();
+        if (sc === 'act' || sc === 'actual' || sc === 'actuals') {
+          const row = rows[ri];
+          for (let c = endCol; c >= startCol; c--) {
+            const v = (row[c] || '').trim();
+            if (v !== '' && parseNum(v) !== null) {
+              autoIdx = Math.max(autoIdx, c - startCol);
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    const cutIdx = g2Idx >= 0 ? g2Idx : autoIdx;
+
+    _strategy = g2Idx >= 0
+      ? `3 (G2 toggle date "${toggleDate}" → cutIdx=${cutIdx} → ${months[cutIdx]})`
+      : autoIdx >= 0
+        ? `2 (act row scan, autoIdx=${autoIdx} → ${months[autoIdx]})`
         : `fallback (no strategy matched; toggleDate="${toggleDate}")`;
 
     if (cutIdx >= 0) {
