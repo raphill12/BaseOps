@@ -150,8 +150,10 @@ export function parseActData(csv, toggleDate = null) {
   const has26A   = hSlice.some(h => /A$/i.test(h) && /[-\s](26|27|28|29|30)/i.test(h));
   const has26F   = hSlice.some(h => /F$/i.test(h) && /[-\s](26|27|28|29|30)/i.test(h));
 
+  let _strategy = '(none)';
   if (has26A || has26F) {
     // Strategy 1: re-derive isAct precisely from suffixes
+    _strategy = `1 (header suffixes: has26A=${has26A}, has26F=${has26F})`;
     for (let j = 0; j < isAct.length; j++) {
       const h = (header[startCol + j] || '').trim();
       if (/[-\s]25/i.test(h)) { isAct[j] = true; continue; }
@@ -183,10 +185,23 @@ export function parseActData(csv, toggleDate = null) {
       return months.findIndex(m => m.toLowerCase() === norm.toLowerCase());
     })();
 
+    _strategy = autoIdx >= 0
+      ? `2 (act row scan, autoIdx=${autoIdx} → ${months[autoIdx]})`
+      : cutIdx >= 0
+        ? `3 (G2 toggle date "${toggleDate}" → cutIdx=${cutIdx} → ${months[cutIdx]})`
+        : `fallback (no strategy matched; toggleDate="${toggleDate}")`;
+
     if (cutIdx >= 0) {
       for (let i = 0; i < isAct.length; i++) isAct[i] = i <= cutIdx;
     }
   }
+
+  const lastActual = months[isAct.lastIndexOf(true)];
+  console.log(`[parseActData] isAct strategy: ${_strategy}`);
+  console.log(`[parseActData] header sample (cols ${startCol}-${startCol+5}):`, hSlice.slice(0,6));
+  console.log(`[parseActData] toggleDate from LT_Inputs G2: "${toggleDate}"`);
+  console.log(`[parseActData] last actual month detected: ${lastActual} (index ${isAct.lastIndexOf(true)})`);
+  console.log(`[parseActData] isAct[]:`, isAct.join(','));
 
   // ── Monthly actuals / forecast ────────────────────────────────────────────
   const monthly = {};
