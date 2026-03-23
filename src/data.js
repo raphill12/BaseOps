@@ -631,7 +631,7 @@ export function computeFromRaw(raw) {
         cash:     m.endCash[lastActIdx],
         gm:       m.gmPct[lastActIdx],
         nrr:      m.nrrPct[lastActIdx],
-        cashBurn: m.cashBurn[lastActIdx],
+        cashBurn: sum(m.cashBurn, qStart, lastActIdx + 1),
 
         // Flow metrics — cumulative from start of active quarter to latest actual
         revenue:    sum(m.revenue,    qStart, lastActIdx + 1),

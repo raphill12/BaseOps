@@ -123,7 +123,7 @@ export default function PageQTD({ QD, B }) {
     { metric: 'Operating Expenses (QTD)', qtd: qtd.opex,     fcst: qtd.qOpexFcst,  target: qOpexBud, fmt: '$', inv: true  },
     { metric: 'Ending Cash',              qtd: qtd.cash,     fcst: qtd.qCashFcst,  target: qCashBud, fmt: '$'              },
     { metric: 'Gross Margin %',           qtd: qtd.gm,       fcst: qtd.qGmFcst,    target: qGmBud,   fmt: '%', inv: false  },
-    { metric: 'Cash Burn (MTD)',          qtd: qtd.cashBurn, fcst: null,            target: null,      fmt: '$', inv: true   },
+    { metric: 'Cash Burn (QTD)',          qtd: qtd.cashBurn, fcst: null,            target: null,      fmt: '$', inv: true   },
   ];
 
   // Count how many quarter forecasts are on/above target
