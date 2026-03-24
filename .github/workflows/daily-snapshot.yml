@@ -1,0 +1,45 @@
+name: Daily Snapshot Log Entry
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # midnight UTC every day
+  workflow_dispatch:        # allow manual run
+
+jobs:
+  add-daily-row:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/google-sheet-live-dashboard-floxP
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepend today's snapshot row
+        run: |
+          TODAY=$(date -u '+%Y-%m-%d')
+          FILE="src/pages/PageAuditLog.jsx"
+
+          # Insert a new null entry for today directly after the opening [ of DAILY_LOG
+          # Only add if today's date isn't already in the file
+          if grep -q "date:.*'${TODAY}'" "$FILE"; then
+            echo "Entry for ${TODAY} already exists — skipping."
+            exit 0
+          fi
+
+          NEW_ROW="  {\n    date:        '${TODAY}',\n    fy26ARR:     null,\n    fy26Cash:    null,\n    cashOutDate: null,\n    note:        '',\n  },"
+
+          # Insert after the line containing "const DAILY_LOG = ["
+          sed -i "/const DAILY_LOG = \[/{n;s/^/${NEW_ROW}\n/}" "$FILE"
+
+          echo "Added snapshot row for ${TODAY}"
+
+      - name: Commit and push
+        run: |
+          TODAY=$(date -u '+%Y-%m-%d')
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/pages/PageAuditLog.jsx
+          # Only commit if there's actually a change
+          git diff --cached --quiet && echo "No changes to commit." && exit 0
+          git commit -m "chore: daily snapshot entry ${TODAY}"
+          git push origin claude/google-sheet-live-dashboard-floxP
