@@ -3,23 +3,23 @@ import { C } from '../config.js';
 import { f$ } from '../utils.js';
 import { MdaBar, SectionHeader } from '../ui.jsx';
 
-// ─── Audit Log Entries ──────────────────────────────────────────────────────
-// Add newest entries at the TOP of this array.
-// For the first entry, deltas are null (baseline). For subsequent entries,
-// deltas are computed automatically from the prior row.
+// ─── Daily Snapshot Log ─────────────────────────────────────────────────────
+// One entry per day, newest at the TOP.
+// Values are pulled from the live model when set to null (good for today's row).
+// When adding a new day: prepend an entry with today's date and set all three
+// values to null — they'll pull from live. The prior day's entry should have
+// its values frozen as explicit numbers at that point.
 //
-// cashOutDate: string like "Sep-28" or "Nov-27"
-// cashOutMonths: numeric representation as total months from a fixed epoch
-//                (e.g. Jan-25 = 0, Feb-25 = 1, … Dec-26 = 23, Jan-27 = 24 …)
-//                This is used to compute month deltas between entries.
-const AUDIT_LOG = [
+// fy26ARR / fy26Cash: dollar amount, e.g. 4200000
+// cashOutDate: string like "Sep-28"  (month-YY, two-digit year)
+// note: optional string — only fill in if something changed that day
+const DAILY_LOG = [
   {
-    date:          '2026-03-24',
-    title:         'Baseline Model Snapshot',
-    fy26ARR:       null,   // null = use live FY26.totalARR
-    fy26Cash:      null,   // null = use live FY26.cash
-    cashOutDate:   null,   // null = use live cashOutDate
-    description:   'Initial audit log entry capturing the current state of the FY26 financial model as the baseline for tracking future changes.',
+    date:        '2026-03-24',
+    fy26ARR:     null,   // null = use live FY26.totalARR
+    fy26Cash:    null,   // null = use live FY26.cash
+    cashOutDate: null,   // null = use live cashOutDate
+    note:        'Baseline',
   },
 ];
 
@@ -27,7 +27,6 @@ const AUDIT_LOG = [
 
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-/** Parse "Sep-28" → total months from Jan-25 epoch, for delta calculation. */
 function cashOutToMonths(s) {
   if (!s) return null;
   const [mon, yr] = s.split('-');
@@ -38,153 +37,96 @@ function cashOutToMonths(s) {
 }
 
 function fDelta$(v) {
-  if (v == null) return '';
-  const sign = v > 0 ? '+' : '';
-  return `${sign}${f$(v)}`;
+  if (v == null || v === 0) return v === 0 ? <span style={{ color: '#4b5563' }}>—</span> : '';
+  const pos = v > 0;
+  return <span style={{ color: pos ? C.grn : C.red }}>{pos ? '+' : ''}{f$(v)}</span>;
 }
 
 function fDeltaMo(v) {
-  if (v == null) return '';
-  const sign = v > 0 ? '+' : '';
-  return `${sign}${v} mo`;
+  if (v == null || v === 0) return <span style={{ color: '#4b5563' }}>—</span>;
+  const pos = v > 0;
+  return <span style={{ color: pos ? C.grn : C.red }}>{pos ? '+' : ''}{v} mo</span>;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function PageAuditLog({ FY26, cashOutDate }) {
-  // Resolve live values for entries that use null
-  const resolvedLog = AUDIT_LOG.map(entry => ({
-    ...entry,
-    fy26ARR:     entry.fy26ARR     ?? FY26?.totalARR ?? null,
-    fy26Cash:    entry.fy26Cash    ?? FY26?.cash     ?? null,
-    cashOutDate: entry.cashOutDate ?? cashOutDate    ?? null,
+  const resolved = DAILY_LOG.map(e => ({
+    ...e,
+    fy26ARR:     e.fy26ARR     ?? FY26?.totalARR ?? null,
+    fy26Cash:    e.fy26Cash    ?? FY26?.cash     ?? null,
+    cashOutDate: e.cashOutDate ?? cashOutDate    ?? null,
   }));
 
-  // Compute deltas (each entry vs the one AFTER it, since newest is first)
-  const rows = resolvedLog.map((entry, i) => {
-    const prior = resolvedLog[i + 1] || null;
-    const arrDelta  = (prior && entry.fy26ARR != null && prior.fy26ARR != null)
-      ? entry.fy26ARR - prior.fy26ARR : null;
-    const cashDelta = (prior && entry.fy26Cash != null && prior.fy26Cash != null)
-      ? entry.fy26Cash - prior.fy26Cash : null;
-
-    const curMo  = cashOutToMonths(entry.cashOutDate);
-    const prevMo = prior ? cashOutToMonths(prior.cashOutDate) : null;
-    const moDelta = (curMo != null && prevMo != null) ? curMo - prevMo : null;
-
-    return { ...entry, arrDelta, cashDelta, moDelta };
+  const rows = resolved.map((e, i) => {
+    const prev = resolved[i + 1] || null;
+    const arrDelta  = prev && e.fy26ARR != null && prev.fy26ARR != null
+      ? e.fy26ARR - prev.fy26ARR : null;
+    const cashDelta = prev && e.fy26Cash != null && prev.fy26Cash != null
+      ? e.fy26Cash - prev.fy26Cash : null;
+    const curMo  = cashOutToMonths(e.cashOutDate);
+    const prevMo = prev ? cashOutToMonths(prev.cashOutDate) : null;
+    const moDelta = curMo != null && prevMo != null ? curMo - prevMo : null;
+    return { ...e, arrDelta, cashDelta, moDelta };
   });
 
   const hStyle = {
     padding: '10px 14px', fontSize: 10, fontWeight: 600, color: C.txt3,
     textTransform: 'uppercase', letterSpacing: '.6px',
     background: C.surf2, borderBottom: `1px solid ${C.bdr}`,
-    textAlign: 'left', whiteSpace: 'nowrap',
+    textAlign: 'right', whiteSpace: 'nowrap',
   };
-
-  const cellStyle = {
-    padding: '12px 14px', borderBottom: `1px solid ${C.bdr}`,
-    fontSize: 12, color: C.txt2, verticalAlign: 'top',
+  const cell = {
+    padding: '11px 14px', borderBottom: `1px solid ${C.bdr}`,
+    fontSize: 12, verticalAlign: 'middle',
   };
-
-  const monoCell = {
-    ...cellStyle,
-    fontFamily: 'monospace', textAlign: 'right', whiteSpace: 'nowrap',
-  };
+  const mono = { ...cell, fontFamily: 'monospace', textAlign: 'right', whiteSpace: 'nowrap' };
 
   return (
     <>
       <MdaBar
-        title="Model Audit Log"
-        scope="All model revisions"
-        text="Tracks every material change to the FY26 financial model. Each entry records the forecasted FY26 ARR exit, ending cash, and cash-out date — along with the delta from the prior version — so stakeholders can see exactly how the model has evolved over time."
+        title="Daily Snapshot Log"
+        scope="FY26 model · updated daily"
+        text="One row per day captures the forecast FY26 ARR exit, ending cash, and projected cash-out date. Deltas show the change vs the prior day's snapshot. On days with no model changes all three deltas will be flat."
       />
 
-      <SectionHeader title="Change History" />
+      <SectionHeader title="Daily History" />
 
-      <div style={{
-        background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10,
-        overflow: 'hidden',
-      }}>
+      <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={{ ...hStyle, minWidth: 90 }}>Date</th>
-                <th style={{ ...hStyle, minWidth: 160 }}>Change</th>
-                <th style={{ ...hStyle, textAlign: 'right', minWidth: 100 }}>FY26 ARR Exit</th>
-                <th style={{ ...hStyle, textAlign: 'right', minWidth: 70 }}>Delta</th>
-                <th style={{ ...hStyle, textAlign: 'right', minWidth: 110 }}>FY26 Ending Cash</th>
-                <th style={{ ...hStyle, textAlign: 'right', minWidth: 70 }}>Delta</th>
-                <th style={{ ...hStyle, textAlign: 'right', minWidth: 100 }}>Cash-Out Date</th>
-                <th style={{ ...hStyle, textAlign: 'right', minWidth: 70 }}>Delta</th>
-                <th style={{ ...hStyle, minWidth: 220 }}>Description</th>
+                <th style={{ ...hStyle, textAlign: 'left', minWidth: 90 }}>Date</th>
+                <th style={{ ...hStyle, textAlign: 'right', minWidth: 110 }}>FY26 ARR Exit</th>
+                <th style={{ ...hStyle, minWidth: 80 }}>vs Prior</th>
+                <th style={{ ...hStyle, minWidth: 120 }}>FY26 Ending Cash</th>
+                <th style={{ ...hStyle, minWidth: 80 }}>vs Prior</th>
+                <th style={{ ...hStyle, minWidth: 110 }}>Cash-Out Date</th>
+                <th style={{ ...hStyle, minWidth: 80 }}>vs Prior</th>
+                <th style={{ ...hStyle, textAlign: 'left', minWidth: 180 }}>Notes</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r, i) => (
                 <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,.015)' }}>
-                  <td style={{ ...cellStyle, fontFamily: 'monospace', fontSize: 11, color: C.txt, whiteSpace: 'nowrap' }}>
+                  <td style={{ ...cell, fontFamily: 'monospace', fontSize: 11, color: C.txt, whiteSpace: 'nowrap' }}>
                     {r.date}
                   </td>
-                  <td style={{ ...cellStyle, fontWeight: 600, color: C.txt }}>
-                    {r.title}
-                  </td>
-                  <td style={{ ...monoCell, color: C.txt }}>
-                    {f$(r.fy26ARR)}
-                  </td>
-                  <td style={{
-                    ...monoCell,
-                    color: r.arrDelta == null ? C.txt3
-                      : r.arrDelta > 0 ? C.grn : r.arrDelta < 0 ? C.red : C.txt3,
-                  }}>
-                    {r.arrDelta != null ? fDelta$(r.arrDelta) : '—'}
-                  </td>
-                  <td style={{ ...monoCell, color: C.txt }}>
-                    {f$(r.fy26Cash)}
-                  </td>
-                  <td style={{
-                    ...monoCell,
-                    color: r.cashDelta == null ? C.txt3
-                      : r.cashDelta > 0 ? C.grn : r.cashDelta < 0 ? C.red : C.txt3,
-                  }}>
-                    {r.cashDelta != null ? fDelta$(r.cashDelta) : '—'}
-                  </td>
-                  <td style={{ ...monoCell, color: C.txt }}>
-                    {r.cashOutDate || '—'}
-                  </td>
-                  <td style={{
-                    ...monoCell,
-                    color: r.moDelta == null ? C.txt3
-                      : r.moDelta > 0 ? C.grn : r.moDelta < 0 ? C.red : C.txt3,
-                  }}>
-                    {r.moDelta != null ? fDeltaMo(r.moDelta) : '—'}
-                  </td>
-                  <td style={{ ...cellStyle, fontSize: 11, lineHeight: 1.5, maxWidth: 360 }}>
-                    {r.description}
+                  <td style={{ ...mono, color: C.txt }}>{f$(r.fy26ARR)}</td>
+                  <td style={{ ...mono }}>{fDelta$(r.arrDelta)}</td>
+                  <td style={{ ...mono, color: C.txt }}>{f$(r.fy26Cash)}</td>
+                  <td style={{ ...mono }}>{fDelta$(r.cashDelta)}</td>
+                  <td style={{ ...mono, color: C.txt }}>{r.cashOutDate || '—'}</td>
+                  <td style={{ ...mono }}>{fDeltaMo(r.moDelta)}</td>
+                  <td style={{ ...cell, color: C.txt3, fontSize: 11, lineHeight: 1.5 }}>
+                    {r.note || ''}
                   </td>
                 </tr>
               ))}
-              {rows.length === 0 && (
-                <tr>
-                  <td colSpan={9} style={{ ...cellStyle, textAlign: 'center', color: C.txt3, padding: 32 }}>
-                    No audit log entries yet.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
-      </div>
-
-      <div style={{ marginTop: 16, fontSize: 10, color: C.txt3, lineHeight: 1.6 }}>
-        To add a new entry, update the <span style={{ fontFamily: 'monospace', color: C.txt2 }}>AUDIT_LOG</span> array
-        in <span style={{ fontFamily: 'monospace', color: C.txt2 }}>src/pages/PageAuditLog.jsx</span>.
-        Add newest entries at the top. Set <span style={{ fontFamily: 'monospace', color: C.txt2 }}>fy26ARR</span>,{' '}
-        <span style={{ fontFamily: 'monospace', color: C.txt2 }}>fy26Cash</span>, and{' '}
-        <span style={{ fontFamily: 'monospace', color: C.txt2 }}>cashOutDate</span> to{' '}
-        <span style={{ fontFamily: 'monospace', color: C.txt2 }}>null</span> to pull from the live model,
-        or set explicit values to freeze a historical snapshot.
       </div>
     </>
   );
