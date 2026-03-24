@@ -17,6 +17,7 @@ class PageErrorBoundary extends Component {
     return this.props.children;
   }
 }
+import PageAuditLog from './pages/PageAuditLog.jsx';
 import PageQTD      from './pages/PageQTD.jsx';
 import PageOverview from './pages/PageOverview.jsx';
 import PageRevenue  from './pages/PageRevenue.jsx';
@@ -29,7 +30,7 @@ import PageLTO      from './pages/PageLTO.jsx';
 const INIT = computeFromRaw(FALLBACK);
 
 export default function App() {
-  const [tab,         setTab]         = useState('qtd');
+  const [tab,         setTab]         = useState('audit');
   const [dataState,   setDataState]   = useState(INIT);
   const [fetchStatus, setFetchStatus] = useState('loading');
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -100,6 +101,7 @@ export default function App() {
   // ── Page router ───────────────────────────────────────────────────────────
   const pageProps = { QD, B, FY26, latestMo, cashOutDate, ltYears, ltForecast };
   const pages = {
+    audit:    <PageAuditLog {...pageProps} />,
     qtd:      <PageQTD      {...pageProps} />,
     overview: <PageOverview {...pageProps} />,
     revenue:  <PageRevenue  {...pageProps} />,
