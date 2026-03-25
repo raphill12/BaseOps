@@ -15,6 +15,13 @@ import { MdaBar, SectionHeader } from '../ui.jsx';
 // note: optional string — only fill in if something changed that day
 const DAILY_LOG = [
   {
+    date:        '2026-03-25',
+    fy26ARR:     null,
+    fy26Cash:    null,
+    cashOutDate: null,
+    note:        '',
+  },
+  {
     date:        '2026-03-24',
     fy26ARR:     null,   // null = use live FY26.totalARR
     fy26Cash:    null,   // null = use live FY26.cash
