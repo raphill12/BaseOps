@@ -32,6 +32,18 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
 
   const yoyQ4 = arr25[3] ? arr26[3] / arr25[3] - 1 : null;
 
+  // Align both years on a shared Jan–Dec x-axis for the monthly progression chart
+  const monthlyData = Array.from({ length: 12 }, (_, i) => {
+    const mo25 = QD.monthlyARR[i];
+    const mo26 = QD.monthlyARR[12 + i];
+    return {
+      m:      mo25.m.split('-')[0],
+      v25:    mo25?.v ?? null,
+      v26act: i <= nAct26 - 1 ? (mo26?.v ?? null) : null,
+      v26fct: i >= nAct26 - 1 ? (mo26?.v ?? null) : null,
+    };
+  });
+
   return (
     <div>
       <MdaBar
@@ -54,15 +66,14 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
         <ChartCard title="Total ARR · Monthly Progression" sub="Jan-25A → Dec-26F"
           legend={<><LegendDot color={C.act25} label="2025 Actual" /><LegendDot color={C.act26} label={`${latestMo} Actual`} /><LegendDot color={C.fct26} label="2026 Forecast" /></>}>
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart margin={{ top: 16, right: 10, left: 0, bottom: 0 }}>
+            <LineChart data={monthlyData} margin={{ top: 16, right: 10, left: 0, bottom: 0 }}>
               {GRID}
-              <XAxis dataKey="m" type="category" data={QD.monthlyARR} {...XSTYLE} interval={2}
-                tickFormatter={m => { const [mon, yr] = m.split('-'); return mon === 'Jan' ? `Jan '${yr}` : mon; }} />
+              <XAxis dataKey="m" {...XSTYLE} />
               <YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
-              <Line data={QD.monthlyARR.slice(0, 12)}                dataKey="v" name="2025A"            stroke={C.act25} strokeWidth={2} dot={false} type="monotone" />
-              <Line data={QD.monthlyARR.slice(12, 12 + nAct26)}     dataKey="v" name={`${latestMo}A`}    stroke={C.act26} strokeWidth={2} dot={{ fill: C.act26, r: 4 }} type="monotone" />
-              <Line data={QD.monthlyARR.slice(11 + nAct26)}         dataKey="v" name="2026F"             stroke={C.fct26} strokeWidth={2} strokeDasharray="4 3" dot={false} type="monotone" />
+              <Line dataKey="v25"    name="2025 Actual"       stroke={C.act25} strokeWidth={2} dot={false} type="monotone" connectNulls />
+              <Line dataKey="v26act" name={`${latestMo} Actual`} stroke={C.act26} strokeWidth={2} dot={{ fill: C.act26, r: 4 }} type="monotone" connectNulls />
+              <Line dataKey="v26fct" name="2026 Forecast"     stroke={C.fct26} strokeWidth={2} strokeDasharray="4 3" dot={false} type="monotone" connectNulls />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
