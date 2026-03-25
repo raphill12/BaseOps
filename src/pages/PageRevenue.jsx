@@ -56,7 +56,8 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
           <ResponsiveContainer width="100%" height={220}>
             <LineChart margin={{ top: 16, right: 10, left: 0, bottom: 0 }}>
               {GRID}
-              <XAxis dataKey="m" type="category" data={QD.monthlyARR} {...XSTYLE} interval={2} />
+              <XAxis dataKey="m" type="category" data={QD.monthlyARR} {...XSTYLE} interval={2}
+                tickFormatter={m => { const [mon, yr] = m.split('-'); return mon === 'Jan' ? `Jan '${yr}` : mon; }} />
               <YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Line data={QD.monthlyARR.slice(0, 12)}                dataKey="v" name="2025A"            stroke={C.act25} strokeWidth={2} dot={false} type="monotone" />
