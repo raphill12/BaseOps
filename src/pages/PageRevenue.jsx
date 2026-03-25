@@ -56,7 +56,7 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 22 }}>
         <Card label="Total ARR · FY26F EOP"  value={f$(FY26.totalARR)} meta={`Budget ${f$(B.totalARR[4])}`} pill={vf(vp(FY26.totalARR, B.totalARR[4]))} pillGood={FY26.totalARR >= B.totalARR[4]} color={C.blue} />
-        <Card label="Enterprise ARR · FY26F EOP"   value={f$(FY26.corpARR)}  meta={`Budget ${f$(B.corpARR[4])}`}  pill={vf(vp(FY26.corpARR,  B.corpARR[4]))}  pillGood={FY26.corpARR  >= B.corpARR[4]}  color={C.cyn}  />
+        <Card label="Revenue · FY26F"               value={f$(FY26.revenue)}  meta={`Budget ${f$(B.revenue[4])}`}  pill={vf(vp(FY26.revenue,  B.revenue[4]))}  pillGood={FY26.revenue  >= B.revenue[4]}  color={C.cyn}  />
         <Card label="Y/Y Total ARR · Q4 26F" value={fp(arr25[3] ? arr26[3] / arr25[3] - 1 : null)} meta="vs Q4 25A" pill={arr25[3] ? `▲ ${fp(arr26[3] / arr25[3] - 1)}` : '—'} pillGood={true} color={C.grn}  />
         <Card label="Enterprise NRR · TTM Q4 26F"  value={fp(FY26.nrr)}      meta={`Budget ${fp(B.nrr[4])}`}       pill={fpc(FY26.nrr - B.nrr[4])}             pillGood={FY26.nrr >= B.nrr[4]}            color={C.pur}  />
       </div>
