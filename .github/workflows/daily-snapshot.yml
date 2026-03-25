@@ -22,27 +22,51 @@ jobs:
           TODAY=$(date -u '+%Y-%m-%d')
           FILE="src/pages/PageAuditLog.jsx"
 
-          # Insert a new null entry for today directly after the opening [ of DAILY_LOG
-          # Only add if today's date isn't already in the file
           if grep -q "date:.*'${TODAY}'" "$FILE"; then
             echo "Entry for ${TODAY} already exists — skipping."
             exit 0
           fi
 
-          NEW_ROW="  {\n    date:        '${TODAY}',\n    fy26ARR:     null,\n    fy26Cash:    null,\n    cashOutDate: null,\n    note:        '',\n  },"
+          # Use python to safely insert the multiline row
+          python3 - <<PYEOF
+import re, sys
 
-          # Insert after the line containing "const DAILY_LOG = ["
-          sed -i "/const DAILY_LOG = \[/{n;s/^/${NEW_ROW}\n/}" "$FILE"
+today = "${TODAY}"
+new_row = f"""  {{
+    date:        '{today}',
+    fy26ARR:     null,
+    fy26Cash:    null,
+    cashOutDate: null,
+    note:        '',
+  }},"""
 
-          echo "Added snapshot row for ${TODAY}"
+with open("${FILE}", "r") as f:
+    content = f.read()
+
+marker = "const DAILY_LOG = ["
+idx = content.find(marker)
+if idx == -1:
+    print("ERROR: DAILY_LOG marker not found", file=sys.stderr)
+    sys.exit(1)
+
+insert_at = idx + len(marker)
+content = content[:insert_at] + "\n" + new_row + content[insert_at:]
+
+with open("${FILE}", "w") as f:
+    f.write(content)
+
+print(f"Added snapshot row for {today}")
+PYEOF
 
       - name: Commit and push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TODAY=$(date -u '+%Y-%m-%d')
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           git add src/pages/PageAuditLog.jsx
-          # Only commit if there's actually a change
           git diff --cached --quiet && echo "No changes to commit." && exit 0
           git commit -m "chore: daily snapshot entry ${TODAY}"
           git push origin claude/google-sheet-live-dashboard-floxP
