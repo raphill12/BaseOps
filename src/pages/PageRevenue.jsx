@@ -19,18 +19,18 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
   const fedTCV25  = QD.fedTCVQ.slice(0, 4).map(d => d.act);
   const fedTCV26  = q26vals(QD.fedTCVQ);
 
+  // Number of 2026 actual months (e.g. "Feb-26" → 2) — drives the monthly ARR line split
+  const nAct26 = actMos26(latestMo) || 1;
+
   // Y/Y ARR growth quarters (vs same quarter prior year from live data)
   const arrYoY = [
-    { q: 'Q1 26A', val: arr25[0] ? (arr26[0] / arr25[0]) - 1 : null },
-    { q: 'Q2 26F', val: arr25[1] ? (arr26[1] / arr25[1]) - 1 : null },
-    { q: 'Q3 26F', val: arr25[2] ? (arr26[2] / arr25[2]) - 1 : null },
-    { q: 'Q4 26F', val: arr25[3] ? (arr26[3] / arr25[3]) - 1 : null },
+    { q: nAct26 >= 3  ? 'Q1 26A' : 'Q1 26F', val: arr25[0] ? (arr26[0] / arr25[0]) - 1 : null },
+    { q: nAct26 >= 6  ? 'Q2 26A' : 'Q2 26F', val: arr25[1] ? (arr26[1] / arr25[1]) - 1 : null },
+    { q: nAct26 >= 9  ? 'Q3 26A' : 'Q3 26F', val: arr25[2] ? (arr26[2] / arr25[2]) - 1 : null },
+    { q: nAct26 >= 12 ? 'Q4 26A' : 'Q4 26F', val: arr25[3] ? (arr26[3] / arr25[3]) - 1 : null },
   ].filter(d => d.val != null);
 
   const yoyQ4 = arr25[3] ? arr26[3] / arr25[3] - 1 : null;
-
-  // Number of 2026 actual months (e.g. "Feb-26" → 2) — drives the monthly ARR line split
-  const nAct26 = actMos26(latestMo) || 1;
 
   return (
     <div>

@@ -16,7 +16,7 @@ export const TOOLTIP_STYLE = {
 
 export const GRID = <CartesianGrid strokeDasharray="3 3" stroke={C.bdr} />;
 
-export const XSTYLE = { tick: { fill: C.txt3, fontSize: 10 }, axisLine: { stroke: C.bdr }, tickLine: false };
+export const XSTYLE = { tick: { fill: C.txt3, fontSize: 10 }, axisLine: { stroke: C.bdr }, tickLine: false, interval: 0 };
 export const YSTYLE = { tick: { fill: C.txt3, fontSize: 10 }, axisLine: false, tickLine: false, width: 55 };
 
 export function yFmt$(v) {
