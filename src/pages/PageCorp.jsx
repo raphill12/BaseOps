@@ -167,8 +167,8 @@ export default function PageCorp({ QD, B, FY26 }) {
       <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <BvATable rows={[
           { lbl: 'Enterprise ARR (EOP)',    a25: corp25,      a26: corp26,      b26: B.corpARR.slice(0, 4), fy: FY26.corpARR, fyb: B.corpARR[4], h: true },
-          { lbl: 'New Logo ARR',           a25: newCorp25,   a26: newCorp26,   b26: [null, null, null, null], fy: B.corpNewLogo, fyb: B.corpNewLogo },
-          { lbl: 'Expansion ARR',          a25: expCorp25,   a26: expCorp26,   b26: [null, null, null, null], fy: B.corpExp,     fyb: B.corpExp     },
+          { lbl: 'New Logo ARR',           a25: newCorp25,   a26: newCorp26,   b26: [null, null, null, null], fy: newCorp26.reduce((s, v) => s + (v ?? 0), 0), fyb: B.corpNewLogo },
+          { lbl: 'Expansion ARR',          a25: expCorp25,   a26: expCorp26,   b26: [null, null, null, null], fy: expCorp26.reduce((s, v) => s + (v ?? 0), 0), fyb: B.corpExp     },
           { lbl: 'Contraction ARR',        a25: contrCorp25, a26: contrCorp26, b26: [null, null, null, null], fy: null,          fyb: null, inv: true },
           { lbl: 'Enterprise NRR % (TTM)', a25: nrr25,       a26: nrr26,       b26: B.nrr.slice(0, 4),     fy: FY26.nrr,     fyb: B.nrr[4], f: fp },
           { lbl: 'Revenue (Enterprise)',   a25: [null,   null,   null,   null],       a26: QD.corpPL.map(d => d.rev),   b26: [null, null, null, null], fy: QD.corpPL.reduce((s, d) => s + (d.rev || 0), 0),   fyb: null, h: true },
