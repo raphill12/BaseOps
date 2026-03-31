@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Component } from 'react';
 import { C, TABS, csvUrl } from './config.js';
-import { parseActData, parseLTInputs, computeFromRaw, FALLBACK } from './data.js';
+import { parseActData, parseLTInputs, parseAuditLog, computeFromRaw, FALLBACK } from './data.js';
 
 class PageErrorBoundary extends Component {
   constructor(props) { super(props); this.state = { err: null }; }
@@ -36,6 +36,7 @@ export default function App() {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [cashOutDate, setCashOutDate] = useState(null);
   const [ltForecast,  setLtForecast]  = useState(null);
+  const [auditLog,    setAuditLog]    = useState([]);
   const hasFetched = useRef(false);
 
   const { QD, B, FY26, latestMo, ltYears } = dataState;
@@ -44,17 +45,19 @@ export default function App() {
   const fetchLive = async () => {
     setFetchStatus('loading');
     try {
-      const [actRes, ltRes] = await Promise.all([
+      const [actRes, ltRes, auditRes] = await Promise.all([
         fetch(csvUrl('Act_Data')),
         fetch(csvUrl('LT_Inputs')).catch(() => null),
+        fetch(csvUrl('Audit_Log')).catch(() => null),
       ]);
       if (!actRes.ok) throw new Error(`Act_Data fetch failed: ${actRes.status}`);
 
       // Read both bodies in parallel, then parse LT_Inputs first so its toggle
       // date (G2) can be passed into parseActData to set the actuals cut-off.
-      const [actCsv, ltCsv] = await Promise.all([
+      const [actCsv, ltCsv, auditCsv] = await Promise.all([
         actRes.text(),
         ltRes?.ok ? ltRes.text() : Promise.resolve(null),
+        auditRes?.ok ? auditRes.text() : Promise.resolve(null),
       ]);
 
       const ltParsed  = ltCsv ? parseLTInputs(ltCsv) : null;
@@ -77,6 +80,7 @@ export default function App() {
       if (ltParsed?.cashOutDate) setCashOutDate(ltParsed.cashOutDate);
       if (ltParsed?.ltForecast && Object.keys(ltParsed.ltForecast).length > 0)
         setLtForecast(ltParsed.ltForecast);
+      if (auditCsv) setAuditLog(parseAuditLog(auditCsv));
     } catch (e) {
       console.warn('Live fetch failed, using fallback data:', e.message);
       setFetchStatus('error');
@@ -99,7 +103,7 @@ export default function App() {
   const st = statusConfig[fetchStatus] || statusConfig.live;
 
   // ── Page router ───────────────────────────────────────────────────────────
-  const pageProps = { QD, B, FY26, latestMo, cashOutDate, ltYears, ltForecast };
+  const pageProps = { QD, B, FY26, latestMo, cashOutDate, ltYears, ltForecast, auditLog };
   const pages = {
     audit:    <PageAuditLog {...pageProps} />,
     qtd:      <PageQTD      {...pageProps} />,

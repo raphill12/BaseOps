@@ -3,39 +3,6 @@ import { C } from '../config.js';
 import { f$ } from '../utils.js';
 import { MdaBar, SectionHeader } from '../ui.jsx';
 
-// ─── Daily Snapshot Log ─────────────────────────────────────────────────────
-// One entry per day, newest at the TOP.
-// Values are pulled from the live model when set to null (good for today's row).
-// When adding a new day: prepend an entry with today's date and set all three
-// values to null — they'll pull from live. The prior day's entry should have
-// its values frozen as explicit numbers at that point.
-//
-// fy26ARR / fy26Cash: dollar amount, e.g. 4200000
-// cashOutDate: string like "Sep-28"  (month-YY, two-digit year)
-// note: optional string — only fill in if something changed that day
-const DAILY_LOG = [
-  {
-    date:        '2026-03-31',
-    fy26ARR:     null,
-    fy26Cash:    null,
-    cashOutDate: null,
-    note:        '',
-  },
-  {
-    date:        '2026-03-25',
-    fy26ARR:     null,
-    fy26Cash:    null,
-    cashOutDate: null,
-    note:        '',
-  },
-  {
-    date:        '2026-03-24',
-    fy26ARR:     null,   // null = use live FY26.totalARR
-    fy26Cash:    null,   // null = use live FY26.cash
-    cashOutDate: null,   // null = use live cashOutDate
-    note:        'Baseline',
-  },
-];
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -64,8 +31,8 @@ function fDeltaMo(v) {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export default function PageAuditLog({ FY26, cashOutDate }) {
-  const resolved = DAILY_LOG.map(e => ({
+export default function PageAuditLog({ FY26, cashOutDate, auditLog = [] }) {
+  const resolved = auditLog.map(e => ({
     ...e,
     fy26ARR:     e.fy26ARR     ?? FY26?.totalARR ?? null,
     fy26Cash:    e.fy26Cash    ?? FY26?.cash     ?? null,

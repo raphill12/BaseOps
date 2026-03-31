@@ -255,6 +255,25 @@ export function parseActData(csv, toggleDate = null) {
  *    - One metric row per KPI with the label in Col A and annual values under each year column.
  *    - A "cash-out" row anywhere (legacy — value read from col G).
  */
+/** Parse the Audit_Log sheet.
+ *  Row 1 = headers: date, fy26ARR, fy26Cash, cashOutDate, note
+ *  Rows 2+ = data, newest first.
+ *  Blank numeric cells are returned as null (dashboard resolves them to live values).
+ */
+export function parseAuditLog(csv) {
+  const rows = parseCSV(csv);
+  if (rows.length < 2) return [];
+  return rows.slice(1)
+    .filter(r => r[0] && r[0].trim())
+    .map(r => ({
+      date:        r[0].trim(),
+      fy26ARR:     parseNum(r[1]) ?? null,
+      fy26Cash:    parseNum(r[2]) ?? null,
+      cashOutDate: r[3]?.trim() || null,
+      note:        r[4]?.trim() || '',
+    }));
+}
+
 export function parseLTInputs(csv) {
   const rows = parseCSV(csv);
   if (!rows.length) return null;
