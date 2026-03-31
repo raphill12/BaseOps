@@ -31,8 +31,8 @@ jobs:
           YESTERDAY=$(date -u -d 'yesterday' '+%Y-%m-%d')
           HUMAN_COMMITS=$(git log --oneline \
             --after="${YESTERDAY} 00:00:00" \
-            --before="${TODAY} 00:00:00" \
-            --invert-grep --author="github-actions\[bot\]" 2>/dev/null | wc -l)
+            --before="${TODAY} 00:00:00" 2>/dev/null \
+            | grep -v "github-actions\[bot\]" | wc -l)
           if [ "$HUMAN_COMMITS" -eq 0 ]; then
             echo "No human commits on ${YESTERDAY} — skipping snapshot."
             exit 0
