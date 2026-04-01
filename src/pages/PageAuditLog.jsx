@@ -18,7 +18,7 @@ function cashOutToMonths(s) {
 }
 
 function fDelta$(v) {
-  if (v == null || v === 0) return v === 0 ? <span style={{ color: '#4b5563' }}>—</span> : '';
+  if (v == null || v === 0) return <span style={{ color: '#4b5563' }}>—</span>;
   const pos = v > 0;
   return <span style={{ color: pos ? C.grn : C.red }}>{pos ? '+' : ''}{f$(v)}</span>;
 }
@@ -32,22 +32,22 @@ function fDeltaMo(v) {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function PageAuditLog({ FY26, cashOutDate, auditLog = [] }) {
-  const resolved = auditLog.map(e => ({
-    ...e,
-    fy26ARR:     e.fy26ARR     ?? FY26?.totalARR ?? null,
-    fy26Cash:    e.fy26Cash    ?? FY26?.cash     ?? null,
-    cashOutDate: e.cashOutDate ?? cashOutDate    ?? null,
-  }));
+  const resolved = auditLog.map(e => {
+    const date        = e.cashOutDate ?? cashOutDate ?? null;
+    return {
+      ...e,
+      fy26ARR:     e.fy26ARR  ?? FY26?.totalARR ?? null,
+      fy26Cash:    e.fy26Cash ?? FY26?.cash     ?? null,
+      cashOutDate: date,
+      cashOutMo:   cashOutToMonths(date),
+    };
+  });
 
   const rows = resolved.map((e, i) => {
-    const prev = resolved[i + 1] || null;
-    const arrDelta  = prev && e.fy26ARR != null && prev.fy26ARR != null
-      ? e.fy26ARR - prev.fy26ARR : null;
-    const cashDelta = prev && e.fy26Cash != null && prev.fy26Cash != null
-      ? e.fy26Cash - prev.fy26Cash : null;
-    const curMo  = cashOutToMonths(e.cashOutDate);
-    const prevMo = prev ? cashOutToMonths(prev.cashOutDate) : null;
-    const moDelta = curMo != null && prevMo != null ? curMo - prevMo : null;
+    const prev      = resolved[i + 1] || null;
+    const arrDelta  = prev && e.fy26ARR  != null && prev.fy26ARR  != null ? e.fy26ARR  - prev.fy26ARR  : null;
+    const cashDelta = prev && e.fy26Cash != null && prev.fy26Cash != null ? e.fy26Cash - prev.fy26Cash : null;
+    const moDelta   = e.cashOutMo != null && prev?.cashOutMo != null      ? e.cashOutMo - prev.cashOutMo : null;
     return { ...e, arrDelta, cashDelta, moDelta };
   });
 

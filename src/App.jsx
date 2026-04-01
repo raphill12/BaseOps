@@ -103,9 +103,9 @@ export default function App() {
   const st = statusConfig[fetchStatus] || statusConfig.live;
 
   // ── Page router ───────────────────────────────────────────────────────────
-  const pageProps = { QD, B, FY26, latestMo, cashOutDate, ltYears, ltForecast, auditLog };
+  const pageProps = { QD, B, FY26, latestMo, cashOutDate, ltYears, ltForecast };
   const pages = {
-    audit:    <PageAuditLog {...pageProps} />,
+    audit:    <PageAuditLog {...pageProps} auditLog={auditLog} />,
     qtd:      <PageQTD      {...pageProps} />,
     overview: <PageOverview {...pageProps} />,
     revenue:  <PageRevenue  {...pageProps} />,
