@@ -110,8 +110,8 @@ export default function PageQTD({ QD, B }) {
 
   const topRows = [
     { metric: 'Enterprise ARR (EOP)',      qtd: qtd.corpARR,    fcst: qtd.qCorpARRFcst,    target: qCorpBud,  fmt: '$'  },
-    { metric: 'Federal ARR (EOP)',        qtd: qtd.fedARR,     fcst: qtd.qFedARRFcst,     target: qFedBud,   fmt: '$'  },
-    { metric: 'Total ARR (EOP)',          qtd: qtd.totalARR,   fcst: qtd.qTotalARRFcst,   target: qTotalBud, fmt: '$'  },
+    { metric: 'Federal Annualized Revenue (EOP)',        qtd: qtd.fedARR,     fcst: qtd.qFedARRFcst,     target: qFedBud,   fmt: '$'  },
+    { metric: 'Annualized Revenue (EOP)',          qtd: qtd.totalARR,   fcst: qtd.qTotalARRFcst,   target: qTotalBud, fmt: '$'  },
     { metric: 'New Enterprise ARR (bookings)',  qtd: qtd.newCorpARR, fcst: qtd.qNewCorpARRFcst, target: qNewCBud,  fmt: '$'  },
     { metric: 'Exp Enterprise ARR (bookings)', qtd: qtd.expCorpARR, fcst: qtd.qExpCorpARRFcst, target: qExpCBud,  fmt: '$'  },
     { metric: 'Federal TCV (bookings)',  qtd: qtd.fedTCV,     fcst: qtd.qFedTCVFcst,     target: 0,         fmt: '$'  },

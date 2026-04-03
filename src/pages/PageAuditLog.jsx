@@ -68,7 +68,7 @@ export default function PageAuditLog({ FY26, cashOutDate, auditLog = [] }) {
       <MdaBar
         title="Daily Snapshot Log"
         scope="FY26 model · updated daily"
-        text="One row per day captures the forecast FY26 ARR exit, ending cash, and projected cash-out date. Deltas show the change vs the prior day's snapshot. On days with no model changes all three deltas will be flat."
+        text="One row per day captures the forecast FY26 Annualized Revenue exit, ending cash, and projected cash-out date. Deltas show the change vs the prior day's snapshot. On days with no model changes all three deltas will be flat."
       />
 
       <SectionHeader title="Daily History" />
@@ -79,7 +79,7 @@ export default function PageAuditLog({ FY26, cashOutDate, auditLog = [] }) {
             <thead>
               <tr>
                 <th style={{ ...hStyle, textAlign: 'left', minWidth: 90 }}>Date</th>
-                <th style={{ ...hStyle, textAlign: 'right', minWidth: 110 }}>FY26 ARR Exit</th>
+                <th style={{ ...hStyle, textAlign: 'right', minWidth: 110 }}>FY26 Annualized Revenue Exit</th>
                 <th style={{ ...hStyle, minWidth: 80 }}>vs Prior</th>
                 <th style={{ ...hStyle, minWidth: 120 }}>FY26 Ending Cash</th>
                 <th style={{ ...hStyle, minWidth: 80 }}>vs Prior</th>

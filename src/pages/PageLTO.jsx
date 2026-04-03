@@ -122,7 +122,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
   const BSIZE2 = hasOuterYears ? 22 : 50;   // side-by-side bookings chart
   const H      = 270;
   const MARGIN = { top: 28, right: 16, left: 0, bottom: 0 };
-  const lblStyle = { fill: C.txt3, fontSize: 10 };
+  const lblStyle = { fill: C.txt3, fontSize: 11 };
 
   // Budget dot line — amber dashed, only appears at the 2026 bar (null elsewhere)
   const BudLine = () => (
@@ -158,10 +158,10 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
         right={hasLT ? '2025A · 2026A/F · 2027–2030 Forecast' : '2025 Actual vs 2026 Annual Forecast — add 2027–2030 rows to LT_Inputs sheet to extend'}
       />
 
-      {/* ── Row 1: Total ARR (stacked) + Enterprise ARR Bookings ── */}
+      {/* ── Row 1: Annualized Revenue (stacked) + Enterprise ARR Bookings ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
 
-        <ChartCard title="Total ARR (Year-End EOP)" sub="Enterprise + Federal · stacked"
+        <ChartCard title="Annualized Revenue (Year-End EOP)" sub="Enterprise + Federal · stacked"
           legend={<>
             <LegendDot color={C.act25}   label="2025A Enterprise" />
             <LegendDot color={C.lgrn}    label="2025A Fed" />
@@ -177,7 +177,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               {GRID}<XAxis dataKey="yr" {...XSTYLE} />
               <YAxis yAxisId="left"  tickFormatter={yFmt$}   {...YSTYLE} />
               <YAxis yAxisId="right" orientation="right" tickFormatter={yFmtPct}
-                tick={{ fill: C.txt3, fontSize: 10 }} axisLine={false} tickLine={false} width={44} />
+                tick={{ fill: C.txt3, fontSize: 12 }} axisLine={false} tickLine={false} width={44} />
               <Tooltip {...TOOLTIP_STYLE}
                 formatter={(v, name) => name === 'YoY Growth' ? fp(v) : f$(v)} />
               <Bar yAxisId="left" dataKey="corp" name="Enterprise ARR" stackId="a" radius={[0, 0, 0, 0]}>
@@ -189,7 +189,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
                   const d = arrData[index];
                   const total = (d.corp || 0) + (d.fed || 0);
                   if (!total) return null;
-                  return <text x={x + width / 2} y={y - 8} fill={C.txt3} fontSize={10} textAnchor="middle">{f$(total)}</text>;
+                  return <text x={x + width / 2} y={y - 8} fill={C.txt3} fontSize={11} textAnchor="middle">{f$(total)}</text>;
                 }} />
               </Bar>
               <Line yAxisId="left"  dataKey="bud" name="FY26 Budget" stroke={C.budLine}
@@ -285,7 +285,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               {GRID}<XAxis dataKey="yr" {...XSTYLE} />
               <YAxis yAxisId="left"  tickFormatter={yFmt$}   {...YSTYLE} />
               <YAxis yAxisId="right" orientation="right" tickFormatter={yFmtPct}
-                tick={{ fill: C.txt3, fontSize: 10 }} axisLine={false} tickLine={false} width={44} />
+                tick={{ fill: C.txt3, fontSize: 12 }} axisLine={false} tickLine={false} width={44} />
               <Tooltip {...TOOLTIP_STYLE}
                 formatter={(v, name) => name === 'Opex % Rev' ? fp(v) : f$(v)} />
               <Bar yAxisId="left" dataKey="val" name="Opex ($)" fill={C.red} radius={[3, 3, 0, 0]}>

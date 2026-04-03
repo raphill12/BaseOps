@@ -13,7 +13,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
   const nrr25  = QD.nrr.slice(0, 4).map(d => d.act);
 
   const cards = [
-    { lbl: 'Total ARR · FY26F EOP',    val: f$(FY26.totalARR), meta: `Budget ${f$(B.totalARR[4])}`, pill: vf(vp(FY26.totalARR, B.totalARR[4])), good: FY26.totalARR >= B.totalARR[4], color: C.blue },
+    { lbl: 'Annualized Revenue · FY26F EOP',    val: f$(FY26.totalARR), meta: `Budget ${f$(B.totalARR[4])}`, pill: vf(vp(FY26.totalARR, B.totalARR[4])), good: FY26.totalARR >= B.totalARR[4], color: C.blue },
     { lbl: 'Revenue · FY26F',           val: f$(FY26.revenue),  meta: `Budget ${f$(B.revenue[4])}`,  pill: vf(vp(FY26.revenue,  B.revenue[4])),  good: FY26.revenue  >= B.revenue[4],  color: C.grn  },
     { lbl: 'Gross Margin · FY26F avg',  val: fp(FY26.gm),       meta: `Budget ${fp(B.gm[4])}`,       pill: vf(vp(FY26.gm,       B.gm[4])),       good: FY26.gm       >= B.gm[4],       color: C.cyn  },
     { lbl: 'OpEx · FY26F total',        val: f$(FY26.opex),     meta: `Budget ${f$(B.opex[4])}`,     pill: vf(vp(FY26.opex,     B.opex[4])),     good: FY26.opex     <= B.opex[4],     color: C.amb  },
@@ -48,7 +48,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
       <MdaBar
         title="FY 2026 Full-Year Outlook"
         scope={`${actLbl}${fctLbl ? ` · ${fctLbl}` : ''} · ${onTrack}/5 KPIs on or above budget`}
-        text={`FY26 is forecast to close at ${f$(FY26.totalARR)} total ARR (${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget) and ${f$(FY26.revenue)} in revenue (${vf(vp(FY26.revenue, B.revenue[4]))} vs plan), with NRR holding at ${fp(FY26.nrr)} against a ${fp(B.nrr[4])} target. Gross margin is tracking at ${fp(FY26.gm)} (${FY26.gm >= B.gm[4] ? '+' : ''}${((FY26.gm - B.gm[4]) * 100).toFixed(1)}pp vs plan), and operating expenses of ${f$(FY26.opex)} are ${f$(Math.abs(opxDelta))} ${opxDelta <= 0 ? 'under' : 'over'} budget. Ending cash of ${f$(FY26.cash)} is ${vf(vp(FY26.cash, B.cash[4]))} vs our ${f$(B.cash[4])} target.`}
+        text={`FY26 is forecast to close at ${f$(FY26.totalARR)} annualized revenue (${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget) and ${f$(FY26.revenue)} in revenue (${vf(vp(FY26.revenue, B.revenue[4]))} vs plan), with NRR holding at ${fp(FY26.nrr)} against a ${fp(B.nrr[4])} target. Gross margin is tracking at ${fp(FY26.gm)} (${FY26.gm >= B.gm[4] ? '+' : ''}${((FY26.gm - B.gm[4]) * 100).toFixed(1)}pp vs plan), and operating expenses of ${f$(FY26.opex)} are ${f$(Math.abs(opxDelta))} ${opxDelta <= 0 ? 'under' : 'over'} budget. Ending cash of ${f$(FY26.cash)} is ${vf(vp(FY26.cash, B.cash[4]))} vs our ${f$(B.cash[4])} target.`}
       />
       <SectionHeader title="FY 2026 Forecast vs Budget" right={`${latestMo}A${fctLbl2 ? ` · ${fctLbl2}` : ''}`} />
 
@@ -58,12 +58,12 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
       </div>
 
       {/* ARR stacked chart */}
-      <SectionHeader title="Total ARR · Stacked Enterprise + Federal" />
+      <SectionHeader title="Annualized Revenue · Stacked Enterprise + Federal" />
       <div style={{ marginBottom: 20 }}>
         <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, padding: 18 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: C.txt }}>Total ARR by Quarter · Enterprise + Federal vs Budget</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.txt }}>Annualized Revenue by Quarter · Enterprise + Federal vs Budget</div>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', fontSize: 10, color: C.txt2 }}>
               {[
@@ -98,7 +98,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
                 {QD.arr.map((d, i) => (
                   <Cell key={i} fill={d.q.includes('25A') ? `${C.act25}66` : d.q.includes('26A') ? `${C.act26}88` : `${C.fct26}88`} />
                 ))}
-                <LabelList dataKey="total" position="top" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="total" position="top" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="budTotal" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -116,7 +116,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Revenue" radius={[3, 3, 0, 0]}>
                 {QD.rev.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -133,7 +133,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="Gross Margin" radius={[3, 3, 0, 0]}>
                 {QD.gm.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -147,7 +147,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="OpEx" radius={[3, 3, 0, 0]}>
                 {QD.opex.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.red} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.red, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -161,7 +161,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Ending Cash" radius={[3, 3, 0, 0]}>
                 {QD.cash.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -173,7 +173,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
       <SectionHeader title="Full Year 2026 Summary · Forecast vs Budget" />
       <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <BvATable rows={[
-          { lbl: 'Total ARR (EOP)',     a25: arr25,  a26: arr26,  b26: B.totalARR.slice(0, 4), fy: FY26.totalARR, fyb: B.totalARR[4], h: true },
+          { lbl: 'Annualized Revenue (EOP)',     a25: arr25,  a26: arr26,  b26: B.totalARR.slice(0, 4), fy: FY26.totalARR, fyb: B.totalARR[4], h: true },
           { lbl: 'Revenue',             a25: rev25,  a26: rev26,  b26: B.revenue.slice(0, 4),  fy: FY26.revenue,  fyb: B.revenue[4],  h: true },
           { lbl: 'Gross Margin %',      a25: gm25,   a26: gm26,   b26: B.gm.slice(0, 4),       fy: FY26.gm,       fyb: B.gm[4],       f: fp   },
           { lbl: 'Operating Expenses',  a25: opex25, a26: opex26, b26: B.opex.slice(0, 4),     fy: FY26.opex,     fyb: B.opex[4],     inv: true, h: true },

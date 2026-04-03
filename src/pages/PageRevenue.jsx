@@ -49,21 +49,21 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
       <MdaBar
         title="Revenue & ARR"
         scope="2025 Actual · 2026 Actual/Forecast vs Budget"
-        text={`The business is tracking to ${f$(FY26.totalARR)} total ARR at year-end — ${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget — with ${yoyQ4 != null ? fp(yoyQ4) : '—'} YoY growth off the Q4 '25 exit. Revenue is projected at ${f$(FY26.revenue)} (${vf(vp(FY26.revenue, B.revenue[4]))} vs budget), supported by NRR of ${fp(FY26.nrr)} vs our ${fp(B.nrr[4])} plan. Federal TCV bookings are pacing at ${f$(FY26.fedTCV)} vs the ${f$(B.fedTCV[4] ?? 2250000)} target.`}
+        text={`The business is tracking to ${f$(FY26.totalARR)} annualized revenue at year-end — ${vf(vp(FY26.totalARR, B.totalARR[4]))} vs budget — with ${yoyQ4 != null ? fp(yoyQ4) : '—'} YoY growth off the Q4 '25 exit. Revenue is projected at ${f$(FY26.revenue)} (${vf(vp(FY26.revenue, B.revenue[4]))} vs budget), supported by NRR of ${fp(FY26.nrr)} vs our ${fp(B.nrr[4])} plan. Federal TCV bookings are pacing at ${f$(FY26.fedTCV)} vs the ${f$(B.fedTCV[4] ?? 2250000)} target.`}
       />
       <SectionHeader title="Revenue & ARR · 2025A & 2026A/F vs Budget" />
 
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 22 }}>
-        <Card label="Total ARR · FY26F EOP"  value={f$(FY26.totalARR)} meta={`Budget ${f$(B.totalARR[4])}`} pill={vf(vp(FY26.totalARR, B.totalARR[4]))} pillGood={FY26.totalARR >= B.totalARR[4]} color={C.blue} />
+        <Card label="Annualized Revenue · FY26F EOP"  value={f$(FY26.totalARR)} meta={`Budget ${f$(B.totalARR[4])}`} pill={vf(vp(FY26.totalARR, B.totalARR[4]))} pillGood={FY26.totalARR >= B.totalARR[4]} color={C.blue} />
         <Card label="Revenue · FY26F"               value={f$(FY26.revenue)}  meta={`Budget ${f$(B.revenue[4])}`}  pill={vf(vp(FY26.revenue,  B.revenue[4]))}  pillGood={FY26.revenue  >= B.revenue[4]}  color={C.cyn}  />
-        <Card label="Y/Y Total ARR · Q4 26F" value={fp(arr25[3] ? arr26[3] / arr25[3] - 1 : null)} meta="vs Q4 25A" pill={arr25[3] ? `▲ ${fp(arr26[3] / arr25[3] - 1)}` : '—'} pillGood={true} color={C.grn}  />
+        <Card label="Y/Y Annualized Revenue · Q4 26F" value={fp(arr25[3] ? arr26[3] / arr25[3] - 1 : null)} meta="vs Q4 25A" pill={arr25[3] ? `▲ ${fp(arr26[3] / arr25[3] - 1)}` : '—'} pillGood={true} color={C.grn}  />
         <Card label="Enterprise NRR · TTM Q4 26F"  value={fp(FY26.nrr)}      meta={`Budget ${fp(B.nrr[4])}`}       pill={fpc(FY26.nrr - B.nrr[4])}             pillGood={FY26.nrr >= B.nrr[4]}            color={C.pur}  />
       </div>
 
       {/* Monthly ARR line + Y/Y growth */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14, marginBottom: 20 }}>
-        <ChartCard title="Total ARR · Monthly Progression" sub="Jan-25A → Dec-26F"
+        <ChartCard title="Annualized Revenue · Monthly Progression" sub="Jan-25A → Dec-26F"
           legend={<><LegendDot color={C.act25} label="2025 Actual" /><LegendDot color={C.act26} label={`${latestMo} Actual`} /><LegendDot color={C.fct26} label="2026 Forecast" /></>}>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={monthlyData} margin={{ top: 16, right: 10, left: 0, bottom: 0 }}>
@@ -86,7 +86,7 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="Y/Y Growth" radius={[3, 3, 0, 0]}>
                 {arrYoY.map((d, i) => <Cell key={i} fill={d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -107,7 +107,7 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="NRR" radius={[3, 3, 0, 0]}>
                 {QD.nrr.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -120,9 +120,9 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
       <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <BvATable rows={[
           { sec: true, lbl: 'ARR Metrics' },
-          { lbl: 'Total ARR (EOP)',         a25: arr25,    a26: arr26,    b26: B.totalARR.slice(0, 4), fy: FY26.totalARR, fyb: B.totalARR[4], h: true },
+          { lbl: 'Annualized Revenue (EOP)',         a25: arr25,    a26: arr26,    b26: B.totalARR.slice(0, 4), fy: FY26.totalARR, fyb: B.totalARR[4], h: true },
           { lbl: 'Enterprise ARR (EOP)',      a25: corp25,   a26: corp26,   b26: B.corpARR.slice(0, 4),  fy: FY26.corpARR,  fyb: B.corpARR[4]          },
-          { lbl: 'Federal ARR (EOP)',        a25: fed25,    a26: fed26,    b26: B.fedARR.slice(0, 4),   fy: FY26.fedARR,   fyb: B.fedARR[4]           },
+          { lbl: 'Federal Annualized Revenue (EOP)',        a25: fed25,    a26: fed26,    b26: B.fedARR.slice(0, 4),   fy: FY26.fedARR,   fyb: B.fedARR[4]           },
           { lbl: 'Federal TCV (Bookings)',   a25: fedTCV25, a26: fedTCV26, b26: B.fedTCV.slice(0, 4),   fy: FY26.fedTCV,   fyb: B.fedTCV[4] ?? 2250000 },
           { sec: true, lbl: 'Revenue & Retention' },
           { lbl: 'Revenue',                 a25: rev25,    a26: rev26,    b26: B.revenue.slice(0, 4),  fy: FY26.revenue,  fyb: B.revenue[4],  h: true },

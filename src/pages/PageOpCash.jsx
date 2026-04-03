@@ -48,7 +48,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="OpEx" radius={[3, 3, 0, 0]}>
                 {QD.opex.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.red} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.red, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -62,7 +62,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Ending Cash" radius={[3, 3, 0, 0]}>
                 {QD.cash.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -79,7 +79,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="Gross Margin" radius={[3, 3, 0, 0]}>
                 {QD.gm.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -93,7 +93,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="NRR" radius={[3, 3, 0, 0]}>
                 {QD.nrr.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -130,7 +130,7 @@ export default function PageOpCash({ QD, B, FY26, cashOutDate }) {
               name === 'Headcount' ? [`${Math.round(v)}`, name] : [yFmt$(v), 'ARR / HC']
             } />
             <Bar yAxisId="left" dataKey="v" name="Headcount" fill={C.pur} radius={[3, 3, 0, 0]}>
-              <LabelList dataKey="v" position="top" formatter={v => v || ''} style={{ fill: C.txt3, fontSize: 9 }} />
+              <LabelList dataKey="v" position="top" formatter={v => v || ''} style={{ fill: C.txt3, fontSize: 11 }} />
             </Bar>
             <Line yAxisId="right" dataKey="ratio" name="ARR / HC" stroke={C.act26} strokeWidth={2} dot={false} type="monotone" connectNulls={false} />
           </ComposedChart>

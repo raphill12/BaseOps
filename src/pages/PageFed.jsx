@@ -25,13 +25,13 @@ export default function PageFed({ QD, B, FY26 }) {
       <MdaBar
         title="Federal Business Unit"
         scope="2025 Actual · 2026 Actual/Forecast vs Budget"
-        text={`The federal segment is forecast to exit FY26 at ${f$(FY26.fedARR)} ARR (${vf(vp(FY26.fedARR, B.fedARR[4]))} vs budget), with TCV bookings of ${f$(FY26.fedTCV)} against our ${f$(fedTCVBud)} target (${vf(vp(FY26.fedTCV, fedTCVBud))}). Federal revenue is projected at ${f$(fedRevFY)} for the year, with operating income of ${f$(fedOpIncFY)} reflecting the planned investment-phase build-out.`}
+        text={`The federal segment is forecast to exit FY26 at ${f$(FY26.fedARR)} annualized revenue (${vf(vp(FY26.fedARR, B.fedARR[4]))} vs budget), with TCV bookings of ${f$(FY26.fedTCV)} against our ${f$(fedTCVBud)} target (${vf(vp(FY26.fedTCV, fedTCVBud))}). Federal revenue is projected at ${f$(fedRevFY)} for the year, with operating income of ${f$(fedOpIncFY)} reflecting the planned investment-phase build-out.`}
       />
       <SectionHeader title="Federal Breakout · 2025A & 2026A/F" />
 
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 22 }}>
-        <Card label="Federal ARR · FY26F EOP"   value={f$(FY26.fedARR)}  meta={`Budget ${f$(B.fedARR[4])}`}  pill={vf(vp(FY26.fedARR, B.fedARR[4]))} pillGood={FY26.fedARR >= B.fedARR[4]} color={C.blue} />
+        <Card label="Federal Annualized Revenue · FY26F EOP"   value={f$(FY26.fedARR)}  meta={`Budget ${f$(B.fedARR[4])}`}  pill={vf(vp(FY26.fedARR, B.fedARR[4]))} pillGood={FY26.fedARR >= B.fedARR[4]} color={C.blue} />
         <Card label="Federal TCV · FY26F"        value={f$(FY26.fedTCV)}  meta={`Budget ${f$(B.fedTCV[4] ?? 2250000)}`} pill={vf(vp(FY26.fedTCV, B.fedTCV[4] ?? 2250000))} pillGood={FY26.fedTCV >= (B.fedTCV[4] ?? 2250000)} color={C.amb} />
         <Card label="Federal Revenue · FY26F"    value={f$(fedRevFY)}     meta="2026 Forecast"                color={C.grn} />
         <Card label="Federal Op Income · FY26F"  value={f$(fedOpIncFY)}   meta="Investment phase"             color={C.red} />
@@ -39,21 +39,21 @@ export default function PageFed({ QD, B, FY26 }) {
 
       {/* Fed ARR quarterly + waterfall */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
-        <ChartCard title="Federal ARR (EOP) · Quarterly" sub="vs Budget" legend={<ChartLegendStd />}>
+        <ChartCard title="Federal Annualized Revenue (EOP) · Quarterly" sub="vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={240}>
             <ComposedChart data={QD.fedARR} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Fed ARR" radius={[3, 3, 0, 0]}>
                 {QD.fedARR.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Fed ARR Waterfall · Q4 25A → FY26 Exit"
+        <ChartCard title="Federal Annualized Revenue Waterfall · Q4 25A → FY26 Exit"
           legend={<><LegendDot color={C.act26} label="Anchor" /><LegendDot color={C.grn} label="New Logo" /><LegendDot color={C.cyn} label="Expansion" /></>}>
           <WaterfallChart data={QD.fedWaterfall} height={240} />
         </ChartCard>
@@ -75,7 +75,7 @@ export default function PageFed({ QD, B, FY26 }) {
                   if (!value) return null;
                   const tgt = B.fedTCV[4] ?? 2250000;
                   const pct = (value / tgt * 100).toFixed(0) + '%';
-                  return <text x={x + width / 2} y={y - 6} fill={C.txt3} fontSize={8} textAnchor="middle">{pct}</text>;
+                  return <text x={x + width / 2} y={y - 6} fill={C.txt3} fontSize={10} textAnchor="middle">{pct}</text>;
                 }} />
               </Bar>
               <Line dataKey="tgt" name="Annual Target" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={false} />
@@ -93,7 +93,7 @@ export default function PageFed({ QD, B, FY26 }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Fed TCV" radius={[3, 3, 0, 0]}>
                 {fedTCVQtly.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -107,10 +107,10 @@ export default function PageFed({ QD, B, FY26 }) {
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="rev"   name="Revenue"   fill={C.grn} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="rev" position="top" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="rev" position="top" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Bar dataKey="opInc" name="Op Income" fill={C.red} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="opInc" position="insideBottom" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 8 }} />
+                <LabelList dataKey="opInc" position="insideBottom" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 10 }} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -121,7 +121,7 @@ export default function PageFed({ QD, B, FY26 }) {
       <SectionHeader title="Federal Detail" />
       <div style={{ background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <BvATable rows={[
-          { lbl: 'Federal ARR (EOP)',      a25: fed25,    a26: fed26,    b26: B.fedARR.slice(0, 4),  fy: FY26.fedARR,  fyb: B.fedARR[4],           h: true },
+          { lbl: 'Federal Annualized Revenue (EOP)',      a25: fed25,    a26: fed26,    b26: B.fedARR.slice(0, 4),  fy: FY26.fedARR,  fyb: B.fedARR[4],           h: true },
           { lbl: 'Federal TCV (Bookings)', a25: fedTCV25, a26: fedTCV26, b26: B.fedTCV.slice(0, 4),  fy: FY26.fedTCV,  fyb: B.fedTCV[4] ?? 2250000         },
           { lbl: 'Federal Revenue',        a25: [null,   null,   null,   null],   a26: QD.fedPL.map(d => d.rev),   b26: [null, null, null, null], fy: fedRevFY,    fyb: null, h: true },
           { lbl: 'Federal Op Income',      a25: [null,   null,   null,   null],   a26: QD.fedPL.map(d => d.opInc), b26: [null, null, null, null], fy: fedOpIncFY, fyb: null, inv: true },

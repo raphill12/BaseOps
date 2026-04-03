@@ -59,7 +59,7 @@ export default function PageCorp({ QD, B, FY26 }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Enterprise ARR" radius={[3, 3, 0, 0]}>
                 {QD.corpARR.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -87,7 +87,7 @@ export default function PageCorp({ QD, B, FY26 }) {
                 <LabelList content={({ x, y, width, value, index }) => {
                   if (!value || index % 3 !== 2) return null;
                   const pct = (value / B.corpNewLogo * 100).toFixed(0) + '%';
-                  return <text x={x + width / 2} y={y - 6} fill={C.txt3} fontSize={8} textAnchor="middle">{pct}</text>;
+                  return <text x={x + width / 2} y={y - 6} fill={C.txt3} fontSize={10} textAnchor="middle">{pct}</text>;
                 }} />
               </Bar>
               <Line dataKey="tgt" name="Annual Target" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={false} />
@@ -107,7 +107,7 @@ export default function PageCorp({ QD, B, FY26 }) {
                 <LabelList content={({ x, y, width, value, index }) => {
                   if (!value || index % 3 !== 2) return null;
                   const pct = (value / B.corpExp * 100).toFixed(0) + '%';
-                  return <text x={x + width / 2} y={y - 6} fill={C.txt3} fontSize={8} textAnchor="middle">{pct}</text>;
+                  return <text x={x + width / 2} y={y - 6} fill={C.txt3} fontSize={10} textAnchor="middle">{pct}</text>;
                 }} />
               </Bar>
               <Line dataKey="tgt" name="Annual Target" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={false} />
@@ -125,10 +125,10 @@ export default function PageCorp({ QD, B, FY26 }) {
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="rev"   name="Revenue"   fill={C.grn} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="rev" position="top" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="rev" position="top" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Bar dataKey="opInc" name="Op Income" fill={C.red} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="opInc" position="insideBottom" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 8 }} />
+                <LabelList dataKey="opInc" position="insideBottom" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 10 }} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -141,7 +141,7 @@ export default function PageCorp({ QD, B, FY26 }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="NRR" radius={[3, 3, 0, 0]}>
                 {QD.nrr.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -155,7 +155,7 @@ export default function PageCorp({ QD, B, FY26 }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => v ? `${v.toFixed(1)} mo` : null} />
               <Bar dataKey="v" name="CAC Payback" radius={[3, 3, 0, 0]}>
                 {QD.corpCAC.map((d, i) => <Cell key={i} fill={i === 0 ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="v" position="top" formatter={v => v ? `${v.toFixed(1)}mo` : ''} style={{ fill: C.txt3, fontSize: 9 }} />
+                <LabelList dataKey="v" position="top" formatter={v => v ? `${v.toFixed(1)}mo` : ''} style={{ fill: C.txt3, fontSize: 11 }} />
               </Bar>
             </ComposedChart>
           </ResponsiveContainer>

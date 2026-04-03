@@ -16,8 +16,8 @@ export const TOOLTIP_STYLE = {
 
 export const GRID = <CartesianGrid strokeDasharray="3 3" stroke={C.bdr} />;
 
-export const XSTYLE = { tick: { fill: C.txt3, fontSize: 10 }, axisLine: { stroke: C.bdr }, tickLine: false, interval: 0 };
-export const YSTYLE = { tick: { fill: C.txt3, fontSize: 10 }, axisLine: false, tickLine: false, width: 55 };
+export const XSTYLE = { tick: { fill: C.txt3, fontSize: 12 }, axisLine: { stroke: C.bdr }, tickLine: false, interval: 0 };
+export const YSTYLE = { tick: { fill: C.txt3, fontSize: 12 }, axisLine: false, tickLine: false, width: 60 };
 
 export function yFmt$(v) {
   return Math.abs(v) >= 1e6
@@ -137,7 +137,7 @@ export const ChartLegendStd = () => (
 
 // ─── Waterfall Chart ───────────────────────────────────────────────────────
 
-const WF_TICK = { fill: C.txt3, fontSize: 9 };
+const WF_TICK = { fill: C.txt3, fontSize: 11 };
 
 export function WaterfallChart({ data, height = 240 }) {
   return (
@@ -169,7 +169,7 @@ export function WaterfallChart({ data, height = 240 }) {
               const d = data[index];
               if (!d) return null;
               return (
-                <text x={x + width / 2} y={y - 6} fill={C.txt2} fontSize={9} textAnchor="middle">
+                <text x={x + width / 2} y={y - 6} fill={C.txt2} fontSize={11} textAnchor="middle">
                   {f$(d.val)}
                 </text>
               );
