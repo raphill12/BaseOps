@@ -1,7 +1,7 @@
 import { ComposedChart, BarChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp } from '../utils.js';
-import { MdaBar, SectionHeader, ChartCard, LegendDot, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
+import { MdaBar, SectionHeader, ChartCard, LegendDot, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct, smartLabel } from '../ui.jsx';
 
 // ─── Long-Term Outlook ──────────────────────────────────────────────────────
 // Annual summary: 2025 Actual + 2026 A/F + 2027-2030 Forecast.
@@ -121,8 +121,8 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
   const BSIZE  = hasOuterYears ? 38 : 72;
   const BSIZE2 = hasOuterYears ? 22 : 50;   // side-by-side bookings chart
   const H      = 270;
-  const MARGIN = { top: 28, right: 16, left: 0, bottom: 0 };
-  const lblStyle = { fill: C.txt3, fontSize: 11 };
+  const MARGIN = { top: 40, right: 16, left: 0, bottom: 0 };
+  // lblStyle removed — use smartLabel() content prop instead
 
   // Budget dot line — amber dashed, only appears at the 2026 bar (null elsewhere)
   const BudLine = () => (
@@ -189,7 +189,12 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
                   const d = arrData[index];
                   const total = (d.corp || 0) + (d.fed || 0);
                   if (!total) return null;
-                  return <text x={x + width / 2} y={y - 8} fill={C.txt3} fontSize={11} textAnchor="middle">{f$(total)}</text>;
+                  const str = f$(total);
+                  const cx = x + width / 2;
+                  if (width < 42) {
+                    return <text x={cx} y={y - 4} fill={C.txt3} fontSize={11} textAnchor="start" transform={`rotate(-65, ${cx}, ${y - 4})`}>{str}</text>;
+                  }
+                  return <text x={cx} y={y - 8} fill={C.txt3} fontSize={11} textAnchor="middle">{str}</text>;
                 }} />
               </Bar>
               <Line yAxisId="left"  dataKey="bud" name="FY26 Budget" stroke={C.budLine}
@@ -210,10 +215,10 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               {GRID}<XAxis dataKey="yr" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="newC" name="New Logo ARR"  fill={C.blue} radius={[3, 3, 0, 0]} barSize={BSIZE2}>
-                <LabelList dataKey="newC" position="top" formatter={v => f$(v)} style={lblStyle} />
+                <LabelList dataKey="newC" content={smartLabel(v => f$(v))} />
               </Bar>
               <Bar dataKey="expC" name="Expansion ARR" fill={C.pur}  radius={[3, 3, 0, 0]} barSize={BSIZE2}>
-                <LabelList dataKey="expC" position="top" formatter={v => f$(v)} style={lblStyle} />
+                <LabelList dataKey="expC" content={smartLabel(v => f$(v))} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -232,7 +237,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Revenue" radius={[3, 3, 0, 0]}>
                 {revData.map((_, i) => <Cell key={i} fill={barColor(i)} />)}
-                <LabelList dataKey="val" position="top" formatter={v => f$(v)} style={lblStyle} />
+                <LabelList dataKey="val" content={smartLabel(v => f$(v))} />
               </Bar>
               <BudLine />
             </ComposedChart>
@@ -247,7 +252,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Fed TCV" radius={[3, 3, 0, 0]}>
                 {fedData.map((_, i) => <Cell key={i} fill={barColor(i)} />)}
-                <LabelList dataKey="val" position="top" formatter={v => f$(v)} style={lblStyle} />
+                <LabelList dataKey="val" content={smartLabel(v => f$(v))} />
               </Bar>
               <BudLine />
             </ComposedChart>
@@ -262,7 +267,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Ending Cash" radius={[3, 3, 0, 0]}>
                 {cashData.map((_, i) => <Cell key={i} fill={barColor(i)} />)}
-                <LabelList dataKey="val" position="top" formatter={v => f$(v)} style={lblStyle} />
+                <LabelList dataKey="val" content={smartLabel(v => f$(v))} />
               </Bar>
               <BudLine />
             </ComposedChart>
@@ -281,7 +286,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
             <LegendDot color={C.budLine} label="FY26 Budget ($)" line dashed />
           </>}>
           <ResponsiveContainer width="100%" height={H}>
-            <ComposedChart data={opxData} margin={{ top: 28, right: 48, left: 0, bottom: 0 }} barSize={BSIZE}>
+            <ComposedChart data={opxData} margin={{ top: 40, right: 48, left: 0, bottom: 0 }} barSize={BSIZE}>
               {GRID}<XAxis dataKey="yr" {...XSTYLE} />
               <YAxis yAxisId="left"  tickFormatter={yFmt$}   {...YSTYLE} />
               <YAxis yAxisId="right" orientation="right" tickFormatter={yFmtPct}
@@ -289,7 +294,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               <Tooltip {...TOOLTIP_STYLE}
                 formatter={(v, name) => name === 'Opex % Rev' ? fp(v) : f$(v)} />
               <Bar yAxisId="left" dataKey="val" name="Opex ($)" fill={C.red} radius={[3, 3, 0, 0]}>
-                <LabelList dataKey="val" position="top" formatter={v => f$(v)} style={lblStyle} />
+                <LabelList dataKey="val" content={smartLabel(v => f$(v))} />
               </Bar>
               <Line yAxisId="left"  dataKey="bud" name="FY26 Budget ($)" stroke={C.budLine}
                 strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 4 }} connectNulls={false} />
@@ -307,7 +312,7 @@ export default function PageLTO({ QD, B, ltYears, ltForecast, cashOutDate }) {
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="Gross Margin %" radius={[3, 3, 0, 0]}>
                 {gmData.map((_, i) => <Cell key={i} fill={i === 0 ? C.cyn : i === 1 ? col26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={lblStyle} />
+                <LabelList dataKey="val" content={smartLabel(v => v ? fp(v) : '')} />
               </Bar>
               <BudLine />
             </ComposedChart>

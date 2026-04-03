@@ -29,6 +29,28 @@ export function yFmt$(v) {
 
 export function yFmtPct(v) { return `${(v * 100).toFixed(0)}%`; }
 
+/**
+ * Returns a LabelList `content` fn.
+ * Renders the label horizontally when the bar is wide enough (≥ minW px),
+ * or rotates it –65° upward-right when bars are tight — preventing overlap.
+ */
+export function smartLabel(fmtFn, { minW = 42, fs = 11 } = {}) {
+  return ({ x = 0, y = 0, width = 0, value }) => {
+    if (value == null) return null;
+    const str = fmtFn ? fmtFn(value) : String(value);
+    if (!str || str === '—') return null;
+    const cx = x + width / 2;
+    if (width < minW) {
+      return (
+        <text x={cx} y={y - 4} fill={C.txt3} fontSize={fs}
+          textAnchor="start"
+          transform={`rotate(-65, ${cx}, ${y - 4})`}>{str}</text>
+      );
+    }
+    return <text x={cx} y={y - 6} fill={C.txt3} fontSize={fs} textAnchor="middle">{str}</text>;
+  };
+}
+
 // ─── KPI Card ──────────────────────────────────────────────────────────────
 
 /** Metric card with a colored top accent, headline value, budget meta, and variance pill. */
@@ -168,11 +190,15 @@ export function WaterfallChart({ data, height = 240 }) {
             content={({ x, y, width, index }) => {
               const d = data[index];
               if (!d) return null;
-              return (
-                <text x={x + width / 2} y={y - 6} fill={C.txt2} fontSize={11} textAnchor="middle">
-                  {f$(d.val)}
-                </text>
-              );
+              const str = f$(d.val);
+              const cx = x + width / 2;
+              if (width < 42) {
+                return (
+                  <text x={cx} y={y - 4} fill={C.txt2} fontSize={11}
+                    textAnchor="start" transform={`rotate(-65, ${cx}, ${y - 4})`}>{str}</text>
+                );
+              }
+              return <text x={cx} y={y - 6} fill={C.txt2} fontSize={11} textAnchor="middle">{str}</text>;
             }}
           />
         </Bar>

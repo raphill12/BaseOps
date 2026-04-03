@@ -1,7 +1,7 @@
 import { ComposedChart, BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, fpc, vp, vf, q26vals, actMos26 } from '../utils.js';
-import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, LegendDot, WaterfallChart, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
+import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, LegendDot, WaterfallChart, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct, smartLabel } from '../ui.jsx';
 
 export default function PageRevenue({ QD, B, FY26, latestMo }) {
   const corp26 = q26vals(QD.corpARR);
@@ -81,12 +81,12 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
         <ChartCard title="Y/Y ARR Growth · 2026F"
           legend={<><LegendDot color={C.act26} label="2026A" /><LegendDot color={C.fct26} label="2026F" /></>}>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={arrYoY} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
+            <BarChart data={arrYoY} margin={{ top: 40, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="Y/Y Growth" radius={[3, 3, 0, 0]}>
                 {arrYoY.map((d, i) => <Cell key={i} fill={d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
+                <LabelList dataKey="val" content={smartLabel(v => v ? fp(v) : '')} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -102,12 +102,12 @@ export default function PageRevenue({ QD, B, FY26, latestMo }) {
 
         <ChartCard title="Enterprise NRR % (TTM)" sub="Quarterly vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={260}>
-            <ComposedChart data={QD.nrr} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
+            <ComposedChart data={QD.nrr} margin={{ top: 40, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.9, 1.15]} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="NRR" radius={[3, 3, 0, 0]}>
                 {QD.nrr.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
+                <LabelList dataKey="val" content={smartLabel(v => v ? fp(v) : '')} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>

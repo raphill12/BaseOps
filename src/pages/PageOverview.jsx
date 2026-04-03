@@ -1,7 +1,7 @@
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { C } from '../config.js';
 import { f$, fp, vp, vf, q26vals, nextMo } from '../utils.js';
-import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct } from '../ui.jsx';
+import { Card, MdaBar, SectionHeader, ChartCard, ChartLegendStd, BvATable, TOOLTIP_STYLE, GRID, XSTYLE, YSTYLE, yFmt$, yFmtPct, smartLabel } from '../ui.jsx';
 
 export default function PageOverview({ QD, B, FY26, latestMo }) {
   // 2025 quarterly actuals derived from live QD series (not hardcoded)
@@ -84,7 +84,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
             </div>
           </div>
           <ResponsiveContainer width="100%" height={260}>
-            <ComposedChart data={QD.arr} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
+            <ComposedChart data={QD.arr} margin={{ top: 40, right: 10, left: 0, bottom: 0 }}>
               {GRID}
               <XAxis dataKey="q" {...XSTYLE} />
               <YAxis tickFormatter={yFmt$} {...YSTYLE} />
@@ -98,7 +98,7 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
                 {QD.arr.map((d, i) => (
                   <Cell key={i} fill={d.q.includes('25A') ? `${C.act25}66` : d.q.includes('26A') ? `${C.act26}88` : `${C.fct26}88`} />
                 ))}
-                <LabelList dataKey="total" position="top" formatter={v => f$(v)} style={{ fill: C.txt3, fontSize: 11 }} />
+                <LabelList dataKey="total" content={smartLabel(v => f$(v))} />
               </Bar>
               <Line dataKey="budTotal" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -111,12 +111,12 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
       <div style={{ marginBottom: 20 }}>
         <ChartCard title="Revenue · Actual/Forecast vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={220}>
-            <ComposedChart data={QD.rev} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
+            <ComposedChart data={QD.rev} margin={{ top: 40, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Revenue" radius={[3, 3, 0, 0]}>
                 {QD.rev.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
+                <LabelList dataKey="val" content={smartLabel(v => v ? f$(v) : '')} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -128,12 +128,12 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 20 }}>
         <ChartCard title="Gross Margin %" sub="Quarterly avg vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={200}>
-            <ComposedChart data={QD.gm} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
+            <ComposedChart data={QD.gm} margin={{ top: 40, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmtPct} {...YSTYLE} domain={[0.7, 0.95]} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => fp(v)} />
               <Bar dataKey="val" name="Gross Margin" radius={[3, 3, 0, 0]}>
                 {QD.gm.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? fp(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
+                <LabelList dataKey="val" content={smartLabel(v => v ? fp(v) : '')} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -142,12 +142,12 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
 
         <ChartCard title="Operating Expenses" sub="Quarterly vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={200}>
-            <ComposedChart data={QD.opex} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
+            <ComposedChart data={QD.opex} margin={{ top: 40, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="OpEx" radius={[3, 3, 0, 0]}>
                 {QD.opex.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
+                <LabelList dataKey="val" content={smartLabel(v => v ? f$(v) : '')} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.red} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.red, r: 3 }} connectNulls={false} />
             </ComposedChart>
@@ -156,12 +156,12 @@ export default function PageOverview({ QD, B, FY26, latestMo }) {
 
         <ChartCard title="Ending Cash" sub="Quarterly vs Budget" legend={<ChartLegendStd />}>
           <ResponsiveContainer width="100%" height={200}>
-            <ComposedChart data={QD.cash} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
+            <ComposedChart data={QD.cash} margin={{ top: 40, right: 10, left: 0, bottom: 0 }}>
               {GRID}<XAxis dataKey="q" {...XSTYLE} /><YAxis tickFormatter={yFmt$} {...YSTYLE} />
               <Tooltip {...TOOLTIP_STYLE} formatter={v => f$(v)} />
               <Bar dataKey="val" name="Ending Cash" radius={[3, 3, 0, 0]}>
                 {QD.cash.map((d, i) => <Cell key={i} fill={d.q.includes('25A') ? C.act25 : d.q.includes('26A') ? C.act26 : C.fct26} />)}
-                <LabelList dataKey="val" position="top" formatter={v => v ? f$(v) : ''} style={{ fill: C.txt3, fontSize: 11 }} />
+                <LabelList dataKey="val" content={smartLabel(v => v ? f$(v) : '')} />
               </Bar>
               <Line dataKey="bud" name="Budget" stroke={C.budLine} strokeDasharray="5 4" strokeWidth={2} dot={{ fill: C.budLine, r: 3 }} connectNulls={false} />
             </ComposedChart>
