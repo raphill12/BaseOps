@@ -23,6 +23,13 @@ function fDelta$(v) {
   return <span style={{ color: pos ? C.grn : C.red }}>{pos ? '+' : ''}{f$(v)}</span>;
 }
 
+function fDeltaK$(v) {
+  if (v == null || v === 0) return <span style={{ color: '#4b5563' }}>—</span>;
+  const pos = v > 0;
+  const s = `$${Math.round(Math.abs(v) / 1000)}K`;
+  return <span style={{ color: pos ? C.grn : C.red }}>{pos ? '+' : '-'}{s}</span>;
+}
+
 function fDeltaMo(v) {
   if (v == null || v === 0) return <span style={{ color: '#4b5563' }}>—</span>;
   const pos = v > 0;
@@ -95,7 +102,7 @@ export default function PageAuditLog({ FY26, cashOutDate, auditLog = [] }) {
                     {r.date}
                   </td>
                   <td style={{ ...mono, color: C.txt }}>{f$(r.fy26ARR)}</td>
-                  <td style={{ ...mono }}>{fDelta$(r.arrDelta)}</td>
+                  <td style={{ ...mono }}>{fDeltaK$(r.arrDelta)}</td>
                   <td style={{ ...mono, color: C.txt }}>{f$(r.fy26Cash)}</td>
                   <td style={{ ...mono }}>{fDelta$(r.cashDelta)}</td>
                   <td style={{ ...mono, color: C.txt }}>{r.cashOutDate || '—'}</td>
