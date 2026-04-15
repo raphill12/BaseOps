@@ -18,20 +18,20 @@ function cashOutToMonths(s) {
 }
 
 function fDelta$(v) {
-  if (v == null || v === 0) return <span style={{ color: '#4b5563' }}>—</span>;
+  if (v == null || v === 0) return <span style={{ color: '#ffffff' }}>—</span>;
   const pos = v > 0;
   return <span style={{ color: pos ? C.grn : C.red }}>{pos ? '+' : ''}{f$(v)}</span>;
 }
 
 function fDeltaK$(v) {
-  if (v == null || v === 0) return <span style={{ color: '#4b5563' }}>—</span>;
+  if (v == null || v === 0) return <span style={{ color: '#ffffff' }}>—</span>;
   const pos = v > 0;
   const s = `$${Math.round(Math.abs(v) / 1000)}K`;
   return <span style={{ color: pos ? C.grn : C.red }}>{pos ? '+' : '-'}{s}</span>;
 }
 
 function fDeltaMo(v) {
-  if (v == null || v === 0) return <span style={{ color: '#4b5563' }}>—</span>;
+  if (v == null || v === 0) return <span style={{ color: '#ffffff' }}>—</span>;
   const pos = v > 0;
   return <span style={{ color: pos ? C.grn : C.red }}>{pos ? '+' : ''}{v} mo</span>;
 }

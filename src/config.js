@@ -14,8 +14,8 @@ export const C = {
 
   // Typography
   txt:     '#FFFFFF',   // primary text
-  txt2:    '#9ca3af',   // secondary text
-  txt3:    '#6b7280',   // tertiary / axis labels
+  txt2:    '#ffffff',   // secondary text
+  txt3:    '#ffffff',   // tertiary / axis labels
 
   // Surfaces — true-black theme
   surf:    '#111111',   // card / panel background
