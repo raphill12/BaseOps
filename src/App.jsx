@@ -51,7 +51,6 @@ export default function App() {
   const [cashOutDate, setCashOutDate] = useState(null);
   const [ltForecast,  setLtForecast]  = useState(null);
   const [auditLog,    setAuditLog]    = useState([]);
-  const [dlOpen,      setDlOpen]      = useState(false);
   const hasFetched = useRef(false);
 
   const { QD, B, FY26, latestMo, ltYears } = dataState;
@@ -167,45 +166,18 @@ export default function App() {
           </div>
 
           {/* CSV download */}
-          <div style={{ position: 'relative' }}>
-            <div
-              onClick={() => setDlOpen(o => !o)}
-              title="Download raw sheet data as CSV"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                cursor: 'pointer', userSelect: 'none',
-                background: 'rgba(255,255,255,.06)', border: `1px solid ${C.bdr}`, borderRadius: 20,
-                padding: '4px 12px', fontSize: 10, fontWeight: 700,
-                color: C.txt, textTransform: 'uppercase', letterSpacing: '.6px',
-              }}
-            >
-              ↓ Export CSV
-            </div>
-            {dlOpen && (
-              <div
-                onMouseLeave={() => setDlOpen(false)}
-                style={{
-                  position: 'absolute', top: '110%', right: 0, zIndex: 200,
-                  background: C.surf, border: `1px solid ${C.bdr}`, borderRadius: 8,
-                  minWidth: 160, overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,.5)',
-                }}
-              >
-                {['Act_Data', 'LT_Inputs', 'Audit_Log'].map(sheet => (
-                  <div
-                    key={sheet}
-                    onClick={() => { downloadSheet(sheet); setDlOpen(false); }}
-                    style={{
-                      padding: '9px 16px', fontSize: 11, cursor: 'pointer',
-                      color: C.txt, borderBottom: `1px solid ${C.bdr}`,
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.background = C.surf2}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                  >
-                    {sheet}.csv
-                  </div>
-                ))}
-              </div>
-            )}
+          <div
+            onClick={() => downloadSheet('Act_Data')}
+            title="Download Act_Data as CSV"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              cursor: 'pointer', userSelect: 'none',
+              background: 'rgba(255,255,255,.06)', border: `1px solid ${C.bdr}`, borderRadius: 20,
+              padding: '4px 12px', fontSize: 10, fontWeight: 700,
+              color: C.txt, textTransform: 'uppercase', letterSpacing: '.6px',
+            }}
+          >
+            ↓ Export Data to CSV
           </div>
 
           {/* Live data status badge — click to refresh */}
