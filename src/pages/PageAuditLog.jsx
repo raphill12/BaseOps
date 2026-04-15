@@ -40,13 +40,15 @@ function fDeltaMo(v) {
 
 export default function PageAuditLog({ FY26, cashOutDate, auditLog = [] }) {
   const resolved = auditLog.map(e => {
-    const date        = e.cashOutDate ?? cashOutDate ?? null;
+    const date = e.cashOutDate ?? cashOutDate ?? null;
     return {
       ...e,
       fy26ARR:     e.fy26ARR  ?? FY26?.totalARR ?? null,
       fy26Cash:    e.fy26Cash ?? FY26?.cash     ?? null,
       cashOutDate: date,
-      cashOutMo:   cashOutToMonths(date),
+      // Use the row's own stored value (not the live fallback) so deltas
+      // reflect actual changes between snapshots, not always 0.
+      cashOutMo:   cashOutToMonths(e.cashOutDate),
     };
   });
 
