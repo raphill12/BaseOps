@@ -10,11 +10,22 @@ const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','D
 
 function cashOutToMonths(s) {
   if (!s) return null;
-  const [mon, yr] = s.split('-');
-  const mi = MO.indexOf(mon);
-  if (mi < 0) return null;
-  const year = Number(yr) + (Number(yr) < 100 ? 2000 : 0);
-  return (year - 2025) * 12 + mi;
+  // "Mon-YY" or "Mon-YYYY"  e.g. "Mar-28" or "Mar-2028"
+  const m1 = s.match(/^([A-Za-z]{3})-(\d{2,4})$/);
+  if (m1) {
+    const mi = MO.indexOf(m1[1].charAt(0).toUpperCase() + m1[1].slice(1).toLowerCase());
+    if (mi < 0) return null;
+    const yr = Number(m1[2]);
+    const year = yr < 100 ? 2000 + yr : yr;
+    return (year - 2025) * 12 + mi;
+  }
+  // "M/D/YYYY" or "MM/DD/YYYY"  e.g. "3/1/2028"
+  const m2 = s.match(/^(\d{1,2})\/\d{1,2}\/(\d{4})$/);
+  if (m2) return (Number(m2[2]) - 2025) * 12 + (Number(m2[1]) - 1);
+  // "YYYY-MM-DD"
+  const m3 = s.match(/^(\d{4})-(\d{2})-\d{2}$/);
+  if (m3) return (Number(m3[1]) - 2025) * 12 + (Number(m3[2]) - 1);
+  return null;
 }
 
 function fDelta$(v) {
