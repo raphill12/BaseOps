@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, Component } from 'react';
+import { inject } from '@vercel/analytics';
 import { C, TABS, csvUrl } from './config.js';
 import { parseActData, parseLTInputs, parseAuditLog, computeFromRaw, FALLBACK } from './data.js';
 
@@ -25,6 +26,8 @@ import PageOpCash   from './pages/PageOpCash.jsx';
 import PageCorp     from './pages/PageCorp.jsx';
 import PageFed      from './pages/PageFed.jsx';
 import PageLTO      from './pages/PageLTO.jsx';
+
+inject();
 
 // Compute initial data from fallback so the UI renders immediately on load.
 const INIT = computeFromRaw(FALLBACK);
