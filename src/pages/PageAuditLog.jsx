@@ -28,6 +28,20 @@ function cashOutToMonths(s) {
   return null;
 }
 
+function fmtCashOutDate(s) {
+  if (!s) return '—';
+  // "MM/DD/YYYY"
+  const m2 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m2) return MO[Number(m2[1]) - 1] + '-' + String(m2[2]).padStart(2, '0');
+  // "Mon-YY" or "Mon-YYYY" — already has month name, just reformat day if present
+  const m1 = s.match(/^([A-Za-z]{3})-(\d{2,4})$/);
+  if (m1) return m1[1] + '-' + m1[2];
+  // "YYYY-MM-DD"
+  const m3 = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m3) return MO[Number(m3[2]) - 1] + '-' + m3[3];
+  return s;
+}
+
 function fDelta$(v) {
   if (v == null || v === 0) return <span style={{ color: '#ffffff' }}>—</span>;
   const pos = v > 0;
@@ -118,7 +132,7 @@ export default function PageAuditLog({ FY26, cashOutDate, auditLog = [] }) {
                   <td style={{ ...mono }}>{fDeltaK$(r.arrDelta)}</td>
                   <td style={{ ...mono, color: C.txt }}>{f$(r.fy26Cash)}</td>
                   <td style={{ ...mono }}>{fDelta$(r.cashDelta)}</td>
-                  <td style={{ ...mono, color: C.txt }}>{r.cashOutDate || '—'}</td>
+                  <td style={{ ...mono, color: C.txt }}>{fmtCashOutDate(r.cashOutDate)}</td>
                   <td style={{ ...mono }}>{fDeltaMo(r.moDelta)}</td>
                   <td style={{ ...cell, color: C.txt3, fontSize: 11, lineHeight: 1.5 }}>
                     {r.note || ''}
