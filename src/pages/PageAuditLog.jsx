@@ -31,14 +31,14 @@ function cashOutToMonths(s) {
 function fmtCashOutDate(s) {
   if (!s) return '—';
   // "MM/DD/YYYY"
-  const m2 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (m2) return MO[Number(m2[1]) - 1] + '-' + String(m2[2]).padStart(2, '0');
-  // "Mon-YY" or "Mon-YYYY" — already has month name, just reformat day if present
+  const m2 = s.match(/^(\d{1,2})\/\d{1,2}\/(\d{4})$/);
+  if (m2) return MO[Number(m2[1]) - 1] + '-' + m2[2].slice(-2);
+  // "Mon-YY" or "Mon-YYYY"
   const m1 = s.match(/^([A-Za-z]{3})-(\d{2,4})$/);
-  if (m1) return m1[1] + '-' + m1[2];
+  if (m1) return m1[1] + '-' + String(m1[2]).slice(-2);
   // "YYYY-MM-DD"
-  const m3 = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (m3) return MO[Number(m3[2]) - 1] + '-' + m3[3];
+  const m3 = s.match(/^(\d{4})-(\d{2})-\d{2}$/);
+  if (m3) return MO[Number(m3[2]) - 1] + '-' + m3[1].slice(-2);
   return s;
 }
 
