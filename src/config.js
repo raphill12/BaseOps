@@ -34,8 +34,10 @@ export const C = {
 // Change SHEET_ID here to point to a different workbook.
 export const SHEET_ID = '1SO7-3IUEKUtuXIr6JSQeXYaat-x1nNkYHi6O1-CR-y0';
 
+// Cache-busting timestamp forces Google/browser caches to serve fresh data
+// on every page load and every click of the refresh badge.
 export const csvUrl = (sheetName) =>
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
 
 // ─── Navigation Tabs ───────────────────────────────────────────────────────
 // Reorder, rename, or add tabs here.

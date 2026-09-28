@@ -63,9 +63,9 @@ export default function App() {
     setFetchStatus('loading');
     try {
       const [actRes, ltRes, auditRes] = await Promise.all([
-        fetch(csvUrl('Act_Data')),
-        fetch(csvUrl('LT_Inputs')).catch(() => null),
-        fetch(csvUrl('Audit_Log')).catch(() => null),
+        fetch(csvUrl('Act_Data'), { cache: 'no-store' }),
+        fetch(csvUrl('LT_Inputs'), { cache: 'no-store' }).catch(() => null),
+        fetch(csvUrl('Audit_Log'), { cache: 'no-store' }).catch(() => null),
       ]);
       if (!actRes.ok) throw new Error(`Act_Data fetch failed: ${actRes.status}`);
 
